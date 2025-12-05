@@ -1,91 +1,151 @@
-import { Member, MealPlan, Meal } from '../models/types';
+import { Agent } from '../core/Agent';
+import { LLMService } from '../core/LLMService';
 import { DatabaseManager } from '../db/DatabaseManager';
+import { Member, MealPlan, WorkoutPlan } from '../models/types';
+import { WorkoutGeneratorAgent } from './WorkoutGeneratorAgent';
+import { NutritionPlanGeneratorAgent } from './NutritionPlanGeneratorAgent';
 import { RAGService } from '../core/RAGService';
 import { v4 as uuidv4 } from 'uuid';
 
-export class PlanGeneratorAgent {
-    private db: DatabaseManager;
-    private rag: RAGService;
+interface PlanAssemblerInput {
+    mode: 'daily_plan' | 'weekly_summary';
+    member_profile: any;
+    workout_json: any;
+    nutrition_plan_json: any;
+    rag_examples?: any[];
+}
 
-    constructor(db: DatabaseManager, rag: RAGService) {
-        this.db = db;
-        this.rag = rag;
+interface PlanAssemblerResponse {
+    plan_json: {
+        workout: any;
+        nutrition: any;
+    };
+    day_label: string;
+    whatsapp_summary: {
+        workout_title: string;
+        exercise_bullets: string;
+        breakfast_summary: string;
+        day_number: number;
+    };
+}
+
+export class PlanGeneratorAgent implements Agent {
+    name = 'plan_generator';
+
+    private workoutAgent: WorkoutGeneratorAgent;
+    private nutritionAgent: NutritionPlanGeneratorAgent;
+
+    constructor(
+        private db: DatabaseManager,
+        private rag: RAGService,
+        private llm: LLMService
+    ) {
+        this.workoutAgent = new WorkoutGeneratorAgent(llm);
+        this.nutritionAgent = new NutritionPlanGeneratorAgent(llm);
     }
 
-    async generatePlan(member: Member): Promise<MealPlan> {
-        // 1. Calculate TDEE & Target Calories
-        const tdee = this.calculateTDEE(member);
-        let targetCalories = tdee;
+    // Agent interface implementation (optional if used directly)
+    async handleMessage(user: any, message: string, context: any): Promise<string | null> {
+        // This agent is mostly used as a service, but could handle "generate plan" commands
+        return null;
+    }
 
-        if (member.goal === 'fat_loss') targetCalories -= 500;
-        else if (member.goal === 'muscle_gain') targetCalories += 300;
+    // Main service method
+    async generatePlan(member: Member): Promise<{ mealPlan: MealPlan, workoutPlan: WorkoutPlan, summary: string }> {
+        // 1. Generate Workout
+        const workoutRes = await this.workoutAgent.generateWorkout({
+            member_profile: {
+                age: member.age,
+                gender: member.gender,
+                height_cm: member.height_cm,
+                weight_kg: member.weight_kg,
+                goal: member.goal
+            }
+        });
 
-        // 2. Check RAG for similar cases (Trainer Edits)
-        const ragQuery = `age${member.age} ${member.diet_preference} ${member.goal}`;
-        const similarEdits = await this.rag.search(ragQuery);
+        // 2. Generate Nutrition
+        const nutritionRes = await this.nutritionAgent.generateNutritionPlan({
+            member_profile: {
+                age: member.age,
+                gender: member.gender,
+                weight_kg: member.weight_kg,
+                height_cm: member.height_cm,
+                goal: member.goal,
+                diet_pref: member.diet_preference,
+                allergies: member.allergies
+            }
+        });
 
-        // Apply RAG insights (Simple heuristic for demo)
-        if (similarEdits.some(e => e.includes('calories_up'))) {
-            targetCalories += 200; // Adjust based on "low energy" feedback found in RAG
-        }
+        // 3. Assemble and Summarize
+        const assemblerInput: PlanAssemblerInput = {
+            mode: 'daily_plan',
+            member_profile: { name: member.name, goal: member.goal },
+            workout_json: workoutRes.workout_json,
+            nutrition_plan_json: nutritionRes.nutrition_plan_json
+        };
 
-        // 3. Calculate Macros
-        const protein = Math.round(member.weight_kg * (member.goal === 'muscle_gain' ? 2.0 : 1.6));
-        const remainingCals = targetCalories - (protein * 4);
-        const fats = Math.round((remainingCals * 0.3) / 9);
-        const carbs = Math.round((remainingCals * 0.7) / 4);
+        const systemPrompt = `
+You are PlanGeneratorAgent for DailyFit.
+You merge workout and nutrition plans and produce the final plan_json + WhatsApp-friendly summary.
 
-        // 4. Generate Meals (Indian Cuisine)
-        const meals = this.generateIndianMeals(member.diet_preference, targetCalories, member.allergies);
+Output (mode = daily_plan):
+{
+  "plan_json": {
+    "workout": {...},
+    "nutrition": {...}
+  },
+  "day_label": "Day 12 - Upper Body Strength",
+  "whatsapp_summary": {
+    "workout_title": "Upper Body Strength",
+    "exercise_bullets": "Pushups, Dumbbell Rows, Shoulder Press",
+    "breakfast_summary": "Oats + Banana, 380 kcal",
+    "day_number": 12
+  }
+}
+`;
 
-        const plan: MealPlan = {
+        const assemblerRes = await this.llm.getAgentResponse<PlanAssemblerResponse>(systemPrompt, assemblerInput);
+
+        // 4. Convert to Domain Models (MealPlan, WorkoutPlan)
+        const mealPlan: MealPlan = {
             plan_id: uuidv4(),
             member_id: member.member_id,
             version_number: 1,
-            daily_calories: Math.round(targetCalories),
+            daily_calories: nutritionRes.nutrition_plan_json.target_calories,
             macros: {
-                protein_g: protein,
-                carbs_g: carbs,
-                fat_g: fats
+                protein_g: nutritionRes.nutrition_plan_json.macros.protein_g,
+                carbs_g: nutritionRes.nutrition_plan_json.macros.carbs_g,
+                fat_g: nutritionRes.nutrition_plan_json.macros.fats_g
             },
-            meals: meals,
+            meals: nutritionRes.nutrition_plan_json.meals.flatMap(m => m.items.map(i => ({
+                time: m.time_window.split('-')[0],
+                name: i.name,
+                calories: i.approx_cal,
+                protein: 0 // Placeholder as item level macros aren't fully generated yet
+            }))),
             created_by: 'AI',
-            status: 'draft',
+            status: 'active',
             created_timestamp: new Date().toISOString(),
-            notes: similarEdits.length > 0 ? `Adjusted based on ${similarEdits.length} similar trainer edits.` : undefined
+            notes: assemblerRes.whatsapp_summary.breakfast_summary // simplified
         };
 
-        return plan;
-    }
+        const workoutPlan: WorkoutPlan = {
+            plan_id: uuidv4(),
+            member_id: member.member_id,
+            version: 1,
+            exercises: workoutRes.workout_json.exercises.map(e => ({
+                name: e.name,
+                sets: e.sets,
+                reps: e.reps.toString(),
+                rest: '60s'
+            })),
+            created_by: 'AI',
+            status: 'active'
+        };
 
-    private calculateTDEE(member: Member): number {
-        // Mifflin-St Jeor
-        let bmr = 10 * member.weight_kg + 6.25 * member.height_cm - 5 * member.age;
-        bmr += member.gender === 'male' ? 5 : -161;
-        return Math.round(bmr * 1.35); // Default activity factor
-    }
+        // Construct a nice summary string
+        const summary = `📅 *${assemblerRes.day_label}*\n\n💪 *Workout: ${assemblerRes.whatsapp_summary.workout_title}*\n${assemblerRes.whatsapp_summary.exercise_bullets}\n\n🍳 *Breakfast:* ${assemblerRes.whatsapp_summary.breakfast_summary}\n\nReady to crush it? 🔥`;
 
-    private generateIndianMeals(preference: string, calories: number, allergies: string[]): Meal[] {
-        const isVeg = preference === 'veg' || preference === 'vegan';
-        const meals: Meal[] = [];
-
-        // Breakfast
-        let breakfast = isVeg ? 'Poha with Peanuts' : 'Omelette & Toast';
-        if (allergies.includes('peanut') && breakfast.includes('Peanuts')) breakfast = 'Vegetable Upma';
-        meals.push({ time: '08:00', name: breakfast, calories: Math.round(calories * 0.25), protein: 15 });
-
-        // Lunch
-        let lunch = isVeg ? 'Roti, Dal Tadka & Sabzi' : 'Chicken Curry & Rice';
-        meals.push({ time: '13:00', name: lunch, calories: Math.round(calories * 0.35), protein: 30 });
-
-        // Snack
-        let snack = 'Masala Chai & Marie Biscuit'; // Classic Indian
-        meals.push({ time: '17:00', name: snack, calories: Math.round(calories * 0.10), protein: 5 });
-
-        // Dinner
-        let dinner = isVeg ? 'Paneer Bhurji & Roti' : 'Grilled Fish & Salad';
-        meals.push({ time: '20:00', name: dinner, calories: Math.round(calories * 0.30), protein: 25 });
-
-        return meals;
+        return { mealPlan, workoutPlan, summary };
     }
 }

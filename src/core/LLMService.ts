@@ -150,4 +150,98 @@ Keep it short, friendly, and use emojis. Maximum 2-3 sentences.
             return "I didn't quite catch that! Could you please answer the question? 😊";
         }
     }
+    async getAgentResponse<T>(systemPrompt: string, input: any): Promise<T> {
+        try {
+            const fullPrompt = `
+${systemPrompt}
+
+INPUT JSON:
+${JSON.stringify(input, null, 2)}
+
+OUTPUT JSON:
+`;
+
+            const response = await axios.post(
+                `${this.baseUrl}/${this.model}:generateContent?key=${this.apiKey}`,
+                {
+                    contents: [{
+                        parts: [{
+                            text: fullPrompt
+                        }]
+                    }],
+                    generationConfig: {
+                        response_mime_type: "application/json"
+                    }
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!generatedText) {
+                throw new Error('No text generated from API');
+            }
+
+            return JSON.parse(generatedText) as T;
+        } catch (error: any) {
+            console.error("LLM Agent Error:", error.response?.data || error.message);
+            throw error;
+        }
+    }
+
+    async getVisionAgentResponse<T>(systemPrompt: string, input: any, imageUrl: string): Promise<T> {
+        try {
+            // Download image
+            const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+            const base64Image = Buffer.from(imageResponse.data).toString('base64');
+            const mimeType = imageResponse.headers['content-type'];
+
+            const fullPrompt = `
+${systemPrompt}
+
+INPUT JSON:
+${JSON.stringify(input, null, 2)}
+
+OUTPUT JSON:
+`;
+
+            const response = await axios.post(
+                `${this.baseUrl}/${this.model}:generateContent?key=${this.apiKey}`,
+                {
+                    contents: [{
+                        parts: [
+                            { text: fullPrompt },
+                            {
+                                inline_data: {
+                                    mime_type: mimeType,
+                                    data: base64Image
+                                }
+                            }
+                        ]
+                    }],
+                    generationConfig: {
+                        response_mime_type: "application/json"
+                    }
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!generatedText) {
+                throw new Error('No text generated from API');
+            }
+
+            return JSON.parse(generatedText) as T;
+        } catch (error: any) {
+            console.error("LLM Vision Error:", error.response?.data || error.message);
+            throw error;
+        }
+    }
 }

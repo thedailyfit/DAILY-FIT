@@ -137,7 +137,7 @@ export default async function DashboardPage() {
                                 + Create New Diet Template
                             </Link>
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" isDisabled>
+                        <Button variant="outline" className="w-full justify-start" disabled>
                             + Create New Workout Template (Coming Soon)
                         </Button>
                     </CardContent>

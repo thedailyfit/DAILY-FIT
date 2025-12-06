@@ -6,9 +6,14 @@ import { AIDietAssistant } from "./ai-diet-assistant"
 import { Button } from "@/components/ui/button"
 import { PanelRightOpen, PanelRightClose, Save } from "lucide-react"
 
-export function DietEditorWrapper() {
+interface DietEditorWrapperProps {
+    initialData?: any
+    member?: any
+}
+
+export function DietEditorWrapper({ initialData, member }: DietEditorWrapperProps) {
     const [showAI, setShowAI] = useState(true)
-    const [planData, setPlanData] = useState<any>(null)
+    const [planData, setPlanData] = useState<any>(initialData)
 
     const handleAIPlan = (newPlan: any) => {
         setPlanData(newPlan)

@@ -48,7 +48,7 @@ const formSchema = z.object({
         message: "Please select a gender.",
     }),
     goal: z.string().optional(),
-    // status: z.string().default("Active"), // Removing to fix type error
+    status: z.string(),
 })
 
 export function AddClientDialog() {
@@ -64,8 +64,7 @@ export function AddClientDialog() {
             phone: "",
             gender: "",
             goal: "",
-            // Status is handled manually
-            // status: "Active",
+            status: "Active",
         },
     })
 
@@ -84,7 +83,7 @@ export function AddClientDialog() {
                 phone: values.phone,
                 gender: values.gender,
                 goal: values.goal,
-                status: 'Active', // Manually set status
+                status: values.status,
             })
 
             if (error) {

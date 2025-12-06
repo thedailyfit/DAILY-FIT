@@ -1,47 +1,69 @@
-import { createClient } from "@/lib/supabase"
-import { Client } from "@/types/client"
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Metadata } from "next";
+import { ClientsTable } from "@/components/clients/clients-table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase";
+import { AddClientDialog } from "@/components/clients/add-client-dialog";
+import { Client, ClientStatus } from "@/types/client";
 
-async function getData(): Promise<Client[]> {
-    const supabase = createClient()
+export const metadata: Metadata = {
+    title: "Clients | DailyFit Trainer Dashboard",
+};
 
-    // Fetch members from Supabase
-    // Note: In a real app, we might need to handle errors or empty states more gracefully
+async function getClients(): Promise<Client[]> {
+    const supabase = createClient();
+
+    // Fetch from the new clients_view which joins clients, programs, and payments
     const { data, error } = await supabase
-        .from('members')
+        .from('clients_view')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('name', { ascending: true });
 
     if (error) {
-        console.error('Error fetching clients:', error)
-        return []
+        console.error('Error fetching clients:', error);
+        return [];
     }
 
-    // Map Supabase data to Client type if needed, or cast if it matches
-    return (data || []) as Client[]
+    return (data || []).map((row: any) => ({
+        id: row.client_id,
+        name: row.name,
+        status: (row.status && ['Active', 'Paused', 'Trial', 'Inactive'].includes(row.status))
+            ? row.status as ClientStatus
+            : 'Active',
+        phone: row.phone,
+        planName: row.plan_name || "No Plan Assigned",
+        nextPaymentDate: row.next_payment_date || null,
+        lastActive: row.last_active_at || null,
+    }));
 }
 
 export default async function ClientsPage() {
-    const data = await getData()
+    const clients = await getClients();
 
     return (
-        <div className="container mx-auto py-10">
-            <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Clients</h1>
-                    <p className="text-muted-foreground">
-                        Manage your client roster and view their progress.
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        Clients
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Manage all your personal training clients in one place.
                     </p>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Add Client
-                </Button>
+                <AddClientDialog />
             </div>
 
-            <DataTable columns={columns} data={data} />
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">
+                        Client Directory
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ClientsTable clients={clients} />
+                </CardContent>
+            </Card>
         </div>
-    )
+    );
 }

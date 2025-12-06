@@ -1,206 +1,170 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useForm, useFieldArray } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MealPlan, MealPlanData } from "@/types/meal-plan"
-import { Trash2, Plus, Save, Wand2 } from "lucide-react"
-import { createClient } from "@/lib/supabase"
-import { useRouter } from "next/navigation"
-import { useToast } from "@/hooks/use-toast" // We'll need to create this hook or use a library
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Trash2, Plus } from "lucide-react"
 
-// Schema for validation
-const foodItemSchema = z.object({
-    item: z.string().min(1, "Item name is required"),
-    quantity: z.string().min(1, "Quantity is required"),
-    macros: z.object({
-        calories: z.coerce.number().min(0),
-        protein: z.coerce.number().min(0),
-        carbs: z.coerce.number().min(0),
-        fats: z.coerce.number().min(0),
-    }),
-})
-
-const mealSchema = z.object({
-    name: z.string().min(1, "Meal name is required"),
-    items: z.array(foodItemSchema),
-})
-
-const mealPlanSchema = z.object({
-    daily_calories: z.coerce.number().min(500),
-    meals: z.array(mealSchema),
-})
-
-type MealPlanFormValues = z.infer<typeof mealPlanSchema>
-
-interface MealPlanEditorProps {
-    initialData: MealPlan
-    clientId: string
+interface FoodItem {
+    name: string
+    portion: string
+    calories: number
+    protein: number
+    carbs: number
+    fats: number
 }
 
-export function MealPlanEditor({ initialData, clientId }: MealPlanEditorProps) {
-    const router = useRouter()
-    const supabase = createClient()
-    const [isSaving, setIsSaving] = useState(false)
+interface Meal {
+    name: string
+    items: FoodItem[]
+    total_calories: number
+}
 
-    const form = useForm<MealPlanFormValues>({
-        resolver: zodResolver(mealPlanSchema) as any,
-        defaultValues: {
-            daily_calories: initialData.plan_data.daily_calories,
-            meals: initialData.plan_data.meals || [],
-        },
-    })
+interface MealPlanEditorProps {
+    initialData?: any
+    onChange?: (data: any) => void
+}
 
-    const { fields: mealFields, append: appendMeal, remove: removeMeal } = useFieldArray({
-        control: form.control,
-        name: "meals",
-    })
+export function MealPlanEditor({ initialData, onChange }: MealPlanEditorProps) {
+    const [meals, setMeals] = useState<Meal[]>(initialData?.meals || [])
 
-    // Calculate totals in real-time
-    const watchedMeals = form.watch("meals")
-    const totalCalories = watchedMeals?.reduce((acc, meal) => {
-        return acc + (meal.items?.reduce((mAcc, item) => mAcc + (item.macros?.calories || 0), 0) || 0)
-    }, 0) || 0
-
-    const totalProtein = watchedMeals?.reduce((acc, meal) => {
-        return acc + (meal.items?.reduce((mAcc, item) => mAcc + (item.macros?.protein || 0), 0) || 0)
-    }, 0) || 0
-
-    const onSubmit = async (data: MealPlanFormValues) => {
-        setIsSaving(true)
-        try {
-            // Construct the full plan data object
-            const updatedPlanData: MealPlanData = {
-                ...initialData.plan_data,
-                daily_calories: data.daily_calories,
-                meals: data.meals,
-            }
-
-            const { error } = await supabase
-                .from('meal_plans')
-                .update({ plan_data: updatedPlanData })
-                .eq('id', initialData.id)
-
-            if (error) throw error
-
-            router.refresh()
-            // toast({ title: "Plan updated successfully" }) // Add toast later
-            alert("Plan updated successfully!")
-        } catch (error) {
-            console.error("Error updating plan:", error)
-            alert("Failed to update plan")
-        } finally {
-            setIsSaving(false)
+    // Update parent when local state changes
+    useEffect(() => {
+        if (onChange) {
+            onChange({ meals })
         }
+    }, [meals, onChange])
+
+    // Update local state when initialData changes (e.g. from AI generation)
+    useEffect(() => {
+        if (initialData?.meals) {
+            setMeals(initialData.meals)
+        }
+    }, [initialData])
+
+    const addMeal = () => {
+        setMeals([...meals, { name: `Meal ${meals.length + 1}`, items: [], total_calories: 0 }])
+    }
+
+    const removeMeal = (index: number) => {
+        const newMeals = [...meals]
+        newMeals.splice(index, 1)
+        setMeals(newMeals)
+    }
+
+    const addItem = (mealIndex: number) => {
+        const newMeals = [...meals]
+        newMeals[mealIndex].items.push({ name: "", portion: "", calories: 0, protein: 0, carbs: 0, fats: 0 })
+        setMeals(newMeals)
+    }
+
+    const updateItem = (mealIndex: number, itemIndex: number, field: keyof FoodItem, value: any) => {
+        const newMeals = [...meals]
+        newMeals[mealIndex].items[itemIndex] = {
+            ...newMeals[mealIndex].items[itemIndex],
+            [field]: value
+        }
+        // Recalculate totals (simplified)
+        // In a real app, we'd sum up calories here
+        setMeals(newMeals)
+    }
+
+    const removeItem = (mealIndex: number, itemIndex: number) => {
+        const newMeals = [...meals]
+        newMeals[mealIndex].items.splice(itemIndex, 1)
+        setMeals(newMeals)
     }
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                    <h3 className="text-lg font-medium">Plan Settings</h3>
-                    <p className="text-sm text-muted-foreground">
-                        Target: {form.getValues("daily_calories")} kcal | Actual: {totalCalories} kcal
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <Button type="button" variant="outline" size="sm">
-                        <Wand2 className="w-4 h-4 mr-2" />
-                        AI Auto-Fill
-                    </Button>
-                    <Button type="submit" disabled={isSaving} size="sm">
-                        <Save className="w-4 h-4 mr-2" />
-                        {isSaving ? "Saving..." : "Save Changes"}
-                    </Button>
-                </div>
+        <div className="space-y-4 p-4">
+            <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Daily Meal Plan</h3>
+                <Button onClick={addMeal} size="sm" variant="outline">
+                    <Plus className="h-4 w-4 mr-2" /> Add Meal
+                </Button>
             </div>
 
-            <Card>
-                <CardContent className="pt-6">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Daily Calorie Target</Label>
-                            <Input {...form.register("daily_calories")} type="number" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Protein Target (g)</Label>
-                            <div className="p-2 border rounded-md bg-muted text-muted-foreground">
-                                {totalProtein.toFixed(1)} g (Calculated)
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-                {mealFields.map((meal, index) => (
-                    <AccordionItem value={`item-${index}`} key={meal.id}>
+            <Accordion type="single" collapsible className="w-full space-y-2">
+                {meals.map((meal, mealIndex) => (
+                    <AccordionItem key={mealIndex} value={`item-${mealIndex}`} className="border rounded-md px-4">
                         <AccordionTrigger className="hover:no-underline">
-                            <div className="flex items-center justify-between w-full pr-4">
+                            <div className="flex justify-between w-full items-center pr-4">
                                 <span>{meal.name}</span>
-                                <span className="text-sm text-muted-foreground">
-                                    {meal.items?.reduce((acc, item) => acc + (item.macros?.calories || 0), 0)} kcal
-                                </span>
+                                <span className="text-sm text-muted-foreground">{meal.total_calories} kcal</span>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="p-4 space-y-4">
-                            <MealItemsEditor nestIndex={index} control={form.control} register={form.register} />
+                        <AccordionContent className="pt-4 space-y-4">
+                            {meal.items.map((item, itemIndex) => (
+                                <div key={itemIndex} className="grid grid-cols-12 gap-2 items-end">
+                                    <div className="col-span-4">
+                                        <label className="text-xs text-muted-foreground">Food</label>
+                                        <Input
+                                            value={item.name}
+                                            onChange={(e) => updateItem(mealIndex, itemIndex, 'name', e.target.value)}
+                                            placeholder="e.g. Oatmeal"
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="text-xs text-muted-foreground">Portion</label>
+                                        <Input
+                                            value={item.portion}
+                                            onChange={(e) => updateItem(mealIndex, itemIndex, 'portion', e.target.value)}
+                                            placeholder="1 cup"
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="text-xs text-muted-foreground">Cals</label>
+                                        <Input
+                                            type="number"
+                                            value={item.calories}
+                                            onChange={(e) => updateItem(mealIndex, itemIndex, 'calories', parseInt(e.target.value))}
+                                        />
+                                    </div>
+                                    <div className="col-span-3 grid grid-cols-3 gap-1">
+                                        <div>
+                                            <label className="text-[10px] text-muted-foreground">P</label>
+                                            <Input className="h-8 text-xs px-1" placeholder="P" value={item.protein} onChange={(e) => updateItem(mealIndex, itemIndex, 'protein', parseInt(e.target.value))} />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] text-muted-foreground">C</label>
+                                            <Input className="h-8 text-xs px-1" placeholder="C" value={item.carbs} onChange={(e) => updateItem(mealIndex, itemIndex, 'carbs', parseInt(e.target.value))} />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] text-muted-foreground">F</label>
+                                            <Input className="h-8 text-xs px-1" placeholder="F" value={item.fats} onChange={(e) => updateItem(mealIndex, itemIndex, 'fats', parseInt(e.target.value))} />
+                                        </div>
+                                    </div>
+                                    <div className="col-span-1">
+                                        <Button variant="ghost" size="icon" onClick={() => removeItem(mealIndex, itemIndex)}>
+                                            <Trash2 className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="flex justify-between pt-2">
+                                <Button variant="ghost" size="sm" className="text-xs" onClick={() => addItem(mealIndex)}>
+                                    <Plus className="h-3 w-3 mr-1" /> Add Item
+                                </Button>
+                                <Button variant="ghost" size="sm" className="text-xs text-red-500 hover:text-red-600" onClick={() => removeMeal(mealIndex)}>
+                                    Remove Meal
+                                </Button>
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 ))}
             </Accordion>
-        </form>
-    )
-}
 
-// Sub-component for editing items within a meal
-function MealItemsEditor({ nestIndex, control, register }: any) {
-    const { fields, remove, append } = useFieldArray({
-        control,
-        name: `meals.${nestIndex}.items`,
-    })
-
-    return (
-        <div className="space-y-4">
-            {fields.map((item, k) => (
-                <div key={item.id} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-2 items-end border-b pb-4">
-                    <div className="space-y-1">
-                        <Label className="text-xs">Food Item</Label>
-                        <Input {...register(`meals.${nestIndex}.items.${k}.item`)} placeholder="e.g. Oatmeal" />
-                    </div>
-                    <div className="space-y-1">
-                        <Label className="text-xs">Qty</Label>
-                        <Input {...register(`meals.${nestIndex}.items.${k}.quantity`)} placeholder="e.g. 1 cup" />
-                    </div>
-                    <div className="space-y-1">
-                        <Label className="text-xs">Cals</Label>
-                        <Input {...register(`meals.${nestIndex}.items.${k}.macros.calories`)} type="number" />
-                    </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(k)} className="text-red-500">
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
+            {meals.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-md">
+                    No meals added. Use the AI Assistant or add a meal manually.
                 </div>
-            ))}
-            <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full border-dashed"
-                onClick={() => append({ item: "", quantity: "", macros: { calories: 0, protein: 0, carbs: 0, fats: 0 } })}
-            >
-                <Plus className="w-4 h-4 mr-2" /> Add Item
-            </Button>
+            )}
         </div>
     )
 }

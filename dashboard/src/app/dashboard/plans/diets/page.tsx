@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { DietPlansTable, DietPlan } from "@/components/plans/diet-plans-table";
+import { DietPlansTable, DietPlan } from "@/components/plans/diet-plans-table-v2";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";

@@ -6,9 +6,14 @@ import { AIWorkoutAssistant } from "./ai-workout-assistant"
 import { Button } from "@/components/ui/button"
 import { PanelRightOpen, PanelRightClose, Save } from "lucide-react"
 
-export function WorkoutEditorWrapper() {
+interface WorkoutEditorWrapperProps {
+    initialData?: any
+    member?: any
+}
+
+export function WorkoutEditorWrapper({ initialData, member }: WorkoutEditorWrapperProps) {
     const [showAI, setShowAI] = useState(true)
-    const [planData, setPlanData] = useState<any>(null)
+    const [planData, setPlanData] = useState<any>(initialData)
 
     const handleAIPlan = (newPlan: any) => {
         setPlanData(newPlan)

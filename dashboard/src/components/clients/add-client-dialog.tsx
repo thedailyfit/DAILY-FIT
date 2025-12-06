@@ -44,8 +44,8 @@ const formSchema = z.object({
     phone: z.string().min(10, {
         message: "Phone number must be at least 10 digits.",
     }),
-    gender: z.string({
-        required_error: "Please select a gender.",
+    gender: z.string().min(1, {
+        message: "Please select a gender.",
     }),
     goal: z.string().optional(),
     status: z.string().default("Active"),

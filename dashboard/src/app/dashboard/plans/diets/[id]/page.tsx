@@ -79,11 +79,11 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
             }
 
             if (isNew) {
-                // const { error } = await supabase.from('diet_plans').insert([payload])
-                console.log("Creating:", payload)
+                const { error } = await supabase.from('diet_plans').insert([payload])
+                if (error) throw error
             } else {
-                // const { error } = await supabase.from('diet_plans').update(payload).eq('id', params.id)
-                console.log("Updating:", payload)
+                const { error } = await supabase.from('diet_plans').update(payload).eq('id', params.id)
+                if (error) throw error
             }
 
             alert("Plan saved successfully!")

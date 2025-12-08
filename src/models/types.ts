@@ -26,6 +26,10 @@ export interface Trainer {
     trainer_id: string;
     whatsapp_id: string;
     name: string;
+    age?: number;
+    phone_number?: string;
+    city?: string;
+    profile_picture_url?: string;
     specialization: string;
     assigned_member_ids: string[];
     edit_history: string[]; // IDs of change logs

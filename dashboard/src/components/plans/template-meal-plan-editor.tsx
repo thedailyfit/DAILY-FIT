@@ -17,14 +17,20 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Trash2, Plus, Wand2 } from "lucide-react"
 
 // Schema for validation
+const numberSchema = z.preprocess((val) => {
+    if (typeof val === 'string') return parseFloat(val) || 0;
+    if (typeof val === 'number') return val;
+    return 0;
+}, z.number());
+
 const foodItemSchema = z.object({
     item: z.string().min(1, "Item name is required"),
     quantity: z.string().min(1, "Quantity is required"),
     macros: z.object({
-        calories: z.coerce.number().min(0),
-        protein: z.coerce.number().min(0),
-        carbs: z.coerce.number().min(0),
-        fats: z.coerce.number().min(0),
+        calories: numberSchema,
+        protein: numberSchema,
+        carbs: numberSchema,
+        fats: numberSchema,
     }),
 })
 
@@ -47,7 +53,6 @@ interface TemplateMealPlanEditorProps {
 
 export function TemplateMealPlanEditor({ initialStructure, onChange }: TemplateMealPlanEditorProps) {
     const form = useForm<MealPlanStructureValues>({
-        resolver: zodResolver(mealPlanStructureSchema),
         defaultValues: {
             meals: initialStructure?.meals || [],
         },

@@ -33,8 +33,8 @@ export default function DashboardLayout({
             {/* Sidebar */}
             <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden md:flex flex-col">
                 <div className="p-6">
-                    <h1 className="text-2xl font-bold text-primary">DailyFit</h1>
-                    <p className="text-xs text-gray-500">Trainer Dashboard</p>
+                    <h1 className="text-2xl font-bold text-primary">DailyFit AI</h1>
+                    <p className="text-xs text-muted-foreground">Trainer Dashboard</p>
                 </div>
                 <nav className="flex-1 px-4 space-y-2">
                     {navItems.map((item) => {
@@ -45,8 +45,8 @@ export default function DashboardLayout({
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                                     }`}
                             >
                                 <Icon className="w-5 h-5" />

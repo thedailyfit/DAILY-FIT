@@ -40,9 +40,7 @@ import { cn } from "@/lib/utils"
 const formSchema = z.object({
     programType: z.enum(["diet", "workout"]),
     planId: z.string().min(1, "Please select a plan."),
-    startDate: z.date({
-        required_error: "A start date is required.",
-    }),
+    startDate: z.date(),
 })
 
 interface AssignPlanDialogProps {

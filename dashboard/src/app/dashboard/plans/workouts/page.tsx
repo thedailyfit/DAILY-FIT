@@ -66,9 +66,6 @@ export default async function WorkoutPlansPage() {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                        Import from AI
-                    </Button>
                     <Button size="sm" asChild>
                         <Link href="/dashboard/plans/workouts/new">
                             + New Workout Plan

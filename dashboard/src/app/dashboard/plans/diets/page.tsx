@@ -67,9 +67,6 @@ export default async function DietPlansPage() {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                        Import from AI
-                    </Button>
                     <Button size="sm" asChild>
                         <Link href="/dashboard/plans/diets/new">
                             + New Diet Plan

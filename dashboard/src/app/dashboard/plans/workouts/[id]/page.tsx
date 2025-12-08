@@ -61,12 +61,17 @@ export default function EditWorkoutPlanPage({ params }: { params: { id: string }
     const handleSave = async () => {
         setSaving(true)
         try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error("No user logged in")
+
             const payload = {
+                trainer_id: user.id,
                 name,
                 level,
                 focus,
                 frequency_per_week: frequency,
                 plan_type: 'template',
+                is_active: true,
                 structure,
                 description
             }

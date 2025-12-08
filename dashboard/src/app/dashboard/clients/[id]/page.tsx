@@ -23,31 +23,16 @@ async function getClientProfile(id: string) {
             .eq("id", id)
             .single();
 
-        if (memberError) {
+        if (memberError || !member) {
             console.error("Error fetching member:", memberError);
             return null;
         }
 
-        // Fetch active programs with plan details
-        const { data: programs } = await supabase
-            .from("client_programs")
-            .select(`
-                *,
-                plan_programs (
-                    id,
-                    name,
-                    diet_plan_id,
-                    workout_plan_id,
-                    diet_plans (id, name, goal, total_calories),
-                    workout_plans (id, name, level, focus)
-                )
-            `)
-            .eq("client_id", id)
-            .eq("is_current", true);
-
+        // Simplified: Just return member data for now
+        // We'll fetch plans separately if needed
         return {
             member,
-            programs: programs || []
+            programs: []
         };
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -64,9 +49,9 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
 
     const { member, programs } = data;
 
-    // Extract active diet and workout plans
-    const activeDietPlan = programs.find(p => p.plan_programs?.diet_plan_id)?.plan_programs?.diet_plans;
-    const activeWorkoutPlan = programs.find(p => p.plan_programs?.workout_plan_id)?.plan_programs?.workout_plans;
+    // Plans will be null for now since we simplified the query
+    const activeDietPlan = null;
+    const activeWorkoutPlan = null;
 
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
@@ -149,25 +134,9 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
                                 <Utensils className="h-5 w-5 text-primary mt-0.5" />
                                 <div>
                                     <p className="font-medium">Diet Plan</p>
-                                    {activeDietPlan ? (
-                                        <>
-                                            <p className="text-sm text-muted-foreground">{activeDietPlan.name}</p>
-                                            {activeDietPlan.total_calories && (
-                                                <p className="text-xs text-muted-foreground">{activeDietPlan.total_calories} kcal/day</p>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground">No plan assigned</p>
-                                    )}
+                                    <p className="text-sm text-muted-foreground">No plan assigned</p>
                                 </div>
                             </div>
-                            {activeDietPlan && (
-                                <Button variant="ghost" size="sm" asChild>
-                                    <Link href={`/dashboard/clients/${member.id}/diet`}>
-                                        Edit
-                                    </Link>
-                                </Button>
-                            )}
                         </div>
 
                         {/* Workout Plan */}
@@ -176,39 +145,21 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
                                 <Dumbbell className="h-5 w-5 text-primary mt-0.5" />
                                 <div>
                                     <p className="font-medium">Workout Plan</p>
-                                    {activeWorkoutPlan ? (
-                                        <>
-                                            <p className="text-sm text-muted-foreground">{activeWorkoutPlan.name}</p>
-                                            {activeWorkoutPlan.level && (
-                                                <p className="text-xs text-muted-foreground capitalize">{activeWorkoutPlan.level} • {activeWorkoutPlan.focus}</p>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground">No plan assigned</p>
-                                    )}
+                                    <p className="text-sm text-muted-foreground">No plan assigned</p>
                                 </div>
                             </div>
-                            {activeWorkoutPlan && (
-                                <Button variant="ghost" size="sm" asChild>
-                                    <Link href={`/dashboard/clients/${member.id}/workout`}>
-                                        Edit
-                                    </Link>
-                                </Button>
-                            )}
                         </div>
 
-                        {!activeDietPlan && !activeWorkoutPlan && (
-                            <div className="text-center py-4">
-                                <p className="text-sm text-muted-foreground mb-3">No plans assigned yet</p>
-                                <AssignPlanDialog clientId={member.id} clientName={member.name} />
-                            </div>
-                        )}
+                        <div className="text-center py-4">
+                            <p className="text-sm text-muted-foreground mb-3">No plans assigned yet</p>
+                            <AssignPlanDialog clientId={member.id} clientName={member.name} />
+                        </div>
                     </CardContent>
-                </Card>
-            </div>
+                </Card >
+            </div >
 
             {/* Additional Info */}
-            <Card>
+            < Card >
                 <CardHeader>
                     <CardTitle>Health Metrics</CardTitle>
                 </CardHeader>
@@ -234,7 +185,7 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
                         )}
                     </div>
                 </CardContent>
-            </Card>
-        </div>
+            </Card >
+        </div >
     );
 }

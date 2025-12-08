@@ -68,14 +68,18 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
     const handleSave = async () => {
         setSaving(true)
         try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error("No user logged in")
+
             const payload = {
+                trainer_id: user.id,
                 name,
                 goal,
                 total_calories: totalCalories,
                 diet_preference: dietPreference,
                 plan_type: 'template',
+                is_active: true,
                 structure,
-                // description - add to schema if needed or put in structure
             }
 
             if (isNew) {

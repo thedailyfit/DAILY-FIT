@@ -36,6 +36,7 @@ import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { notifyClientPlanUpdate } from "@/lib/whatsapp-notifier"
 
 const formSchema = z.object({
     programType: z.enum(["diet", "workout"]),
@@ -119,6 +120,14 @@ export function AssignPlanDialog({ clientId, clientName }: AssignPlanDialogProps
                 })
 
             if (linkError) throw linkError
+
+            // 3. Send WhatsApp notification
+            await notifyClientPlanUpdate({
+                clientId,
+                planType: values.programType,
+                planName: planName || 'New Plan',
+                action: 'assigned'
+            });
 
             setOpen(false)
             form.reset()

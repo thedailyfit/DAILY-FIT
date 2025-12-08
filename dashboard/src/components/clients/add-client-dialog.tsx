@@ -41,8 +41,8 @@ const formSchema = z.object({
     email: z.string().email({
         message: "Please enter a valid email address.",
     }).optional().or(z.literal('')),
-    phone: z.string().min(10, {
-        message: "Phone number must be at least 10 digits.",
+    whatsapp_number: z.string().min(10, {
+        message: "WhatsApp number must be at least 10 digits.",
     }),
     gender: z.string().min(1, {
         message: "Please select a gender.",
@@ -61,7 +61,7 @@ export function AddClientDialog() {
         defaultValues: {
             name: "",
             email: "",
-            phone: "",
+            whatsapp_number: "",
             gender: "",
             goal: "",
             status: "Active",
@@ -76,11 +76,12 @@ export function AddClientDialog() {
                 throw new Error("No user logged in")
             }
 
-            const { error } = await supabase.from('clients').insert({
+            const { error } = await supabase.from('members').insert({
                 trainer_id: user.id,
                 name: values.name,
-                email: values.email || null, // Handle empty string as null
-                phone: values.phone,
+                email: values.email || null,
+                whatsapp_id: values.whatsapp_number,
+                phone_number: values.whatsapp_number,
                 gender: values.gender,
                 goal: values.goal,
                 status: values.status,
@@ -132,10 +133,10 @@ export function AddClientDialog() {
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
-                                name="phone"
+                                name="whatsapp_number"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Phone</FormLabel>
+                                        <FormLabel>WhatsApp Number</FormLabel>
                                         <FormControl>
                                             <Input placeholder="+91 9876543210" {...field} />
                                         </FormControl>

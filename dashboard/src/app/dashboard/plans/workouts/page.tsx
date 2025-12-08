@@ -6,6 +6,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Workout Plans | DailyFit Trainer Dashboard",
@@ -68,8 +69,10 @@ export default async function WorkoutPlansPage() {
                     <Button variant="outline" size="sm">
                         Import from AI
                     </Button>
-                    <Button size="sm">
-                        + New Workout Plan
+                    <Button size="sm" asChild>
+                        <Link href="/dashboard/plans/workouts/new">
+                            + New Workout Plan
+                        </Link>
                     </Button>
                 </div>
             </div>

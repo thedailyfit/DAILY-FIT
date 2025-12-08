@@ -27,7 +27,7 @@ const profileFormSchema = z.object({
     email: z.string().email({
         message: "Please enter a valid email address.",
     }).optional(),
-    age: z.coerce.number().min(18).optional(),
+    age: z.number().min(18).optional(),
     phone_number: z.string().min(10, {
         message: "Phone number must be at least 10 digits.",
     }).optional(),
@@ -154,7 +154,12 @@ export default function SettingsProfilePage() {
                                 <FormItem>
                                     <FormLabel>Age</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="30" {...field} />
+                                        <Input
+                                            type="number"
+                                            placeholder="30"
+                                            {...field}
+                                            onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

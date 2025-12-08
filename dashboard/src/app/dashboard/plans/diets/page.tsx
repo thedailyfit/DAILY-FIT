@@ -3,6 +3,7 @@ import { DietPlansTable, DietPlan } from "@/components/plans/diet-plans-table-v2
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Diet Plans | DailyFit Trainer Dashboard",
@@ -69,8 +70,10 @@ export default async function DietPlansPage() {
                     <Button variant="outline" size="sm">
                         Import from AI
                     </Button>
-                    <Button size="sm">
-                        + New Diet Plan
+                    <Button size="sm" asChild>
+                        <Link href="/dashboard/plans/diets/new">
+                            + New Diet Plan
+                        </Link>
                     </Button>
                 </div>
             </div>

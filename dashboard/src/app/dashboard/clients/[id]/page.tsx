@@ -42,9 +42,9 @@ export const metadata: Metadata = {
 async function getClient(id: string): Promise<ClientProfile | null> {
     const supabase = createClient();
 
-    // Fetch client details
+    // Fetch client details from members table
     const { data: client, error } = await supabase
-        .from("clients")
+        .from("members")
         .select("*")
         .eq("id", id)
         .single();
@@ -96,20 +96,21 @@ async function getClient(id: string): Promise<ClientProfile | null> {
     return {
         id: client.id,
         name: client.name,
-        status: client.status as ClientStatus,
-        phone: client.phone,
-        email: client.email,
-        gender: client.gender,
-        goal: client.goal,
-        avatarUrl: null, // TODO: Add avatar support
+        status: (client.status || "Active") as ClientStatus,
+        phone: client.phone_number || client.whatsapp_id || "N/A",
+        goal: client.goal || "Not specified",
+        email: client.email || null,
+        gender: client.gender || null,
+        avatarUrl: null,
         activeProgramName: program?.plan_programs?.name || null,
-        daysOnPlan: daysOnPlan,
-        lastCheckIn: client.last_active_at, // Using last_active_at as proxy for check-in
+        daysOnPlan,
+        lastCheckIn: null,
         progressEntries: progressEntries || [],
         subscription: subscription || null,
         payments: payments || [],
     };
 }
+
 
 const statusColorMap: Record<ClientStatus, string> = {
     Active: "bg-emerald-100 text-emerald-800 border-emerald-200",

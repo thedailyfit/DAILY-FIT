@@ -16,11 +16,11 @@ async function getClientProfile(id: string) {
     const supabase = createClient();
 
     try {
-        // Fetch client from members table
+        // Fetch client from members table using member_id
         const { data: member, error: memberError } = await supabase
             .from("members")
             .select("*")
-            .eq("id", id)
+            .eq("member_id", id)
             .single();
 
         if (memberError || !member) {
@@ -69,7 +69,7 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <AssignPlanDialog clientId={member.id} clientName={member.name} />
+                    <AssignPlanDialog clientId={member.member_id} clientName={member.name} />
                 </div>
             </div>
 
@@ -152,7 +152,7 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
 
                         <div className="text-center py-4">
                             <p className="text-sm text-muted-foreground mb-3">No plans assigned yet</p>
-                            <AssignPlanDialog clientId={member.id} clientName={member.name} />
+                            <AssignPlanDialog clientId={member.member_id} clientName={member.name} />
                         </div>
                     </CardContent>
                 </Card >

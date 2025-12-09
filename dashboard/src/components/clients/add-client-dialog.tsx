@@ -76,8 +76,17 @@ export function AddClientDialog() {
                 throw new Error("No user logged in")
             }
 
+            // Get trainer_id from trainers table (it's TEXT, not UUID)
+            const { data: trainer } = await supabase
+                .from('trainers')
+                .select('trainer_id')
+                .eq('whatsapp_id', user.phone || user.email)  // Match by phone or email
+                .single();
+
+            const trainerId = trainer?.trainer_id || 'a6be4289-082c-419e-bb5b-4168619d689a';  // Fallback to known trainer ID
+
             const { error } = await supabase.from('members').insert({
-                trainer_id: user.id,
+                trainer_id: trainerId,  // Use TEXT trainer_id from trainers table
                 name: values.name,
                 email: values.email || null,
                 whatsapp_id: values.whatsapp_number,

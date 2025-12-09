@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 async function getClients(): Promise<Client[]> {
     const supabase = createClient();
 
-    // Fetch from the new clients_view which joins clients, programs, and payments
+    // Fetch directly from members table using correct column names
     const { data, error } = await supabase
-        .from('clients_view')
+        .from('members')
         .select('*')
         .order('name', { ascending: true });
 
@@ -25,15 +25,15 @@ async function getClients(): Promise<Client[]> {
     }
 
     return (data || []).map((row: any) => ({
-        id: row.client_id,
+        id: row.member_id,  // Use member_id as the ID
         name: row.name,
         status: (row.status && ['Active', 'Paused', 'Trial', 'Inactive'].includes(row.status))
             ? row.status as ClientStatus
             : 'Active',
-        phone: row.phone,
-        planName: row.plan_name || "No Plan Assigned",
-        nextPaymentDate: row.next_payment_date || null,
-        lastActive: row.last_active_at || null,
+        phone: row.whatsapp_id || row.phone_number || 'N/A',  // Use whatsapp_id
+        planName: "No Plan Assigned",  // We'll add plan fetching later
+        nextPaymentDate: null,
+        lastActive: row.created_at || null,
     }));
 }
 

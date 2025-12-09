@@ -71,8 +71,17 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("No user logged in")
 
+            // Get trainer_id from trainers table (TEXT type, not UUID)
+            const { data: trainer } = await supabase
+                .from('trainers')
+                .select('trainer_id')
+                .limit(1)
+                .single();
+
+            if (!trainer) throw new Error("Trainer not found")
+
             const payload = {
-                trainer_id: user.id,
+                trainer_id: trainer.trainer_id,  // Use TEXT trainer_id
                 name,
                 goal,
                 total_calories: totalCalories,

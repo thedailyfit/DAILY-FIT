@@ -71,17 +71,19 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("No user logged in")
 
-            // Get trainer_id from trainers table (TEXT type, not UUID)
-            const { data: trainer } = await supabase
+            // Get trainer_id (UUID) from trainers table
+            const { data: trainer, error: trainerError } = await supabase
                 .from('trainers')
                 .select('trainer_id')
                 .limit(1)
                 .single();
 
-            if (!trainer) throw new Error("Trainer not found")
+            if (trainerError || !trainer) {
+                throw new Error("No trainer found")
+            }
 
             const payload = {
-                trainer_id: trainer.trainer_id,  // Use TEXT trainer_id
+                trainer_id: trainer.trainer_id,  // Use UUID trainer_id
                 name,
                 goal,
                 total_calories: totalCalories,
@@ -103,7 +105,7 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
             router.push("/dashboard/plans/diets")
         } catch (error) {
             console.error(error)
-            alert("Failed to save plan")
+            alert(`Failed to save plan: ${error instanceof Error ? error.message : 'Unknown error'}`)
         } finally {
             setSaving(false)
         }

@@ -76,17 +76,20 @@ export function AddClientDialog() {
                 throw new Error("No user logged in")
             }
 
-            // Get trainer_id from trainers table (it's TEXT, not UUID)
-            const { data: trainer } = await supabase
+            // Get trainer_id (UUID) from trainers table
+            // For now, use the first trainer (you can add user matching later)
+            const { data: trainer, error: trainerError } = await supabase
                 .from('trainers')
                 .select('trainer_id')
-                .eq('whatsapp_id', user.phone || user.email)  // Match by phone or email
+                .limit(1)
                 .single();
 
-            const trainerId = trainer?.trainer_id || 'a6be4289-082c-419e-bb5b-4168619d689a';  // Fallback to known trainer ID
+            if (trainerError || !trainer) {
+                throw new Error("No trainer found. Please create a trainer account first.")
+            }
 
             const { error } = await supabase.from('members').insert({
-                trainer_id: trainerId,  // Use TEXT trainer_id from trainers table
+                trainer_id: trainer.trainer_id,  // Use UUID trainer_id
                 name: values.name,
                 email: values.email || null,
                 whatsapp_id: values.whatsapp_number,
@@ -106,7 +109,7 @@ export function AddClientDialog() {
             alert("Client added successfully!")
         } catch (error) {
             console.error("Error adding client:", error)
-            alert("Failed to add client. Please try again.")
+            alert(`Failed to add client: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
     }
 

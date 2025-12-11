@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 async function getClientProfile(id: string) {
     const supabase = createClient();
 
+    console.log('[ClientProfile] Fetching profile for ID:', id);
+
     try {
         // Fetch client from members table using member_id
         const { data: member, error: memberError } = await supabase
@@ -23,10 +25,19 @@ async function getClientProfile(id: string) {
             .eq("member_id", id)
             .single();
 
-        if (memberError || !member) {
-            console.error("Error fetching member:", memberError);
+        console.log('[ClientProfile] Query result:', { member, error: memberError });
+
+        if (memberError) {
+            console.error("[ClientProfile] Error fetching member:", memberError);
             return null;
         }
+
+        if (!member) {
+            console.error("[ClientProfile] No member found for ID:", id);
+            return null;
+        }
+
+        console.log('[ClientProfile] Successfully found member:', member.name);
 
         // Simplified: Just return member data for now
         // We'll fetch plans separately if needed
@@ -35,15 +46,21 @@ async function getClientProfile(id: string) {
             programs: []
         };
     } catch (error) {
-        console.error("Unexpected error:", error);
+        console.error("[ClientProfile] Unexpected error:", error);
         return null;
     }
 }
 
-export default async function ClientProfilePage({ params }: { params: { id: string } }) {
-    const data = await getClientProfile(params.id);
+export default async function ClientProfilePage({ params }: { params: Promise<{ id: string }> }) {
+    // In Next.js 16, params is a Promise and must be awaited
+    const { id } = await params;
+
+    console.log('[ClientProfilePage] Received ID from params:', id);
+
+    const data = await getClientProfile(id);
 
     if (!data || !data.member) {
+        console.error('[ClientProfilePage] No data returned, showing 404');
         notFound();
     }
 

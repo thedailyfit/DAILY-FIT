@@ -10,46 +10,33 @@ export const metadata: Metadata = {
 };
 
 async function getDietPlans(): Promise<DietPlan[]> {
-    // TODO: Replace with real Supabase query:
-    // const supabase = createClient();
-    // const { data } = await supabase.from("diet_plans_usage").select("*");
-    // return data as DietPlan[];
+    const supabase = createClient();
 
-    return [
-        {
-            id: "dp1",
-            name: "Veg Fat Loss – 1500 kcal",
-            goal: "fat_loss",
-            totalCalories: 1500,
-            dietPreference: "veg",
-            planType: "template",
-            tags: ["beginner", "south_indian"],
-            isActive: true,
-            activeClientsCount: 6,
-        },
-        {
-            id: "dp2",
-            name: "High Protein Cut – 1800 kcal",
-            goal: "fat_loss",
-            totalCalories: 1800,
-            dietPreference: "non_veg",
-            planType: "template",
-            tags: ["high_protein"],
-            isActive: true,
-            activeClientsCount: 3,
-        },
-        {
-            id: "dp3",
-            name: "Custom Diet – Akhil",
-            goal: "fat_loss",
-            totalCalories: 1700,
-            dietPreference: "veg",
-            planType: "custom",
-            tags: ["client_specific"],
-            isActive: true,
-            activeClientsCount: 1,
-        },
-    ];
+    // Fetch all diet plans ordered by creation date
+    const { data, error } = await supabase
+        .from("diet_plans")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error fetching diet plans:", error);
+        return [];
+    }
+
+    if (!data) return [];
+
+    // Map database fields to UI type
+    return data.map((plan: any) => ({
+        id: plan.id,
+        name: plan.name,
+        goal: plan.goal || "fat_loss",
+        totalCalories: plan.total_calories || 0,
+        dietPreference: plan.diet_preference || "any",
+        planType: plan.plan_type || "template",
+        tags: [], // Tags not yet in DB
+        isActive: plan.is_active !== false,
+        activeClientsCount: 0, // Usage count not yet implemented
+    }));
 }
 
 export default async function DietPlansPage() {

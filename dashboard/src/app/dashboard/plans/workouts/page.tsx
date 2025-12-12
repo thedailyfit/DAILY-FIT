@@ -13,42 +13,32 @@ export const metadata: Metadata = {
 };
 
 async function getWorkoutPlans(): Promise<WorkoutPlan[]> {
-    // TODO: Replace with Supabase from workout_plans_usage
-    return [
-        {
-            id: "wp1",
-            name: "3 Day Beginner Upper/Lower Split",
-            level: "beginner",
-            frequencyPerWeek: 3,
-            focus: "strength",
-            planType: "template",
-            tags: ["beginner"],
-            isActive: true,
-            activeClientsCount: 4,
-        },
-        {
-            id: "wp2",
-            name: "5 Day Hypertrophy Pro",
-            level: "advanced",
-            frequencyPerWeek: 5,
-            focus: "hypertrophy",
-            planType: "template",
-            tags: ["high_volume"],
-            isActive: true,
-            activeClientsCount: 2,
-        },
-        {
-            id: "wp3",
-            name: "Custom Workout – Akhil",
-            level: "intermediate",
-            frequencyPerWeek: 4,
-            focus: "fat_loss",
-            planType: "custom",
-            tags: ["client_specific"],
-            isActive: true,
-            activeClientsCount: 1,
-        },
-    ];
+    const supabase = createClient();
+
+    // Fetch all workout plans
+    const { data, error } = await supabase
+        .from("workout_plans")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error fetching workout plans:", error);
+        return [];
+    }
+
+    if (!data) return [];
+
+    return data.map((plan: any) => ({
+        id: plan.id,
+        name: plan.name,
+        level: plan.level || "beginner",
+        frequencyPerWeek: plan.frequency_per_week || 3,
+        focus: plan.focus || "general",
+        planType: plan.plan_type || "template",
+        tags: [], // Tags not yet in DB
+        isActive: plan.is_active !== false,
+        activeClientsCount: 0, // Usage count not yet implemented
+    }));
 }
 
 export default async function WorkoutPlansPage() {

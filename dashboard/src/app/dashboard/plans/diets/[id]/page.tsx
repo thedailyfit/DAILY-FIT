@@ -16,10 +16,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TemplateMealPlanEditor } from "@/components/plans/template-meal-plan-editor"
 import { createClient } from "@/lib/supabase"
-import { useRouter } from "next/navigation"
+// Add useParams to imports
+import { useRouter, useParams } from "next/navigation"
 
-export default function EditDietPlanPage({ params }: { params: { id: string } }) {
+// Remove params prop
+export default function EditDietPlanPage() {
     const router = useRouter()
+    // Use useParams hook to get params properly wrapped/unwrapped
+    const params = useParams() as { id: string }
     const supabase = createClient()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)

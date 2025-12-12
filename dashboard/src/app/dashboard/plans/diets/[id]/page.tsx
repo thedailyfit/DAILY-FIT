@@ -67,24 +67,52 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
 
     const handleSave = async () => {
         setSaving(true)
+        console.log('[DietPlan] Starting save...')
+
         try {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) throw new Error("No user logged in")
+            // Validate required fields
+            if (!name || name.trim() === '') {
+                throw new Error("Plan name is required")
+            }
+
+            console.log('[DietPlan] Getting user...')
+            const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+            if (userError) {
+                console.error('[DietPlan] User error:', userError)
+                throw new Error(`Auth error: ${userError.message}`)
+            }
+
+            if (!user) {
+                console.error('[DietPlan] No user found')
+                throw new Error("No user logged in")
+            }
+
+            console.log('[DietPlan] User found:', user.id)
 
             // Get trainer_id (UUID) from trainers table
+            console.log('[DietPlan] Fetching trainer...')
             const { data: trainer, error: trainerError } = await supabase
                 .from('trainers')
                 .select('trainer_id')
                 .limit(1)
                 .single();
 
-            if (trainerError || !trainer) {
-                throw new Error("No trainer found")
+            if (trainerError) {
+                console.error('[DietPlan] Trainer error:', trainerError)
+                throw new Error(`Trainer fetch error: ${trainerError.message}`)
             }
 
+            if (!trainer) {
+                console.error('[DietPlan] No trainer found')
+                throw new Error("No trainer found in database")
+            }
+
+            console.log('[DietPlan] Trainer found:', trainer.trainer_id)
+
             const payload = {
-                trainer_id: trainer.trainer_id,  // Use UUID trainer_id
-                name,
+                trainer_id: trainer.trainer_id,
+                name: name.trim(),
                 goal,
                 total_calories: totalCalories,
                 diet_preference: dietPreference,
@@ -93,19 +121,36 @@ export default function EditDietPlanPage({ params }: { params: { id: string } })
                 structure,
             }
 
+            console.log('[DietPlan] Payload:', JSON.stringify(payload, null, 2))
+
             if (isNew) {
-                const { error } = await supabase.from('diet_plans').insert([payload])
-                if (error) throw error
+                console.log('[DietPlan] Inserting new plan...')
+                const { data, error } = await supabase.from('diet_plans').insert([payload]).select()
+
+                if (error) {
+                    console.error('[DietPlan] Insert error:', error)
+                    throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
+                }
+
+                console.log('[DietPlan] Insert successful:', data)
             } else {
-                const { error } = await supabase.from('diet_plans').update(payload).eq('id', params.id)
-                if (error) throw error
+                console.log('[DietPlan] Updating existing plan...')
+                const { data, error } = await supabase.from('diet_plans').update(payload).eq('id', params.id).select()
+
+                if (error) {
+                    console.error('[DietPlan] Update error:', error)
+                    throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
+                }
+
+                console.log('[DietPlan] Update successful:', data)
             }
 
             alert("Plan saved successfully!")
             router.push("/dashboard/plans/diets")
         } catch (error) {
-            console.error(error)
-            alert(`Failed to save plan: ${error instanceof Error ? error.message : 'Unknown error'}`)
+            console.error('[DietPlan] Save failed:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+            alert(`Failed to save plan: ${errorMessage}`)
         } finally {
             setSaving(false)
         }

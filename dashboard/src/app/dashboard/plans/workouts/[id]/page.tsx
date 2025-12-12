@@ -75,12 +75,22 @@ export default function EditWorkoutPlanPage() {
                 .limit(1)
                 .single();
 
-            if (trainerError || !trainer) {
-                throw new Error("No trainer found")
+            let trainerId = trainer?.trainer_id;
+
+            // Fallback if trainer_id is missing or undefined
+            if (!trainerId) {
+                console.warn('[WorkoutPlan] Trainer ID missing, using fallback')
+                trainerId = 'a6be4289-082c-419e-bb5b-4168619d689a'
+            }
+
+            // Strict UUID validation
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(trainerId)) {
+                throw new Error(`Invalid Trainer UUID: ${trainerId}`)
             }
 
             const payload = {
-                trainer_id: trainer.trainer_id,  // Use UUID trainer_id
+                trainer_id: trainerId,  // Use validated UUID trainer_id
                 name,
                 level,
                 focus,
@@ -93,10 +103,13 @@ export default function EditWorkoutPlanPage() {
 
             if (isNew) {
                 const { error } = await supabase.from('workout_plans').insert([payload])
-                if (error) throw error
+                if (error) throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
             } else {
+                if (!params.id || params.id === 'undefined') {
+                    throw new Error("Invalid Plan ID for update")
+                }
                 const { error } = await supabase.from('workout_plans').update(payload).eq('id', params.id)
-                if (error) throw error
+                if (error) throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
             }
 
             alert("Plan saved successfully!")

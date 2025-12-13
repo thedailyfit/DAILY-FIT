@@ -33,6 +33,7 @@ export type DietPlan = {
     name: string;
     goal: string | null;
     totalCalories: number | null;
+    protein: number | null; // New field
     dietPreference: string | null;
     planType: "template" | "custom";
     tags: string[];
@@ -45,6 +46,7 @@ type DietPlansTableProps = {
 };
 
 export function DietPlansTable({ plans }: DietPlansTableProps) {
+    // ... (rest of filtering logic unchanged)
     const router = useRouter();
     const [search, setSearch] = React.useState("");
     const [goalFilter, setGoalFilter] = React.useState<string>("all");
@@ -151,6 +153,7 @@ export function DietPlansTable({ plans }: DietPlansTableProps) {
                             <TableHead>Name</TableHead>
                             <TableHead>Goal</TableHead>
                             <TableHead>Calories</TableHead>
+                            <TableHead>Protein</TableHead> {/* New Header */}
                             <TableHead>Diet</TableHead>
                             <TableHead>Type</TableHead>
                             <TableHead>Usage</TableHead>
@@ -160,7 +163,7 @@ export function DietPlansTable({ plans }: DietPlansTableProps) {
                     <TableBody>
                         {filteredPlans.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={7} className="h-24 text-center text-sm text-muted-foreground">
+                                <TableCell colSpan={8} className="h-24 text-center text-sm text-muted-foreground">
                                     No diet plans found. Try adjusting your filters or add a new plan.
                                 </TableCell>
                             </TableRow>
@@ -188,6 +191,9 @@ export function DietPlansTable({ plans }: DietPlansTableProps) {
                                     </TableCell>
                                     <TableCell className="text-xs">
                                         {plan.totalCalories ? `${plan.totalCalories} kcal` : "-"}
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                        {plan.protein ? `${plan.protein}g` : "-"}
                                     </TableCell>
                                     <TableCell className="text-xs">
                                         {formatDietPref(plan.dietPreference)}

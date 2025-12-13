@@ -31,6 +31,7 @@ async function getDietPlans(): Promise<DietPlan[]> {
         name: plan.name,
         goal: plan.goal || "fat_loss",
         totalCalories: plan.total_calories || 0,
+        protein: plan.protein || 0, // Map protein from DB
         dietPreference: plan.diet_preference || "any",
         planType: plan.plan_type || "template",
         tags: [], // Tags not yet in DB

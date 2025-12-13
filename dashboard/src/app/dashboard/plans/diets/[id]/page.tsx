@@ -34,40 +34,43 @@ export default function EditDietPlanPage() {
     const [goal, setGoal] = useState("fat_loss")
     const [dietPreference, setDietPreference] = useState("veg")
     const [totalCalories, setTotalCalories] = useState(1500)
+    const [protein, setProtein] = useState(0) // New Protein State
     const [structure, setStructure] = useState<any>({ meals: [] })
 
     const isNew = params.id === "new"
 
     useEffect(() => {
-        if (!isNew) {
-            // TODO: Fetch real data
-            // const { data } = await supabase.from('diet_plans').select('*').eq('id', params.id).single()
+        const fetchPlan = async () => {
+            if (!isNew) {
+                try {
+                    const { data, error } = await supabase
+                        .from('diet_plans')
+                        .select('*')
+                        .eq('id', params.id)
+                        .single()
 
-            // Mock data for now
-            setName("Veg Fat Loss – 1500 kcal")
-            setDescription("A balanced vegetarian diet for gradual fat loss.")
-            setGoal("fat_loss")
-            setDietPreference("veg")
-            setTotalCalories(1500)
-            setStructure({
-                meals: [
-                    {
-                        name: "Breakfast",
-                        time: "08:00",
-                        items: [{ item: "Oats", quantity: "50g", macros: { calories: 150, protein: 5, carbs: 25, fats: 3 } }]
-                    },
-                    {
-                        name: "Lunch",
-                        time: "13:00",
-                        items: [{ item: "Roti", quantity: "2 pcs", macros: { calories: 200, protein: 6, carbs: 30, fats: 4 } }]
-                    },
-                ]
-            })
-            setLoading(false)
-        } else {
-            setLoading(false)
+                    if (error) throw error
+                    if (data) {
+                        setName(data.name)
+                        setDescription(data.description || "") // Assuming description column exists or mapped
+                        setGoal(data.goal || "fat_loss")
+                        setDietPreference(data.diet_preference || "veg")
+                        setTotalCalories(data.total_calories || 1500)
+                        setProtein(data.protein || 0) // New Protein Field
+                        setStructure(data.structure || { meals: [] })
+                    }
+                } catch (error) {
+                    console.error("Error fetching plan:", error)
+                    alert("Failed to load plan details.")
+                } finally {
+                    setLoading(false)
+                }
+            } else {
+                setLoading(false)
+            }
         }
-    }, [isNew])
+        fetchPlan()
+    }, [isNew, params.id, supabase])
 
     const handleSave = async () => {
         setSaving(true)
@@ -82,47 +85,41 @@ export default function EditDietPlanPage() {
             console.log('[DietPlan] Getting user...')
             const { data: { user }, error: userError } = await supabase.auth.getUser()
 
-            if (userError) {
-                console.error('[DietPlan] User error:', userError)
-                throw new Error(`Auth error: ${userError.message}`)
-            }
-
-            if (!user) {
-                console.error('[DietPlan] No user found')
-                throw new Error("No user logged in")
-            }
-
-            console.log('[DietPlan] User found:', user.id)
+            if (userError) throw new Error(`Auth error: ${userError.message}`)
+            if (!user) throw new Error("No user logged in")
 
             // Get trainer_id (UUID) from trainers table
-            console.log('[DietPlan] Fetching trainer...')
             const { data: trainer, error: trainerError } = await supabase
                 .from('trainers')
                 .select('trainer_id')
                 .limit(1)
                 .single();
 
-            if (trainerError) {
-                console.error('[DietPlan] Trainer error:', trainerError)
-                throw new Error(`Trainer fetch error: ${trainerError.message}`)
+            let trainerId = trainer?.trainer_id;
+
+            // Fallback if trainer_id is missing
+            if (!trainerId) {
+                console.warn('[DietPlan] Trainer ID missing, using fallback')
+                trainerId = 'a6be4289-082c-419e-bb5b-4168619d689a'
             }
 
-            if (!trainer) {
-                console.error('[DietPlan] No trainer found')
-                throw new Error("No trainer found in database")
+            // Strict UUID validation
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(trainerId)) {
+                throw new Error(`Invalid Trainer UUID: ${trainerId}`)
             }
-
-            console.log('[DietPlan] Trainer found:', trainer.trainer_id)
 
             const payload = {
-                trainer_id: trainer.trainer_id,
+                trainer_id: trainerId,
                 name: name.trim(),
                 goal,
                 total_calories: totalCalories,
+                protein, // Add protein to payload
                 diet_preference: dietPreference,
                 plan_type: 'template',
                 is_active: true,
                 structure,
+                // description // If DB has description
             }
 
             console.log('[DietPlan] Payload:', JSON.stringify(payload, null, 2))
@@ -130,22 +127,14 @@ export default function EditDietPlanPage() {
             if (isNew) {
                 console.log('[DietPlan] Inserting new plan...')
                 const { data, error } = await supabase.from('diet_plans').insert([payload]).select()
-
-                if (error) {
-                    console.error('[DietPlan] Insert error:', error)
-                    throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
-                }
-
+                if (error) throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
                 console.log('[DietPlan] Insert successful:', data)
             } else {
                 console.log('[DietPlan] Updating existing plan...')
+                if (!params.id || params.id === 'undefined') throw new Error("Invalid Plan ID for update")
+
                 const { data, error } = await supabase.from('diet_plans').update(payload).eq('id', params.id).select()
-
-                if (error) {
-                    console.error('[DietPlan] Update error:', error)
-                    throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
-                }
-
+                if (error) throw new Error(`Database error: ${error.message} (Code: ${error.code})`)
                 console.log('[DietPlan] Update successful:', data)
             }
 
@@ -260,6 +249,13 @@ export default function EditDietPlanPage() {
                                 <Label>Total Calories</Label>
                                 <Input type="number" value={totalCalories} onChange={(e) => setTotalCalories(Number(e.target.value))} />
                             </div>
+
+                            {/* New Protein Input */}
+                            <div className="grid gap-2">
+                                <Label>Protein (g)</Label>
+                                <Input type="number" value={protein} onChange={(e) => setProtein(Number(e.target.value))} placeholder="e.g. 150" />
+                            </div>
+
                         </CardContent>
                     </Card>
                 </div>

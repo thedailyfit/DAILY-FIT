@@ -39,11 +39,41 @@ async function getClientProfile(id: string) {
 
         console.log('[ClientProfile] Successfully found member:', member.name);
 
-        // Simplified: Just return member data for now
-        // We'll fetch plans separately if needed
+        // Fetch active assigned programs
+        const { data: programs, error: programsError } = await supabase
+            .from("client_programs")
+            .select(`
+                *,
+                program:plan_programs (
+                    id,
+                    name,
+                    diet_plan_id,
+                    workout_plan_id,
+                    status
+                )
+            `)
+            .eq("client_id", id)
+            .eq("is_current", true)
+            .order("created_at", { ascending: false });
+
+        if (programsError) {
+            console.error("[ClientProfile] Error fetching programs:", programsError);
+        }
+
+        // Fetch chat history
+        const { data: messages, error: messagesError } = await supabase
+            .from("messages")
+            .select("*")
+            .eq("whatsapp_id", member.whatsapp_id?.replace('whatsapp:', ''))
+            .order("created_at", { ascending: true })
+            .limit(50);
+
+        if (messagesError) console.error("[ClientProfile] Warning fetching messages:", messagesError);
+
         return {
             member,
-            programs: []
+            programs: programs || [],
+            messages: messages || []
         };
     } catch (error) {
         console.error("[ClientProfile] Unexpected error:", error);
@@ -55,20 +85,17 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
     // In Next.js 16, params is a Promise and must be awaited
     const { id } = await params;
 
-    console.log('[ClientProfilePage] Received ID from params:', id);
-
     const data = await getClientProfile(id);
 
     if (!data || !data.member) {
-        console.error('[ClientProfilePage] No data returned, showing 404');
         notFound();
     }
 
-    const { member, programs } = data;
+    const { member, programs, messages } = data;
 
-    // Plans will be null for now since we simplified the query
-    const activeDietPlan = null;
-    const activeWorkoutPlan = null;
+    // Identify active diet and workout plans
+    const activeDietProgram = programs.find((p: any) => p.program?.diet_plan_id);
+    const activeWorkoutProgram = programs.find((p: any) => p.program?.workout_plan_id);
 
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
@@ -92,6 +119,69 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
 
             {/* Client Info Cards */}
             <div className="grid gap-6 md:grid-cols-2">
+                {/* Assigned Plans Card */}
+                <Card className="md:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Target className="h-5 w-5" />
+                            Current Plan Assignments
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-2">
+                        <div className="p-4 border rounded-lg bg-muted/20">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-semibold flex items-center gap-2">
+                                    <Utensils className="h-4 w-4" /> Diet Plan
+                                </h3>
+                                {activeDietProgram ? (
+                                    <Badge variant="default" className="bg-green-600">Active</Badge>
+                                ) : (
+                                    <Badge variant="secondary">Not Assigned</Badge>
+                                )}
+                            </div>
+                            {activeDietProgram ? (
+                                <div>
+                                    <p className="text-lg font-medium">{activeDietProgram.program.name}</p>
+                                    <p className="text-xs text-muted-foreground">Started: {activeDietProgram.start_date}</p>
+                                    <Button variant="link" size="sm" className="px-0 h-auto mt-2" asChild>
+                                        <Link href={`/dashboard/plans/diets/${activeDietProgram.program.diet_plan_id}`}>
+                                            View Details
+                                        </Link>
+                                    </Button>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No diet plan currently assigned.</p>
+                            )}
+                        </div>
+
+                        <div className="p-4 border rounded-lg bg-muted/20">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-semibold flex items-center gap-2">
+                                    <Dumbbell className="h-4 w-4" /> Workout Plan
+                                </h3>
+                                {activeWorkoutProgram ? (
+                                    <Badge variant="default" className="bg-blue-600">Active</Badge>
+                                ) : (
+                                    <Badge variant="secondary">Not Assigned</Badge>
+                                )}
+                            </div>
+                            {activeWorkoutProgram ? (
+                                <div>
+                                    <p className="text-lg font-medium">{activeWorkoutProgram.program.name}</p>
+                                    <p className="text-xs text-muted-foreground">Started: {activeWorkoutProgram.start_date}</p>
+                                    <Button variant="link" size="sm" className="px-0 h-auto mt-2" asChild>
+                                        <Link href={`/dashboard/plans/workouts/${activeWorkoutProgram.program.workout_plan_id}`}>
+                                            View Details
+                                        </Link>
+                                    </Button>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No workout plan currently assigned.</p>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Personal Information */}
                 <Card>
                     <CardHeader>
@@ -138,43 +228,42 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                     </CardContent>
                 </Card>
 
-                {/* Active Plans */}
-                <Card>
+                {/* Chat History */}
+                <Card className="flex flex-col h-[500px]">
                     <CardHeader>
-                        <CardTitle>Active Plans</CardTitle>
-                        <CardDescription>Current diet and workout assignments</CardDescription>
+                        <CardTitle className="flex items-center gap-2">
+                            <Mail className="h-5 w-5" />
+                            WhatsApp History
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        {/* Diet Plan */}
-                        <div className="flex items-start justify-between p-3 border rounded-lg">
-                            <div className="flex items-start gap-3">
-                                <Utensils className="h-5 w-5 text-primary mt-0.5" />
-                                <div>
-                                    <p className="font-medium">Diet Plan</p>
-                                    <p className="text-sm text-muted-foreground">No plan assigned</p>
+                    <CardContent className="flex-1 overflow-y-auto space-y-4 p-4">
+                        {messages && messages.length > 0 ? (
+                            messages.map((msg: any) => (
+                                <div
+                                    key={msg.id}
+                                    className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}
+                                >
+                                    <div
+                                        className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.role === 'user'
+                                            ? 'bg-muted text-foreground'
+                                            : 'bg-primary text-primary-foreground'
+                                            }`}
+                                    >
+                                        <p>{msg.content}</p>
+                                        <div className={`text-[10px] mt-1 opacity-70 ${msg.role === 'user' ? 'text-left' : 'text-right'}`}>
+                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="flex h-full items-center justify-center text-muted-foreground">
+                                <p>No messages yet</p>
                             </div>
-                        </div>
-
-                        {/* Workout Plan */}
-                        <div className="flex items-start justify-between p-3 border rounded-lg">
-                            <div className="flex items-start gap-3">
-                                <Dumbbell className="h-5 w-5 text-primary mt-0.5" />
-                                <div>
-                                    <p className="font-medium">Workout Plan</p>
-                                    <p className="text-sm text-muted-foreground">No plan assigned</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="text-center py-4">
-                            <p className="text-sm text-muted-foreground mb-3">No plans assigned yet</p>
-                            <AssignPlanDialog clientId={member.member_id} clientName={member.name} />
-                        </div>
+                        )}
                     </CardContent>
-                </Card >
-            </div >
-
+                </Card>
+            </div>
             {/* Additional Info */}
             < Card >
                 <CardHeader>

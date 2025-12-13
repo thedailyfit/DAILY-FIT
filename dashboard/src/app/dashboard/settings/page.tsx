@@ -32,7 +32,6 @@ const profileFormSchema = z.object({
         message: "Phone number must be at least 10 digits.",
     }).optional(),
     city: z.string().min(2).optional(),
-    profile_picture_url: z.string().url().optional().or(z.literal("")),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -50,7 +49,6 @@ export default function SettingsProfilePage() {
             age: undefined,
             phone_number: "",
             city: "",
-            profile_picture_url: "",
         },
     })
 
@@ -73,7 +71,6 @@ export default function SettingsProfilePage() {
                         age: trainer.age,
                         phone_number: trainer.phone_number || "",
                         city: trainer.city || "",
-                        profile_picture_url: trainer.profile_picture_url || "",
                     })
                 }
             } catch (error) {
@@ -99,7 +96,6 @@ export default function SettingsProfilePage() {
                     age: data.age,
                     phone_number: data.phone_number,
                     city: data.city,
-                    profile_picture_url: data.profile_picture_url || null,
                 })
                 .eq('trainer_id', user.id)
 
@@ -192,25 +188,9 @@ export default function SettingsProfilePage() {
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="profile_picture_url"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Profile Picture URL</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://example.com/avatar.jpg" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    Public URL to your profile picture.
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                     <Button type="submit" disabled={isSaving}>
                         {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Update Profile
+                        Save Changes
                     </Button>
                 </form>
             </Form>

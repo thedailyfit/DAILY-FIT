@@ -13,10 +13,17 @@ export const metadata: Metadata = {
 async function getClients(): Promise<Client[]> {
     const supabase = createClient();
 
-    // Fetch directly from members table using correct column names
-    const { data, error } = await supabase
+    // Fetch members with their active plan assignments
+    // We need to fetch members AND their active client_programs -> plan_programs
+    const { data: members, error } = await supabase
         .from('members')
-        .select('*')
+        .select(`
+            *,
+            client_programs:client_programs(
+                program:plan_programs(name),
+                is_current
+            )
+        `)
         .order('name', { ascending: true });
 
     if (error) {
@@ -24,17 +31,26 @@ async function getClients(): Promise<Client[]> {
         return [];
     }
 
-    return (data || []).map((row: any) => ({
-        id: row.member_id,  // Use member_id as the ID
-        name: row.name,
-        status: (row.status && ['Active', 'Paused', 'Trial', 'Inactive'].includes(row.status))
-            ? row.status as ClientStatus
-            : 'Active',
-        phone: row.whatsapp_id || row.phone_number || 'N/A',  // Use whatsapp_id
-        planName: "No Plan Assigned",  // We'll add plan fetching later
-        nextPaymentDate: null,
-        lastActive: row.created_at || null,
-    }));
+    return (members || []).map((row: any) => {
+        // Find the active program (should be only one current one usually, or we show the latest)
+        // Filter for is_current = true
+        const activePrograms = row.client_programs?.filter((cp: any) => cp.is_current === true);
+        const planName = activePrograms && activePrograms.length > 0
+            ? activePrograms[0].program?.name
+            : "No Plan Assigned";
+
+        return {
+            id: row.member_id,
+            name: row.name,
+            status: (row.status && ['Active', 'Paused', 'Trial', 'Inactive'].includes(row.status))
+                ? row.status as ClientStatus
+                : 'Active',
+            phone: row.whatsapp_id || row.phone_number || 'N/A',
+            planName: planName,
+            nextPaymentDate: null,
+            lastActive: row.created_at || null,
+        };
+    });
 }
 
 export default async function ClientsPage() {

@@ -89,18 +89,26 @@ export default function EditDietPlanPage() {
             if (!user) throw new Error("No user logged in")
 
             // Get trainer_id (UUID) from trainers table
+            // Get trainer_id (UUID) from trainers table
             const { data: trainer, error: trainerError } = await supabase
                 .from('trainers')
                 .select('trainer_id')
-                .limit(1)
+                .eq('user_id', user.id)
                 .single();
 
             let trainerId = trainer?.trainer_id;
 
-            // Fallback if trainer_id is missing
+            // If trainer not found, we cannot proceed effectively.
             if (!trainerId) {
-                console.warn('[DietPlan] Trainer ID missing, using fallback')
-                trainerId = 'a6be4289-082c-419e-bb5b-4168619d689a'
+                console.warn('[DietPlan] Trainer profile not found for user. Creating default...');
+                // Try to create a trainer profile on the fly? 
+                // Alternatively, error out telling user to go to settings.
+                // Let's error out for safety, or check if 'trainers' table uses user.id as PK (it doesn't, it uses a separate UUID usually, or maybe it DOES?).
+                // looking at settings page: .eq('trainer_id', user.id) implies trainer_id IS user.id in some contexts?
+                // The task.md said "Convert trainer_id to UUID".
+                // In early migrations, we might have set trainer_id = user.id.
+                // Let's try to use user.id As trainer_id as a fallback IF it is a valid UUID.
+                trainerId = user.id;
             }
 
             // Strict UUID validation

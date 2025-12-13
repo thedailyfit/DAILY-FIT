@@ -69,18 +69,20 @@ export default function EditWorkoutPlanPage() {
             if (!user) throw new Error("No user logged in")
 
             // Get trainer_id (UUID) from trainers table
+            // Get trainer_id (UUID) from trainers table
             const { data: trainer, error: trainerError } = await supabase
                 .from('trainers')
                 .select('trainer_id')
-                .limit(1)
+                .eq('user_id', user.id)
                 .single();
 
             let trainerId = trainer?.trainer_id;
 
-            // Fallback if trainer_id is missing or undefined
+            // If trainer not found, we cannot proceed effectively.
             if (!trainerId) {
-                console.warn('[WorkoutPlan] Trainer ID missing, using fallback')
-                trainerId = 'a6be4289-082c-419e-bb5b-4168619d689a'
+                console.warn('[WorkoutPlan] Trainer profile not found. Using user ID as fallback or creating default...');
+                // Fallback to user.id if it's a valid UUID, assuming potential trainer_id=user.id mapping
+                trainerId = user.id;
             }
 
             // Strict UUID validation

@@ -192,9 +192,17 @@ export function ClientsTable({ clients }: ClientsTableProps) {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <span className="line-clamp-2 text-xs text-muted-foreground">
-                                            {client.planName || "-"}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            {client.planName !== "No Plan Assigned" ? (
+                                                <Badge variant="secondary" className="font-normal truncate max-w-[200px]" title={client.planName}>
+                                                    {client.planName}
+                                                </Badge>
+                                            ) : (
+                                                <span className="text-xs text-muted-foreground italic">
+                                                    No Plan Assigned
+                                                </span>
+                                            )}
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         <span className="text-xs">

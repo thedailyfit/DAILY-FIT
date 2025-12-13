@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { AssignPlanDialog } from "@/components/clients/assign-plan-dialog";
 import Link from "next/link";
@@ -53,7 +53,7 @@ async function getClientProfile(id: string) {
                 )
             `)
             .eq("client_id", id)
-            .eq("is_current", true)
+            // .eq("is_current", true) // Fetch all history
             .order("created_at", { ascending: false });
 
         if (programsError) {
@@ -94,8 +94,9 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
     const { member, programs, messages } = data;
 
     // Identify active diet and workout plans
-    const activeDietProgram = programs.find((p: any) => p.program?.diet_plan_id);
-    const activeWorkoutProgram = programs.find((p: any) => p.program?.workout_plan_id);
+    // Identify active diet and workout plans (explicitly check is_current)
+    const activeDietProgram = programs.find((p: any) => p.is_current && p.program?.diet_plan_id);
+    const activeWorkoutProgram = programs.find((p: any) => p.is_current && p.program?.workout_plan_id);
 
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
@@ -177,6 +178,51 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                 </div>
                             ) : (
                                 <p className="text-sm text-muted-foreground">No workout plan currently assigned.</p>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Assignment History - NEW SECTION */}
+                <Card className="md:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Clock className="h-5 w-5" />
+                            Assignment History (Last 7 Days)
+                        </CardTitle>
+                        <CardDescription>Recent plan updates and assignments</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {programs && programs.length > 0 ? (
+                                programs.map((p: any) => (
+                                    <div key={p.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            {p.program?.diet_plan_id ? (
+                                                <Utensils className="h-4 w-4 text-orange-500" />
+                                            ) : (
+                                                <Dumbbell className="h-4 w-4 text-blue-500" />
+                                            )}
+                                            <div>
+                                                <p className="font-medium">{p.program?.name || 'Unknown Plan'}</p>
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                    <span>Assigned: {new Date(p.created_at).toLocaleDateString()}</span>
+                                                    <span>•</span>
+                                                    <span>Start: {p.start_date}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {p.is_current ? (
+                                                <Badge variant="default" className="bg-green-600">Active</Badge>
+                                            ) : (
+                                                <Badge variant="secondary">History</Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-muted-foreground text-center py-4">No assignment history found.</p>
                             )}
                         </div>
                     </CardContent>

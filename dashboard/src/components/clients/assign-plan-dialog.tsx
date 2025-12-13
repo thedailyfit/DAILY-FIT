@@ -84,7 +84,22 @@ export function AssignPlanDialog({ clientId, clientName }: AssignPlanDialogProps
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("No user logged in")
 
-            // 1. Create a plan_program wrapper (since client_programs links to plan_programs)
+            // Get trainer_id (UUID) from trainers table correctly
+            const { data: trainer, error: trainerError } = await supabase
+                .from('trainers')
+                .select('trainer_id')
+                .eq('user_id', user.id)
+                .single();
+
+            let trainerId = trainer?.trainer_id;
+
+            // Fallback/Error if trainer not found
+            if (!trainerId) {
+                console.warn('[AssignPlan] Trainer profile not found. Using user ID as fallback...');
+                trainerId = user.id;
+            }
+
+            // 1. Create a plan_program wrapper
             // Ideally, we should select an existing plan_program or create one on the fly.
             // For this simplified flow, we'll create a new plan_program for this assignment if one doesn't exist for this plan.
             // OR, we can just create a new plan_program every time to represent this specific assignment instance.
@@ -97,7 +112,7 @@ export function AssignPlanDialog({ clientId, clientName }: AssignPlanDialogProps
             const { data: programData, error: programError } = await supabase
                 .from('plan_programs')
                 .insert({
-                    trainer_id: user.id,
+                    trainer_id: trainerId,
                     name: `${planName} for ${clientName}`,
                     diet_plan_id: values.programType === 'diet' ? values.planId : null,
                     workout_plan_id: values.programType === 'workout' ? values.planId : null,
@@ -106,7 +121,7 @@ export function AssignPlanDialog({ clientId, clientName }: AssignPlanDialogProps
                 .select()
                 .single()
 
-            if (programError) throw programError
+            if (programError) throw new Error(`Failed to create program: ${programError.message}`)
 
             // 2. Link to client
             const { error: linkError } = await supabase
@@ -135,7 +150,8 @@ export function AssignPlanDialog({ clientId, clientName }: AssignPlanDialogProps
             alert("Plan assigned successfully!")
         } catch (error) {
             console.error("Error assigning plan:", error)
-            alert("Failed to assign plan. Please try again.")
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            alert(`Failed to assign plan: ${errorMessage}`)
         }
     }
 

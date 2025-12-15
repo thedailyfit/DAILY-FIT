@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, CalendarIcon, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { updatePaymentStatus, deletePayment } from "@/app/actions/payment-actions";
 
 type PaymentsTableProps = {
     payments: Payment[];
@@ -178,24 +179,35 @@ export function PaymentsTable({ payments }: PaymentsTableProps) {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem
                                                     onClick={() => {
-                                                        console.log("Mark as paid", payment.id);
+                                                        const link = `https://pay.dailyfit.ai/inv_${payment.id.split('-')[0]}`;
+                                                        navigator.clipboard.writeText(link);
+                                                        alert("Payment link copied to clipboard!");
+                                                    }}
+                                                >
+                                                    Copy Payment Link
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={async () => {
+                                                        const result = await updatePaymentStatus(payment.id, 'paid');
+                                                        if (result.success) {
+                                                            alert("Payment marked as paid!");
+                                                        } else {
+                                                            alert("Failed to update status.");
+                                                        }
                                                     }}
                                                 >
                                                     Mark as Paid
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
-                                                    onClick={() => {
-                                                        console.log("Send reminder", payment.id);
+                                                    onClick={async () => {
+                                                        const confirmed = confirm("Are you sure you want to delete this invoice?");
+                                                        if (confirmed) {
+                                                            await deletePayment(payment.id);
+                                                        }
                                                     }}
+                                                    className="text-red-600 focus:text-red-600"
                                                 >
-                                                    Send Reminder
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        console.log("View details", payment.id);
-                                                    }}
-                                                >
-                                                    View Details
+                                                    Delete Invoice
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

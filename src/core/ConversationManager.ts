@@ -14,7 +14,7 @@ export class ConversationManager {
     }
 
     async getState(whatsappId: string): Promise<ConversationState | undefined> {
-        return this.db.findOne<ConversationState>('conversations', (c) => c.whatsapp_id === whatsappId);
+        return this.db.findOne<ConversationState>('conversations', { whatsapp_id: whatsappId });
     }
 
     async setState(whatsappId: string, step: string, data: any = {}): Promise<void> {

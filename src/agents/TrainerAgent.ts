@@ -36,7 +36,7 @@ export class TrainerAgent implements Agent {
         let planContext: MealPlan | undefined = undefined;
 
         if (targetMemberId && targetMemberId.startsWith('M')) {
-            memberContext = await this.db.findOne<Member>('members', m => m.member_id === targetMemberId);
+            memberContext = await this.db.findOne<Member>('members', { member_id: targetMemberId });
             if (memberContext) {
                 const plans = await this.db.read<MealPlan>('meal_plans');
                 planContext = plans.find(p => p.member_id === targetMemberId && p.status === 'active') || undefined;

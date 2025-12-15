@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, FileText, Settings, LogOut, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, Users, FileText, Settings, LogOut, MessageSquare, CheckCircle, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -25,6 +25,7 @@ export default function DashboardLayout({
         { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
         { href: '/dashboard/clients', label: 'Clients', icon: Users },
         { href: '/dashboard/requests', label: 'Requests', icon: MessageSquare },
+        { href: '/dashboard/payments', label: 'Payments', icon: CreditCard },
         { href: '/dashboard/plans', label: 'Plans', icon: FileText },
         { href: '/dashboard/settings', label: 'Settings', icon: Settings },
     ]

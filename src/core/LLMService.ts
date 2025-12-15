@@ -244,4 +244,55 @@ OUTPUT JSON:
             throw error;
         }
     }
+
+    async transcribeAudio(audioUrl: string): Promise<string> {
+        try {
+            console.log(`🎤 Transcribing audio from: ${audioUrl}`);
+
+            // Download audio
+            const audioResponse = await axios.get(audioUrl, { responseType: 'arraybuffer' });
+            const base64Audio = Buffer.from(audioResponse.data).toString('base64');
+            const mimeType = audioResponse.headers['content-type'] || 'audio/ogg'; // Default for WhatsApp
+
+            const prompt = `
+            Please transcribe this audio file accurately. 
+            Return ONLY the transcription text. Do not add any intro or outro.
+            If the audio is silent or unintelligible, return "[Unintelligible Audio]".
+            `;
+
+            const response = await axios.post(
+                `${this.baseUrl}/${this.model}:generateContent?key=${this.apiKey}`,
+                {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            {
+                                inline_data: {
+                                    mime_type: mimeType,
+                                    data: base64Audio
+                                }
+                            }
+                        ]
+                    }]
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            const transcription = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!transcription) {
+                throw new Error('No transcription generated');
+            }
+
+            console.log(`✅ Transcription: "${transcription.trim()}"`);
+            return transcription.trim();
+
+        } catch (error: any) {
+            console.error("LLM Transcription Error:", error.response?.data || error.message);
+            return "[Error transcribing audio]";
+        }
+    }
 }

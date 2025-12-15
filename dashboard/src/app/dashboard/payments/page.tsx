@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { PaymentsTable } from "@/components/payments/payments-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AddPaymentDialog } from "@/components/payments/add-payment-dialog";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Payment } from "@/types/payment";
-import { IndianRupee, AlertCircle, Users } from "lucide-react";
+import { IndianRupee, AlertCircle, Users, CheckCircle2, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 export const metadata: Metadata = {
@@ -11,59 +12,28 @@ export const metadata: Metadata = {
 };
 
 async function getPayments(): Promise<Payment[]> {
-    // TODO: Replace with real Supabase query
-    // const { data } = await supabase.from("payments").select("*, clients(name)");
+    const supabase = createClient();
 
-    return [
-        {
-            id: "p1",
-            client_id: "c1",
-            client_name: "Akhil",
-            amount: 5000,
-            currency: "INR",
-            status: "paid",
-            billing_cycle: "monthly",
-            due_date: "2025-12-01",
-            paid_at: "2025-12-01T10:00:00Z",
-            method: "upi",
-            created_at: "2025-11-01T10:00:00Z",
-        },
-        {
-            id: "p2",
-            client_id: "c2",
-            client_name: "Karthik",
-            amount: 12000,
-            currency: "INR",
-            status: "due",
-            billing_cycle: "package",
-            due_date: "2025-12-05",
-            created_at: "2025-11-05T10:00:00Z",
-        },
-        {
-            id: "p3",
-            client_id: "c3",
-            client_name: "Sneha",
-            amount: 5000,
-            currency: "INR",
-            status: "overdue",
-            billing_cycle: "monthly",
-            due_date: "2025-11-28",
-            created_at: "2025-10-28T10:00:00Z",
-        },
-        {
-            id: "p4",
-            client_id: "c4",
-            client_name: "Rahul",
-            amount: 5000,
-            currency: "INR",
-            status: "paid",
-            billing_cycle: "monthly",
-            due_date: "2025-12-03",
-            paid_at: "2025-12-03T15:30:00Z",
-            method: "cash",
-            created_at: "2025-11-03T10:00:00Z",
-        },
-    ];
+    const { data: payments, error } = await supabase
+        .from("payments")
+        .select(`
+            *,
+            member:members (
+                name
+            )
+        `)
+        .order("due_date", { ascending: false });
+
+    if (error) {
+        console.error("Error fetching payments:", error);
+        return [];
+    }
+
+    return (payments || []).map((p: any) => ({
+        ...p,
+        client_name: p.member?.name || 'Unknown Client',
+        client_id: p.member_id // Ensure mapping
+    }));
 }
 
 export default async function PaymentsPage() {
@@ -81,62 +51,60 @@ export default async function PaymentsPage() {
     const activeClients = new Set(payments.map(p => p.client_id)).size;
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                         Payments
                     </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Track your revenue, manage invoices, and handle client billing.
+                    <p className="text-muted-foreground mt-1">
+                        Track revenue, manage invoices, and handle subscriptions.
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline">
                         Export CSV
                     </Button>
-                    <Button size="sm">
-                        + Record Payment
-                    </Button>
+                    <AddPaymentDialog />
                 </div>
             </div>
 
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card>
+                <Card className="bg-gradient-to-br from-card to-green-500/10 border-green-200/50">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Revenue (This Month)
+                            Total Collected
                         </CardTitle>
-                        <IndianRupee className="h-4 w-4 text-muted-foreground" />
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₹{totalRevenue.toLocaleString('en-IN')}</div>
+                        <div className="text-2xl font-bold text-green-700">₹{totalRevenue.toLocaleString('en-IN')}</div>
                         <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
+                            Lifetime revenue
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-gradient-to-br from-card to-amber-500/10 border-amber-200/50">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
                             Pending & Overdue
                         </CardTitle>
-                        <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                        <Clock className="h-4 w-4 text-amber-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-amber-600">₹{pendingAmount.toLocaleString('en-IN')}</div>
+                        <div className="text-2xl font-bold text-amber-700">₹{pendingAmount.toLocaleString('en-IN')}</div>
                         <p className="text-xs text-muted-foreground">
-                            {payments.filter(p => p.status === 'overdue').length} overdue invoices
+                            {payments.filter(p => p.status === 'overdue').length} invoices overdue
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-gradient-to-br from-card to-primary/5">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
                             Active Paying Clients
                         </CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <Users className="h-4 w-4 text-primary" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{activeClients}</div>
@@ -147,11 +115,14 @@ export default async function PaymentsPage() {
                 </Card>
             </div>
 
-            <Card>
+            <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
-                    <CardTitle className="text-base">
+                    <CardTitle className="text-xl">
                         Transaction History
                     </CardTitle>
+                    <CardDescription>
+                        Recent payments and invoices.
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <PaymentsTable payments={payments} />

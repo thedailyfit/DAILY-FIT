@@ -11,10 +11,13 @@ interface MotivationInput {
         workouts_done: number;
         meals_logged: number;
     };
+    recent_sentiment?: 'positive' | 'neutral' | 'negative' | 'stressed'; // New
+    mood_signals?: string[]; // e.g. ["User said they are tired", "User missed 3 meals"]
 }
 
 interface MotivationResponse {
     motivation_text: string;
+    tone_used: string; // "Empathetic", "Drill Sergeant", "Cheerleader"
 }
 
 export class MotivationAgent implements Agent {
@@ -30,14 +33,27 @@ export class MotivationAgent implements Agent {
     async generateMotivation(input: MotivationInput): Promise<string> {
         const systemPrompt = `
 You are MotivationAgent for DailyFit.
-You generate one short motivational line based on context.
+You generate one short motivational line based on context and DETECTED MOOD.
+
+INPUT CONTEXT:
+Goal: ${input.member_profile.goal}
+Adherence: ${input.last_7_days.workouts_done} workouts done this week.
+Sentiment: ${input.recent_sentiment || 'neutral'}
+Signals: ${input.mood_signals?.join(', ') || 'None'}
+
+LOGIC - ADAPT YOUR PERSONA:
+1. **If Sentiment is Negative/Stressed**: Be EMPATHETIC. "It's okay to rest. Listen to your body."
+2. **If Adherence is Low but Sentiment is Neutral**: Be a GENTLE NUDGE. "Small steps matter."
+3. **If Adherence is High**: Be a CHEERLEADER. "You are unstoppable!"
+4. **If Goal is 'Hardcore' + High Adherence**: Be a DRILL SERGEANT. "Don't stop now."
 
 Output JSON format:
 {
-  "motivation_text": "You completed 4 workouts this week. That’s 4 times you chose discipline over excuses. Keep that streak alive 💪"
+  "motivation_text": "I know it's been a tough week. Just 10 minutes of movement today will help clear your mind. 💙",
+  "tone_used": "Empathetic"
 }
 
-Keep it under 200 characters. No negativity, no guilt.
+Keep it under 200 characters.
 `;
 
         try {

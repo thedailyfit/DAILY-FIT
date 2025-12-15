@@ -3,14 +3,14 @@ import { Member, Trainer } from "../models/types";
 import { LLMService } from "../core/LLMService";
 
 export class DashboardCodeGeneratorAgent implements Agent {
-    name = "DashboardCodeGeneratorAgent";
-    private llmService: LLMService;
+  name = "DashboardCodeGeneratorAgent";
+  private llmService: LLMService;
 
-    constructor() {
-        this.llmService = new LLMService();
-    }
+  constructor() {
+    this.llmService = new LLMService();
+  }
 
-    private SYSTEM_PROMPT = `
+  private SYSTEM_PROMPT = `
 You are DashboardCodeGeneratorAgent for DailyFit, an AI-powered WhatsApp fitness platform.
 
 Your job is to take structured dashboard designs (navigation, page structure, DB schema, API contracts) from TrainerDashboardArchitectAgent and generate:
@@ -178,17 +178,17 @@ Do not leave routes or components undefined; always propose a default.
 Your goal: accelerate a real DailyFit developer by giving them 70–80% complete, structured code for the Trainer Dashboard.
     `;
 
-    async handleMessage(user: { type: 'member' | 'trainer' | 'unknown'; profile?: Member | Trainer }, message: string, context?: any): Promise<string | null> {
-        // Construct the prompt for the LLM
-        const prompt = `
+  async handleMessage(user: { type: 'member' | 'trainer' | 'unknown'; profile?: Member | Trainer }, message: string, context?: any): Promise<string | null> {
+    // Construct the prompt for the LLM
+    const prompt = `
         Request: ${message}
         
         Context: ${JSON.stringify(context || {})}
         `;
 
-        // Call the LLM with the system prompt and the user's request
-        const response = await this.llmService.getAgentResponse(this.SYSTEM_PROMPT, prompt);
+    // Call the LLM with the system prompt and the user's request
+    const response = await this.llmService.getAgentResponse<any>(this.SYSTEM_PROMPT, prompt);
 
-        return response;
-    }
+    return JSON.stringify(response);
+  }
 }

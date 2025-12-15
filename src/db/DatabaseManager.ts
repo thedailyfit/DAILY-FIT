@@ -16,25 +16,39 @@ export class DatabaseManager {
         }
     }
 
-    async read<T>(table: string): Promise<T[]> {
+    async read<T>(table: string, query?: { [key: string]: any }): Promise<T[]> {
         if (this.pool) {
-            const result = await this.pool.query(`SELECT * FROM ${table}`);
-            return result.rows;
+            if (query && Object.keys(query).length > 0) {
+                const keys = Object.keys(query);
+                const values = Object.values(query);
+                const whereClause = keys.map((k, i) => `${k} = $${i + 1}`).join(' AND ');
+                const result = await this.pool.query(`SELECT * FROM ${table} WHERE ${whereClause}`, values);
+                return result.rows;
+            } else {
+                const result = await this.pool.query(`SELECT * FROM ${table}`);
+                return result.rows;
+            }
         } else {
-            // Fallback to JSON files for local development
+            // Fallback to JSON files
             const fs = await import('fs-extra');
             const path = await import('path');
             const filePath = path.join(process.cwd(), 'data', `${table}.json`);
             if (await fs.pathExists(filePath)) {
-                return await fs.readJson(filePath);
+                let items = await fs.readJson(filePath);
+                if (query) {
+                    items = items.filter((item: any) => {
+                        return Object.entries(query).every(([k, v]) => item[k] === v);
+                    });
+                }
+                return items;
             }
             return [];
         }
     }
 
-    async findOne<T>(table: string, predicate: (item: T) => boolean): Promise<T | undefined> {
-        const items = await this.read<T>(table);
-        return items.find(predicate);
+    async findOne<T>(table: string, query: { [key: string]: any }): Promise<T | undefined> {
+        const items = await this.read<T>(table, query);
+        return items[0];
     }
 
     async upsert<T extends { [key: string]: any }>(

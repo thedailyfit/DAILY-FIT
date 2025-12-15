@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Trash2, Plus, Wand2 } from "lucide-react"
+import { AiGenerationDialog } from "./ai-generation-dialog"
 
 // Schema for validation
 const numberSchema = z.preprocess((val) => {
@@ -88,6 +89,33 @@ export function TemplateMealPlanEditor({ initialStructure, onChange }: TemplateM
                     </p>
                 </div>
                 <div className="flex gap-2">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={async () => {
+                            // Simple prompt for now, could be a dialog
+                            const goal = prompt("Enter generic goal (e.g., 'Fat Loss, 1800 kcal, Vegetarian')");
+                            if (!goal) return;
+
+                            try {
+                                const { generateAiMealPlan } = await import("@/app/actions/generate-plan");
+                                const aiPlan = await generateAiMealPlan({ goal });
+                                if (aiPlan && aiPlan.meals) {
+                                    // Reset form with new data
+                                    form.reset({ meals: aiPlan.meals });
+                                    // Also notify parent
+                                    onChange({ meals: aiPlan.meals });
+                                }
+                            } catch (e) {
+                                alert("Failed to generate plan. Please try again.");
+                                console.error(e);
+                            }
+                        }}
+                    >
+                        <Wand2 className="w-4 h-4 mr-2" />
+                        Generate with AI
+                    </Button>
                     <Button type="button" variant="outline" size="sm" onClick={() => appendMeal({ name: "New Meal", items: [] })}>
                         <Plus className="w-4 h-4 mr-2" />
                         Add Meal

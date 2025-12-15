@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, CheckCircle, Clock } from "lucide-react";
+import { RequestActions } from "@/components/requests/request-actions";
 
 export const metadata: Metadata = {
     title: "Client Requests | DailyFit Trainer Dashboard",
@@ -71,11 +72,11 @@ export default async function RequestsPage() {
                                 <div className="text-sm text-gray-700 dark:text-gray-300 mt-2">
                                     {request.content}
                                 </div>
-                                <div className="flex items-center gap-2 mt-4">
-                                    {/* Placeholder buttons for actions */}
-                                    <Button size="sm" variant="outline">Mark as Resolved</Button>
-                                    <Button size="sm">Reply via WhatsApp</Button>
-                                </div>
+                                <RequestActions
+                                    requestId={request.id}
+                                    whatsappId={request.member?.whatsapp_id}
+                                    status={request.status}
+                                />
                             </CardContent>
                         </Card>
                     ))

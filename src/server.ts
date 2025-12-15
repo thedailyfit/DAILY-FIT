@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { Orchestrator } from './core/Orchestrator';
 import twilio from 'twilio';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -36,7 +37,8 @@ import { DatabaseManager } from './db/DatabaseManager';
 const db = new DatabaseManager();
 
 // Helper function to send WhatsApp messages
-async function sendWhatsAppMessage(to: string, message: string) {
+// Helper function to send WhatsApp messages
+async function sendWhatsAppMessage(to: string, message: string, memberId?: string) {
     try {
         await twilioClient.messages.create({
             from: process.env.TWILIO_WHATSAPP_NUMBER,
@@ -46,69 +48,85 @@ async function sendWhatsAppMessage(to: string, message: string) {
         console.log(`✅ Message sent to ${to}`);
 
         // Save outgoing message to DB
-        await db.upsert('messages', {
-            whatsapp_id: to, // 'to' is the whatsapp_id (phone number)
-            role: 'assistant',
-            content: message,
-            created_at: new Date()
-        }, 'id'); // We rely on auto-gen ID, so 'id' as conflict key is dummy if we don't provide it.
-        // Actually upsert expects a key. If we want to simple insert, upsert might wrong if we don't have unique key.
-        // DatabaseManager.upsert implementation:
-        // INSERT INTO table (keys) VALUES (vals) ON CONFLICT (uniqueKey) DO UPDATE...
-        // If we want just INSERT, we can't use upsert easily unless we generate an ID.
-        // But DatabaseManager doesn't have 'insert'.
-        // Let's look at DatabaseManager again. It has `upsert`.
-        // If I pass a dummy ID it might fail.
-        // I should probably add `insert` to DatabaseManager or use `pool.query` directly if accessible.
-        // `pool` is private.
-        // But `server.ts` acts as the app. behavior.
-        // I will add a method to DatabaseManager or just use a random ID for upsert.
-        // UUID generation needed.
+        if (memberId) {
+            await db.upsert('chat_history', {
+                id: crypto.randomUUID(),
+                member_id: memberId,
+                sender: 'assistant',
+                message: message,
+                metadata: { whatsapp_id: to },
+                created_at: new Date()
+            }, 'id');
+        }
 
     } catch (error) {
         console.error('❌ Error sending message:', error);
     }
 }
 
-// ... (in webhook handler)
-try {
-    // Save incoming user message
-    await db.upsert('messages', {
-        id: crypto.randomUUID(), // Need crypto or uuid
-        whatsapp_id: whatsappId,
-        role: 'user',
-        content: Body,
-        media_url: MediaUrl0,
-        created_at: new Date()
-    }, 'id');
+// Webhook for WhatsApp
+app.post('/webhook/whatsapp', async (req, res) => {
+    const { From, Body, MediaUrl0 } = req.body;
 
-    // Process message through Orchestrator
-    const orchestrator = new Orchestrator();
-    const response = await orchestrator.handleIncomingMessage(
-        whatsappId,
-        Body,
-        MediaUrl0
-    );
+    try {
+        const whatsappId = From.replace('whatsapp:', '');
 
-    // Check if request is from browser (has JSON content-type) or Twilio
-    const isBrowserRequest = req.headers['content-type']?.includes('application/json');
+        // 1. Lookup Member
+        const member = await db.findOne<any>('members', { whatsapp_id: whatsappId });
+        let memberId = member?.member_id;
 
-    if (isBrowserRequest) {
-        // Browser request - return JSON
-        res.json({ message: response });
-    } else {
-        // Twilio WhatsApp request - send message via API and return empty TwiML
-        await sendWhatsAppMessage(whatsappId, response);
+        // If no member found, we might be in onboarding or they are unknown.
+        // For now, if unknown, we can't link to chat_history effectively if it has FK constraint.
+        // But we can check if table allows null member_id? 
+        // Master script says: member_id UUID REFERENCES members(member_id)
+        // It's not NOT NULL, so it might allow null.
+        // Ideally we should create a 'prospect' or 'lead' member?
+        // For simplicity, if not found, we skip DB save or create a temp member?
+        // Let's log warning and try to save with raw whatsapp_id in metadata if possible?
+        // Actually, chat_history has member_id.
 
-        // Return empty TwiML response (WhatsApp requires API, not TwiML messages)
-        res.type('text/xml');
-        res.send(`<?xml version="1.0" encoding="UTF-8"?>
+        const metadata = { whatsapp_id: whatsappId };
+
+        // Save incoming user message
+        if (memberId) {
+            await db.upsert('chat_history', {
+                id: crypto.randomUUID(),
+                member_id: memberId,
+                sender: 'user', // schema says: 'user', 'assistant', 'system'
+                message: Body,
+                metadata: metadata,
+                created_at: new Date()
+            }, 'id');
+        }
+
+        // Process message through Orchestrator
+        const orchestrator = new Orchestrator();
+        const response = await orchestrator.handleIncomingMessage(
+            whatsappId,
+            Body,
+            MediaUrl0,
+            req.body.MediaContentType0 // Pass MIME type
+        );
+
+        // Check if request is from browser (has JSON content-type) or Twilio
+        const isBrowserRequest = req.headers['content-type']?.includes('application/json');
+
+        if (isBrowserRequest) {
+            // Browser request - return JSON
+            res.json({ message: response });
+        } else {
+            // Twilio WhatsApp request - send message via API and return empty TwiML
+            await sendWhatsAppMessage(whatsappId, response, memberId);
+
+            // Return empty TwiML response (WhatsApp requires API, not TwiML messages)
+            res.type('text/xml');
+            res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <Response></Response>`);
+        }
+    } catch (error) {
+        console.error('Error processing message:', error);
+        res.status(500).json({ error: 'Error processing message' });
     }
-} catch (error) {
-    console.error('Error processing message:', error);
-    res.status(500).json({ error: 'Error processing message' });
-}
 });
 
 // API Endpoints (for testing and admin)

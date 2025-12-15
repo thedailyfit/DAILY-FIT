@@ -3,14 +3,14 @@ import { Member, Trainer } from "../models/types";
 import { LLMService } from "../core/LLMService";
 
 export class TrainerDashboardArchitectAgent implements Agent {
-    name = "TrainerDashboardArchitectAgent";
-    private llmService: LLMService;
+  name = "TrainerDashboardArchitectAgent";
+  private llmService: LLMService;
 
-    constructor() {
-        this.llmService = new LLMService();
-    }
+  constructor() {
+    this.llmService = new LLMService();
+  }
 
-    private SYSTEM_PROMPT = `
+  private SYSTEM_PROMPT = `
 You are TrainerDashboardArchitectAgent for DailyFit, an AI-powered WhatsApp fitness assistant used by gym trainers and personal trainers.
 
 Your primary responsibility is to design, improve and maintain the Trainer Web Dashboard that trainers use to:
@@ -320,17 +320,17 @@ For every request, respond as JSON:
 Be concise but complete. Always respect the overall structure and flows described above.
     `;
 
-    async handleMessage(user: { type: 'member' | 'trainer' | 'unknown'; profile?: Member | Trainer }, message: string, context?: any): Promise<string | null> {
-        // Construct the prompt for the LLM
-        const prompt = `
+  async handleMessage(user: { type: 'member' | 'trainer' | 'unknown'; profile?: Member | Trainer }, message: string, context?: any): Promise<string | null> {
+    // Construct the prompt for the LLM
+    const prompt = `
         Request: ${message}
         
         Context: ${JSON.stringify(context || {})}
         `;
 
-        // Call the LLM with the system prompt and the user's request
-        const response = await this.llmService.getAgentResponse(this.SYSTEM_PROMPT, prompt);
+    // Call the LLM with the system prompt and the user's request
+    const response = await this.llmService.getAgentResponse<any>(this.SYSTEM_PROMPT, prompt);
 
-        return response;
-    }
+    return JSON.stringify(response);
+  }
 }

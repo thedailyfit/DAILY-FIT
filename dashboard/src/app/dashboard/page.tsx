@@ -1,218 +1,115 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Users, Dumbbell, AlertCircle, ArrowRight, Plus, Sparkles, TrendingUp, IndianRupee } from 'lucide-react'
-import { createClient } from "@/lib/supabase"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { OverviewCharts } from "@/components/dashboard/overview-charts"
+"use client";
 
-async function getDashboardStats() {
-    const supabase = createClient()
+import { Button } from "@/components/ui/button";
+import { Plus, Search, MoreVertical, FlaskConical, Target, CheckCircle2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
-    // 1. Total Clients
-    const { count: totalClients } = await supabase
-        .from('members')
-        .select('*', { count: 'exact', head: true })
-
-    // 2. Active Plans (approximation for now)
-    const { count: activePlans } = await supabase
-        .from('workout_plans')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'active')
-
-    // 3. Alerts (Clients with low adherence)
-    const { count: lowAdherenceCount } = await supabase
-        .from('members')
-        .select('*', { count: 'exact', head: true })
-        .lt('adherence_score', 70)
-
-    // 4. Recent Clients
-    const { data: recentClients } = await supabase
-        .from('members')
-        .select('id, name, phone_number, status, created_at')
-        .order('created_at', { ascending: false })
-        .limit(5)
-
-    // 5. Total Revenue (New)
-    const { data: payments } = await supabase
-        .from('payments')
-        .select('amount')
-        .eq('status', 'paid')
-
-    const totalRevenue = payments?.reduce((sum, p) => sum + p.amount, 0) || 0
-
-    return {
-        totalClients: totalClients || 0,
-        activePlans: activePlans || 0,
-        alerts: lowAdherenceCount || 0,
-        recentClients: recentClients || [],
-        totalRevenue
-    }
-}
-
-export default async function DashboardPage() {
-    const stats = await getDashboardStats()
-    const hour = new Date().getHours()
-    const greeting = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening"
+export default function TrainerDashboard() {
+    const activeClients = [
+        { id: 1, name: "Sarah Jenkins", plan: "Weight Loss Protocol", progress: 75, status: "On Track", lastCheckin: "2 hours ago" },
+        { id: 2, name: "Mike Ross", plan: "Muscle Gain Phase 2", progress: 30, status: "Needs Attention", lastCheckin: "1 day ago" },
+        { id: 3, name: "Jessica Pearson", plan: "Marathon Prep", progress: 90, status: "On Track", lastCheckin: "5 mins ago" },
+        { id: 4, name: "Harvey Specter", plan: "Maintenance", progress: 100, status: "Completed", lastCheckin: "3 days ago" },
+    ];
 
     return (
-        <div className="space-y-8">
-            <div className="flex items-center justify-between">
+        <main className="p-8 max-w-7xl mx-auto space-y-6">
+
+            {/* Header: Clean & White */}
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">{greeting}, Coach</h2>
-                    <p className="text-muted-foreground">
-                        Here's your DailyFit AI command center summary.
-                    </p>
+                    <h1 className="text-2xl font-bold text-slate-900">Active Monitoring</h1>
+                    <p className="text-slate-500 text-sm">Real-time status of your assigned clients.</p>
                 </div>
-                <div className="flex items-center space-x-2">
-                    <Button variant="outline">Download Report</Button>
-                    <Button className="bg-primary hover:bg-primary/90">
-                        <Sparkles className="mr-2 h-4 w-4" /> AI Insights
+                <div className="flex gap-3">
+                    <Button variant="outline" className="bg-white border-slate-200 text-slate-700">
+                        <FlaskConical className="w-4 h-4 mr-2" /> Evaluation Mode
+                    </Button>
+                    <Button className="bg-violet-600 hover:bg-violet-700 text-white">
+                        <Plus className="w-4 h-4 mr-2" /> Add Client
                     </Button>
                 </div>
             </div>
 
-            {/* KPI Stats Overview */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="bg-gradient-to-br from-card to-primary/5 hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Revenue
-                        </CardTitle>
-                        <IndianRupee className="h-4 w-4 text-primary" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">₹{stats.totalRevenue.toLocaleString('en-IN')}</div>
-                        <p className="text-xs text-muted-foreground flex items-center">
-                            <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Active Clients
-                        </CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalClients}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +2 new this week
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Active Plans
-                        </CardTitle>
-                        <Dumbbell className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.activePlans}</div>
-                        <p className="text-xs text-muted-foreground">
-                            98% adherence rate
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="hover:shadow-md transition-shadow border-red-200 dark:border-red-900/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Pending Alerts
-                        </CardTitle>
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.alerts}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Clients need attention
-                        </p>
-                    </CardContent>
-                </Card>
+            {/* Filter Bar (Stax Style) */}
+            <div className="flex items-center gap-4 bg-white p-2 rounded-lg border border-slate-200 shadow-sm mb-6">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                    <Input className="pl-10 border-none shadow-none focus-visible:ring-0" placeholder="Search projects or clients..." />
+                </div>
+                <div className="h-6 w-px bg-slate-200 mx-2"></div>
+                <div className="flex gap-2 pr-2">
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Status: All</Badge>
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Sort: Recent</Badge>
+                </div>
             </div>
 
-            {/* Charts Section */}
-            <OverviewCharts />
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                {/* Recent Clients */}
-                <Card className="col-span-4 hover:shadow-md transition-shadow">
-                    <CardHeader>
-                        <CardTitle>Recent Clients</CardTitle>
-                        <CardDescription>
-                            You have {stats.totalClients} total clients.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {stats.recentClients.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No clients yet.</p>
-                            ) : (
-                                stats.recentClients.map(client => (
-                                    <div key={client.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0 group hover:bg-muted/50 p-2 rounded-lg transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                                                {client.name.substring(0, 2).toUpperCase()}
-                                            </div>
-                                            <div className="grid gap-1">
-                                                <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">{client.name}</p>
-                                                <p className="text-xs text-muted-foreground">{client.phone_number}</p>
-                                            </div>
+            {/* Main Content Area: The List */}
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
+                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold text-xs">
+                        <tr>
+                            <th className="px-6 py-4">Client Name</th>
+                            <th className="px-6 py-4">Current Project / Plan</th>
+                            <th className="px-6 py-4">Progress Status</th>
+                            <th className="px-6 py-4">Inference Metrics</th>
+                            <th className="px-6 py-4">Last Updated</th>
+                            <th className="px-6 py-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {activeClients.map((client) => (
+                            <tr key={client.id} className="hover:bg-slate-50/50 transition-colors">
+                                <td className="px-6 py-4 font-medium text-slate-900">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-xs">
+                                            {client.name.substring(0, 2).toUpperCase()}
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <Badge variant={client.status === 'Active' ? 'default' : 'secondary'} className={client.status === 'Active' ? "bg-green-500 hover:bg-green-600" : ""}>
-                                                {client.status || 'Active'}
-                                            </Badge>
-                                            <Button variant="ghost" size="icon" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Link href={`/dashboard/clients/${client.id}`}>
-                                                    <ArrowRight className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                        </div>
+                                        {client.name}
                                     </div>
-                                ))
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Quick Actions */}
-                <Card className="col-span-3 hover:shadow-md transition-shadow">
-                    <CardHeader>
-                        <CardTitle>Quick Actions</CardTitle>
-                        <CardDescription>
-                            Common tasks and shortcuts
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Button className="w-full justify-start shadow-sm" asChild>
-                            <Link href="/dashboard/clients">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add New Client
-                            </Link>
-                        </Button>
-                        <Button variant="outline" className="w-full justify-start hover:border-primary/50 transition-colors" asChild>
-                            <Link href="/dashboard/plans/diets/new">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create New Diet Template
-                            </Link>
-                        </Button>
-                        <Button variant="outline" className="w-full justify-start hover:border-primary/50 transition-colors" asChild>
-                            <Link href="/dashboard/plans/workouts/new">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create New Workout Template
-                            </Link>
-                        </Button>
-                        <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-primary" asChild>
-                            <Link href="/dashboard/settings">
-                                Configure Settings
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+                                </td>
+                                <td className="px-6 py-4 text-slate-600">
+                                    <div className="flex items-center gap-2">
+                                        <Target className="h-4 w-4 text-slate-400" />
+                                        {client.plan}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full rounded-full ${client.status === 'Needs Attention' ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                                                style={{ width: `${client.progress}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-xs font-medium text-slate-500">{client.progress}%</span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 text-slate-500 font-mono text-xs">
+                                    {client.status === 'Needs Attention'
+                                        ? <span className="text-amber-600 flex items-center gap-1">⚠️ Low Adherence</span>
+                                        : <span className="text-emerald-600 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Optimal</span>
+                                    }
+                                </td>
+                                <td className="px-6 py-4 text-slate-500">
+                                    {client.lastCheckin}
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                        <MoreVertical className="h-4 w-4 text-slate-400" />
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                {activeClients.length === 0 && (
+                    <div className="p-12 text-center text-slate-500">
+                        No clients found.
+                    </div>
+                )}
             </div>
-        </div>
-    )
+        </main>
+    );
 }

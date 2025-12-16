@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Lock, UserPlus, LogIn, Building2, User } from 'lucide-react'
-import { v4 as uuidv4 } from 'uuid'; // We might need to generate UUIDs if insert fails without ID
 
 export default function LoginPage() {
     const [isSignUp, setIsSignUp] = useState(false)

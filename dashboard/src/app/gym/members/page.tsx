@@ -72,10 +72,10 @@ export default function RegularMembersPage() {
                                                 <Button variant="ghost" size="sm">View Track</Button>
                                             </div>
                                         </TableCell>
-                            TableRow> // Fixed closing tag bug
-                        ))} // Removed extra closing tag in logic, wait.
-                                    </TableBody>
-                </Table>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
             </main>

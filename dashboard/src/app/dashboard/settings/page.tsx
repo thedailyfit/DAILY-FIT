@@ -30,7 +30,7 @@ const profileFormSchema = z.object({
     age: z.number().min(18).optional(),
     phone_number: z.string().min(10, {
         message: "Phone number must be at least 10 digits.",
-    }).optional(),
+    }).optional().or(z.literal('')),
     city: z.string().min(2).optional(),
 })
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, DollarSign, Dumbbell, UserPlus } from "lucide-react";
+import { Users, DollarSign, Dumbbell, UserPlus, ShoppingBag } from "lucide-react";
 
 export default function GymOwnerDashboard() {
     // Mock Data (Connect to 'trainers' table with gym_id filter)

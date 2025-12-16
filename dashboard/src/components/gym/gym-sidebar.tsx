@@ -57,13 +57,6 @@ export function GymSidebar() {
                         <ShoppingBag className="mr-2 h-4 w-4" /> Products/Add-ons
                     </Button>
                 </Link>
-                <div className="border-t my-2 pt-2">
-                    <Link href="/admin">
-                        <Button variant="ghost" className="w-full justify-start text-amber-600 hover:bg-amber-50">
-                            <DollarSign className="mr-2 h-4 w-4" /> Switch to Admin
-                        </Button>
-                    </Link>
-                </div>
             </nav>
         </aside>
     );

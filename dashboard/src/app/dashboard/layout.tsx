@@ -16,7 +16,7 @@ export default function DashboardLayout({
                 </div>
                 {/* Deployment Version Indicator - To Prove Updates to User */}
                 <div className="fixed bottom-4 right-4 bg-[#cbfe00] text-black px-3 py-1 rounded-full text-xs font-bold pointer-events-none z-50 opacity-50">
-                    v2.2 LIVE
+                    v2.2.1 LIVE
                 </div>
             </div>
         </div>

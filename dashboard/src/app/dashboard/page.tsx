@@ -73,9 +73,7 @@ export default function TrainerDashboard() {
                                     5 active clients waiting for check-in.
                                 </p>
                             </div>
-                            <Button className="bg-[#cbfe00] text-[#212121] hover:bg-[#bbf000] font-bold rounded-xl px-6 h-12 shadow-[0_0_20px_rgba(203,254,0,0.2)] hover:shadow-[0_0_30px_rgba(203,254,0,0.4)] transition-all">
-                                Start Review <ChevronRight className="ml-2 h-4 w-4" />
-                            </Button>
+                            {/* Removed 'Review it' button as per user request */}
                         </div>
                         {/* Background Decoration */}
                         <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-[#cbfe00]/5 to-transparent pointer-events-none"></div>
@@ -83,18 +81,18 @@ export default function TrainerDashboard() {
 
                     {/* STATS ROW */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Highlights: Neon Block */}
-                        <div className="md:col-span-2 p-6 rounded-[2rem] bg-[#cbfe00] text-[#212121] relative overflow-hidden group hover:scale-[1.01] transition-all duration-300 shadow-xl cursor-default">
+                        {/* Highlights: Black Block with Neon Text */}
+                        <div className="md:col-span-2 p-6 rounded-[2rem] bg-[#212121] text-white relative overflow-hidden group hover:scale-[1.01] transition-all duration-300 shadow-xl cursor-default border border-zinc-800 hover:border-[#cbfe00]/30 mr-0">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <div className="bg-[#212121]/10 w-fit p-2 rounded-lg mb-4">
-                                        <Dumbbell className="h-5 w-5 text-[#212121]" />
+                                    <div className="bg-[#cbfe00]/10 w-fit p-2 rounded-lg mb-4">
+                                        <Dumbbell className="h-5 w-5 text-[#cbfe00]" />
                                     </div>
-                                    <h3 className="text-5xl font-black tracking-tighter mb-1">142</h3>
-                                    <p className="font-bold text-[#212121]/70 text-sm tracking-wide uppercase">Workouts Done</p>
+                                    <h3 className="text-5xl font-black tracking-tighter mb-1 text-[#cbfe00]">142</h3>
+                                    <p className="font-bold text-zinc-400 text-sm tracking-wide uppercase">Workouts Done</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold text-lg flex items-center gap-1 justify-end">
+                                    <p className="font-bold text-lg flex items-center gap-1 justify-end text-[#cbfe00]">
                                         <Activity className="h-4 w-4" /> +12%
                                     </p>
                                     <p className="text-sm opacity-70">vs last week</p>

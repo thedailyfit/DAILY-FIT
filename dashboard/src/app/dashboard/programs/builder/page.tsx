@@ -237,7 +237,7 @@ export default function ProgramBuilderPage() {
                     </CardFooter>
                 </Card>
             </div>
-        </div >
-        </div >
+        </div>
+    </div >
     );
 }

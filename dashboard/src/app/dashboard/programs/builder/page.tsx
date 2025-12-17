@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Save, Dumbbell, Utensils, Moon, Pill } from "lucide-react";
+import { Plus, Trash2, Save, Dumbbell, Utensils, Moon, Pill, Minus } from "lucide-react";
 
 export default function ProgramBuilderPage() {
     // Stage 1: Basic Info
@@ -36,8 +36,8 @@ export default function ProgramBuilderPage() {
         { id: "w3", name: "Home Workout (No Equip)" }
     ];
 
-    const addSupplement = () => {
-        setSupplements([...supplements, { name: "", dosage: "", timing: "" }]);
+    const addSupplement = (name: string, dosage: string, timing: string) => {
+        setSupplements([...supplements, { name, dosage, timing }]);
     };
 
     const removeSupplement = (index: number) => {
@@ -208,10 +208,15 @@ export default function ProgramBuilderPage() {
                                 </div>
                                 <Button
                                     onClick={() => {
-                                        const name = (document.getElementById('suppName') as HTMLInputElement).value;
-                                        const dosage = (document.getElementById('suppDose') as HTMLInputElement).value;
-                                        const timing = (document.getElementById('suppTime') as HTMLInputElement).value;
-                                        handleAddSupplement(name, dosage, timing);
+                                        const nameEl = document.getElementById('suppName') as HTMLInputElement;
+                                        const doseEl = document.getElementById('suppDose') as HTMLInputElement;
+                                        const timeEl = document.getElementById('suppTime') as HTMLInputElement;
+                                        if (nameEl && doseEl && timeEl) {
+                                            addSupplement(nameEl.value, doseEl.value, timeEl.value);
+                                            nameEl.value = '';
+                                            doseEl.value = '';
+                                            timeEl.value = '';
+                                        }
                                     }}
                                     className="w-full mt-3 bg-black text-white hover:bg-zinc-800"
                                     variant="outline"
@@ -221,27 +226,31 @@ export default function ProgramBuilderPage() {
                             </div>
 
                             <div className="space-y-2">
-                                {supplements.map((s) => (
-                                    <div key={s.id} className="flex justify-between items-center p-3 bg-zinc-50 rounded-lg border border-zinc-100 text-sm">
+                                {supplements.map((s, index) => (
+                                    <div key={index} className="flex justify-between items-center p-3 bg-zinc-50 rounded-lg border border-zinc-100 text-sm">
                                         <div>
-                                            <p className="font-bold text-black">{s.name}</p>
+                                            <p className="font-bold text-black">{s.name || "Untitled"}</p>
                                             <p className="text-xs text-zinc-500">{s.dosage} • {s.timing}</p>
                                         </div>
-                                        <Button size="icon" variant="ghost" className="h-6 w-6 text-zinc-400 hover:text-red-500" onClick={() => handleRemoveSupplement(s.id)}>
+                                        <Button size="icon" variant="ghost" className="h-6 w-6 text-zinc-400 hover:text-red-500" onClick={() => removeSupplement(index)}>
                                             <Minus className="h-3 w-3" />
                                         </Button>
                                     </div>
-                                <Plus className="h-4 w-4 mr-2" /> Add Item
-                            </Button>
+                                ))}
+                            </div>
                         </CardContent>
-                        <div className="p-6 border-t bg-slate-50 rounded-b-xl">
-                            <Button size="lg" className="w-full bg-violet-600 hover:bg-violet-700" onClick={handleSave}>
-                                <Save className="h-4 w-4 mr-2" /> Save Master Program
+                        <CardFooter>
+                            <Button
+                                onClick={handleSave}
+                                disabled={loading}
+                                className="w-full bg-[#8B5CF6] hover:bg-[#7c4dff] text-white font-bold h-12 text-lg shadow-lg shadow-purple-500/20"
+                            >
+                                {loading ? "Saving..." : "Save Master Program"}
                             </Button>
-                        </div>
+                        </CardFooter>
                     </Card>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

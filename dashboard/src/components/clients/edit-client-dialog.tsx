@@ -85,22 +85,27 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+            // Sanitize values
+            const updates: any = {
+                name: values.name,
+                phone_number: values.phone,
+                status: values.status,
+                // Only include optional fields if they have values or explicit null
+                email: values.email || null,
+                gender: values.gender || null,
+                goal: values.goal || null,
+            };
+
+            // Handle numbers - ensure they are numbers or null, not empty strings/NaN
+            if (values.age) updates.age = Number(values.age);
+            if (values.height) updates.height_cm = Number(values.height);
+            if (values.weight) updates.weight_kg = Number(values.weight);
+            if (values.monthly_fee !== undefined && values.monthly_fee !== null) updates.monthly_fee = Number(values.monthly_fee);
+
             const { error } = await supabase
-                .from('members') // Changed from 'clients' to 'members' to match AddDialog
-                .update({
-                    name: values.name,
-                    email: values.email || null,
-                    phone_number: values.phone, // Changed to match DB schema usually phone_number
-                    gender: values.gender,
-                    age: values.age,
-                    height_cm: values.height,
-                    weight_kg: values.weight,
-                    monthly_fee: values.monthly_fee,
-                    goal: values.goal,
-                    status: values.status,
-                    // updated_at: new Date().toISOString(), // Supabase might handle this automagically or column name might differ
-                })
-                .eq('member_id', client.id) // Changed from 'id' to 'member_id' based on typical schema
+                .from('members')
+                .update(updates)
+                .eq('member_id', client.id)
 
             if (error) {
                 throw error

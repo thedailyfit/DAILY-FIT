@@ -22,7 +22,7 @@ export default function PlansLayout({
                             className={cn(
                                 buttonVariants({ variant: "ghost" }),
                                 pathname === "/dashboard/plans/diets"
-                                    ? "bg-muted hover:bg-muted"
+                                    ? "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 font-bold"
                                     : "hover:bg-transparent hover:underline",
                                 "justify-start"
                             )}
@@ -34,7 +34,7 @@ export default function PlansLayout({
                             className={cn(
                                 buttonVariants({ variant: "ghost" }),
                                 pathname === "/dashboard/plans/workouts"
-                                    ? "bg-muted hover:bg-muted"
+                                    ? "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 font-bold"
                                     : "hover:bg-transparent hover:underline",
                                 "justify-start"
                             )}

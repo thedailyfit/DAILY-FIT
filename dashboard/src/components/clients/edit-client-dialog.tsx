@@ -34,16 +34,14 @@ import { createClient } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
-    name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
-    }),
-    email: z.string().email({
-        message: "Please enter a valid email address.",
-    }).optional().or(z.literal('')),
-    phone: z.string().min(10, {
-        message: "Phone number must be at least 10 digits.",
-    }),
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email().optional().or(z.literal('')),
+    phone: z.string().min(10, { message: "Phone number must be at least 10 digits." }),
     gender: z.string().optional(),
+    age: z.coerce.number().optional(),
+    height: z.coerce.number().optional(),
+    weight: z.coerce.number().optional(),
+    monthly_fee: z.coerce.number().optional(),
     goal: z.string().optional(),
     status: z.string(),
 })
@@ -55,6 +53,10 @@ interface EditClientDialogProps {
         email?: string | null
         phone: string
         gender?: string | null
+        age?: number | null
+        height_cm?: number | null
+        weight_kg?: number | null
+        monthly_fee?: number | null
         goal?: string | null
         status: string
     }
@@ -72,6 +74,10 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
             email: client.email || "",
             phone: client.phone,
             gender: client.gender || "",
+            age: client.age || undefined,
+            height: client.height_cm || undefined,
+            weight: client.weight_kg || undefined,
+            monthly_fee: client.monthly_fee || undefined,
             goal: client.goal || "",
             status: client.status,
         },
@@ -80,17 +86,21 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const { error } = await supabase
-                .from('clients')
+                .from('members') // Changed from 'clients' to 'members' to match AddDialog
                 .update({
                     name: values.name,
                     email: values.email || null,
-                    phone: values.phone,
+                    phone_number: values.phone, // Changed to match DB schema usually phone_number
                     gender: values.gender,
+                    age: values.age,
+                    height_cm: values.height,
+                    weight_kg: values.weight,
+                    monthly_fee: values.monthly_fee,
                     goal: values.goal,
                     status: values.status,
-                    updated_at: new Date().toISOString(),
+                    // updated_at: new Date().toISOString(), // Supabase might handle this automagically or column name might differ
                 })
-                .eq('id', client.id)
+                .eq('member_id', client.id) // Changed from 'id' to 'member_id' based on typical schema
 
             if (error) {
                 throw error
@@ -99,42 +109,42 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
             setOpen(false)
             router.refresh()
             alert("Client updated successfully!")
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error updating client:", error)
-            alert("Failed to update client. Please try again.")
+            alert(`Failed to update client: ${error.message || "Unknown error"}`)
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="ghost" className="w-full justify-start pl-2 font-normal">
                     Edit Profile
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[600px] bg-white text-black max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Edit Client Profile</DialogTitle>
                     <DialogDescription>
-                        Update the client's details below.
+                        Update the client's comprehensive details.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Name</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                         <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Name</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="phone"
@@ -148,13 +158,31 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
                                     </FormItem>
                                 )}
                             />
+                        </div>
+
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Email (Optional)</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Physical Stats */}
+                        <div className="p-4 bg-zinc-50 rounded-xl grid grid-cols-4 gap-4 border">
                             <FormField
                                 control={form.control}
                                 name="gender"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Gender</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormLabel className="text-xs font-bold text-zinc-500 uppercase">Gender</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value || ""}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select" />
@@ -170,20 +198,47 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name="age"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs font-bold text-zinc-500 uppercase">Age</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="height"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs font-bold text-zinc-500 uppercase">Height (cm)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="weight"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs font-bold text-zinc-500 uppercase">Weight (kg)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email (Optional)</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
@@ -191,7 +246,7 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Goal</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value || ""}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a goal" />
@@ -211,30 +266,47 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name="status"
+                                name="monthly_fee"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Status</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select status" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Active">Active</SelectItem>
-                                                <SelectItem value="Paused">Paused</SelectItem>
-                                                <SelectItem value="Trial">Trial</SelectItem>
-                                                <SelectItem value="Inactive">Inactive</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        <FormLabel>Monthly Fee (₹)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="status"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Status</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select status" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Active">Active</SelectItem>
+                                            <SelectItem value="Paused">Paused</SelectItem>
+                                            <SelectItem value="Trial">Trial</SelectItem>
+                                            <SelectItem value="Inactive">Inactive</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         <DialogFooter>
-                            <Button type="submit">Save Changes</Button>
+                            <Button type="submit" className="w-full bg-black text-white hover:bg-zinc-800">
+                                Save Changes
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

@@ -161,9 +161,10 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
             form.reset()
             router.refresh()
             // alert("Client created successfully!") // Removed alert effectively replacing with UI feedback if needed, but keeping flow smooth
-        } catch (error) {
-            console.error("Error adding client:", error)
-            alert(`Failed to add client: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        } catch (error: any) {
+            console.error("Error adding client:", error);
+            const errorMessage = error?.message || error?.details || "Unknown error occurred";
+            alert(`Failed to add client: ${errorMessage}`);
         } finally {
             setLoading(false);
         }

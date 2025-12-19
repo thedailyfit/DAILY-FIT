@@ -44,18 +44,18 @@ export default async function DietPlansPage() {
     const plans = await getDietPlans();
 
     return (
-        <div className="flex flex-col gap-6 bg-[#e6e6e6] min-h-screen p-8 text-black">
+        <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-slate-900">
             <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-4xl font-black text-[#212121] uppercase tracking-tighter mb-2">
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
                         Diet Plans
                     </h1>
-                    <p className="text-zinc-500 font-medium">
+                    <p className="text-slate-500 mt-2">
                         Create, manage, and reuse structured nutrition plans.
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button size="lg" className="bg-[#212121] hover:bg-black text-white font-bold shadow-xl rounded-xl" asChild>
+                    <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm rounded-lg" asChild>
                         <Link href="/dashboard/plans/diets/new">
                             + New Diet Plan
                         </Link>
@@ -63,11 +63,11 @@ export default async function DietPlansPage() {
                 </div>
             </div>
 
-            <Card className="border-none shadow-xl bg-white rounded-[1.5rem] overflow-hidden">
-                <CardHeader className="bg-[#212121] text-white p-6">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2">
+            <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
+                <CardHeader className="bg-white border-b border-slate-100 p-6">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
                         Diet Plan Library
-                        <span className="flex h-2 w-2 rounded-full bg-[#cbfe00] animate-pulse"></span>
+                        <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">

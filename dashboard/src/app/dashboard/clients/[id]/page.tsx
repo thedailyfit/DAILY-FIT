@@ -127,11 +127,14 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                 {/* Left Column (Stats & Info) */}
                 <div className="space-y-6">
                     <Card className="bg-[#212121] border-none shadow-xl text-white">
-                        <CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="flex items-center gap-2 text-[#cbfe00]">
                                 <User className="h-5 w-5" />
                                 Personal Details
                             </CardTitle>
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-zinc-500 hover:text-white">
+                                <User className="h-4 w-4" /> {/* Edit Icon placeholder */}
+                            </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
@@ -141,15 +144,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                     <p className="text-sm font-bold text-white">{member.whatsapp_id || "Not provided"}</p>
                                 </div>
                             </div>
-                            {member.email && (
-                                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                                    <Mail className="h-4 w-4 text-zinc-400" />
-                                    <div>
-                                        <p className="text-xs font-bold text-zinc-500 uppercase">Email</p>
-                                        <p className="text-sm font-bold text-white">{member.email}</p>
-                                    </div>
-                                </div>
-                            )}
+
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                                 <Target className="h-4 w-4 text-zinc-400" />
                                 <div>
@@ -157,6 +152,21 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                     <p className="text-sm font-bold text-[#cbfe00] mt-1">
                                         {member.goal?.replace('_', ' ').toUpperCase() || "NOT SET"}
                                     </p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2 mt-2">
+                                <div className="p-2 bg-white/5 rounded-lg text-center">
+                                    <p className="text-[10px] text-zinc-500 uppercase font-bold">Age</p>
+                                    <p className="font-bold text-white">{member.age || "-"}</p>
+                                </div>
+                                <div className="p-2 bg-white/5 rounded-lg text-center">
+                                    <p className="text-[10px] text-zinc-500 uppercase font-bold">Weight</p>
+                                    <p className="font-bold text-white">{member.weight_kg ? `${member.weight_kg}kg` : "-"}</p>
+                                </div>
+                                <div className="p-2 bg-white/5 rounded-lg text-center">
+                                    <p className="text-[10px] text-zinc-500 uppercase font-bold">Height</p>
+                                    <p className="font-bold text-white">{member.height_cm ? `${member.height_cm}cm` : "-"}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -174,7 +184,9 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                             <div>
                                 <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Monthly Fee</p>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-3xl font-black text-[#212121]">₹5,000</span>
+                                    <span className="text-3xl font-black text-[#212121]">
+                                        {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(member.monthly_fee || 0)}
+                                    </span>
                                     <Badge className="bg-[#cbfe00] text-black hover:bg-[#b0dc00]">Active</Badge>
                                 </div>
                             </div>
@@ -214,9 +226,9 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                 </div>
                                 {activeDietProgram ? (
                                     <div>
-                                        <p className="text-xl font-bold text-white mb-1">{activeDietProgram.program.name}</p>
+                                        <p className="text-xl font-bold text-white mb-1 line-clamp-1">{activeDietProgram.program.name}</p>
                                         <p className="text-xs text-zinc-500 mb-4">Started {activeDietProgram.start_date}</p>
-                                        <Button variant="outline" className="w-full border-zinc-700 text-zinc-300 hover:text-white hover:border-white h-9 text-xs" asChild>
+                                        <Button className="w-full bg-white text-black hover:bg-zinc-200 font-bold h-10 text-xs" asChild>
                                             <Link href={`/dashboard/plans/diets/${activeDietProgram.program.diet_plan_id}`}>
                                                 View Protocol
                                             </Link>
@@ -240,9 +252,9 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                 </div>
                                 {activeWorkoutProgram ? (
                                     <div>
-                                        <p className="text-xl font-bold text-white mb-1">{activeWorkoutProgram.program.name}</p>
+                                        <p className="text-xl font-bold text-white mb-1 line-clamp-1">{activeWorkoutProgram.program.name}</p>
                                         <p className="text-xs text-zinc-500 mb-4">Started {activeWorkoutProgram.start_date}</p>
-                                        <Button variant="outline" className="w-full border-zinc-700 text-zinc-300 hover:text-white hover:border-white h-9 text-xs" asChild>
+                                        <Button className="w-full bg-white text-black hover:bg-zinc-200 font-bold h-10 text-xs" asChild>
                                             <Link href={`/dashboard/plans/workouts/${activeWorkoutProgram.program.workout_plan_id}`}>
                                                 View Protocol
                                             </Link>

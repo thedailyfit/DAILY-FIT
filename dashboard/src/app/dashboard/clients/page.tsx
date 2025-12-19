@@ -53,8 +53,19 @@ async function getClients(): Promise<Client[]> {
     });
 }
 
+async function getPlans() {
+    const supabase = createClient();
+    const { data: d } = await supabase.from('diet_plans').select('id, name').eq('is_active', true);
+    const { data: w } = await supabase.from('workout_plans').select('id, name').eq('is_active', true);
+    return {
+        dPlans: d || [],
+        wPlans: w || []
+    };
+}
+
 export default async function ClientsPage() {
     const clients = await getClients();
+    const { dPlans, wPlans } = await getPlans();
 
     return (
         <div className="flex flex-col gap-6 bg-[#e6e6e6] min-h-screen p-8 text-black">
@@ -67,7 +78,7 @@ export default async function ClientsPage() {
                         Manage your roster and track progress.
                     </p>
                 </div>
-                <AddClientDialog />
+                <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} />
             </div>
 
             <Card className="border-none shadow-xl bg-white rounded-[1.5rem] overflow-hidden">

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
     Users,
     Calendar,
@@ -148,33 +149,39 @@ export default function TrainerDashboard() {
                     <div className="p-6 rounded-[2rem] bg-white border border-white shadow-sm">
                         <h3 className="font-black text-[#212121] text-lg mb-4 uppercase tracking-tight">Quick Actions</h3>
                         <div className="space-y-3">
-                            <Button className="w-full h-14 rounded-xl bg-[#212121] hover:bg-black text-white font-bold text-base justify-between px-6 group shadow-lg hover:shadow-xl transition-all">
-                                <span className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-[#cbfe00] flex items-center justify-center text-[#212121]">
-                                        <Zap className="h-4 w-4" />
-                                    </div>
-                                    Create Program
-                                </span>
-                                <ChevronRight className="h-4 w-4 text-zinc-500 group-hover:text-[#cbfe00]" />
-                            </Button>
+                            <Link href="/dashboard/programs/builder" className="block w-full">
+                                <Button className="w-full h-14 rounded-xl bg-[#212121] hover:bg-black text-white font-bold text-base justify-between px-6 group shadow-lg hover:shadow-xl transition-all">
+                                    <span className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-[#cbfe00] flex items-center justify-center text-[#212121]">
+                                            <Zap className="h-4 w-4" />
+                                        </div>
+                                        Create Program
+                                    </span>
+                                    <ChevronRight className="h-4 w-4 text-zinc-500 group-hover:text-[#cbfe00]" />
+                                </Button>
+                            </Link>
 
-                            <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-200 hover:border-[#212121] hover:bg-zinc-50 text-[#212121] font-bold text-base justify-between px-6 group transition-all">
-                                <span className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#212121]">
-                                        <Calendar className="h-4 w-4" />
-                                    </div>
-                                    Schedule Session
-                                </span>
-                            </Button>
+                            <Link href="/dashboard/clients" className="block w-full">
+                                <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-200 hover:border-[#212121] hover:bg-zinc-50 text-[#212121] font-bold text-base justify-between px-6 group transition-all">
+                                    <span className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#212121]">
+                                            <Calendar className="h-4 w-4" />
+                                        </div>
+                                        Schedule Session
+                                    </span>
+                                </Button>
+                            </Link>
 
-                            <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-200 hover:border-[#212121] hover:bg-zinc-50 text-[#212121] font-bold text-base justify-between px-6 group transition-all">
-                                <span className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#212121]">
-                                        <MessageSquare className="h-4 w-4" />
-                                    </div>
-                                    Broadcast Message
-                                </span>
-                            </Button>
+                            <Link href="/dashboard/chat" className="block w-full">
+                                <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-200 hover:border-[#212121] hover:bg-zinc-50 text-[#212121] font-bold text-base justify-between px-6 group transition-all">
+                                    <span className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#212121]">
+                                            <MessageSquare className="h-4 w-4" />
+                                        </div>
+                                        Broadcast Message
+                                    </span>
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 

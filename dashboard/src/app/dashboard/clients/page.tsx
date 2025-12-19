@@ -57,26 +57,27 @@ export default async function ClientsPage() {
     const clients = await getClients();
 
     return (
-        <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-6 bg-[#e6e6e6] min-h-screen p-8 text-black">
+            <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                    <h1 className="text-4xl font-black text-[#212121] uppercase tracking-tighter mb-2">
                         Clients
                     </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Manage all your personal training clients in one place.
+                    <p className="text-zinc-500 font-medium">
+                        Manage your roster and track progress.
                     </p>
                 </div>
                 <AddClientDialog />
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">
+            <Card className="border-none shadow-xl bg-white rounded-[1.5rem] overflow-hidden">
+                <CardHeader className="bg-[#212121] text-white p-6">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2">
                         Client Directory
+                        <span className="flex h-2 w-2 rounded-full bg-[#cbfe00] animate-pulse"></span>
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     <ClientsTable clients={clients} />
                 </CardContent>
             </Card>

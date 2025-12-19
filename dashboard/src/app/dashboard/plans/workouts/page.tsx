@@ -45,18 +45,18 @@ export default async function WorkoutPlansPage() {
     const plans = await getWorkoutPlans();
 
     return (
-        <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-6 bg-[#e6e6e6] min-h-screen p-8 text-black">
+            <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                    <h1 className="text-4xl font-black text-[#212121] uppercase tracking-tighter mb-2">
                         Workout Plans
                     </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Build structured training programs you can reuse and customize for clients.
+                    <p className="text-zinc-500 font-medium">
+                        Build structured training programs you can reuse.
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button size="sm" asChild>
+                    <Button size="lg" className="bg-[#212121] hover:bg-black text-white font-bold shadow-xl rounded-xl" asChild>
                         <Link href="/dashboard/plans/workouts/new">
                             + New Workout Plan
                         </Link>
@@ -64,13 +64,14 @@ export default async function WorkoutPlansPage() {
                 </div>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">
+            <Card className="border-none shadow-xl bg-white rounded-[1.5rem] overflow-hidden">
+                <CardHeader className="bg-[#212121] text-white p-6">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2">
                         Workout Plan Library
+                        <span className="flex h-2 w-2 rounded-full bg-[#cbfe00] animate-pulse"></span>
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     <WorkoutPlansTable plans={plans} />
                 </CardContent>
             </Card>

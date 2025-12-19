@@ -6,15 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Dumbbell, Utensils, Pill, Minus } from "lucide-react";
+import { Plus, Dumbbell, Utensils, Pill, Minus, FileText, Library } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function ProgramBuilderPage() {
     // Stage 1: Basic Info
     const [programName, setProgramName] = useState("");
+    const [programDesc, setProgramDesc] = useState("");
 
-    // Stage 2: Core Components (Select existing)
+    // Stage 2: Core Protocols
+    const [dietMode, setDietMode] = useState<"library" | "custom">("library");
+    const [workoutMode, setWorkoutMode] = useState<"library" | "custom">("library");
+
     const [selectedDiet, setSelectedDiet] = useState<string>("");
+    const [customDiet, setCustomDiet] = useState({ name: "", details: "" });
+
     const [selectedWorkout, setSelectedWorkout] = useState<string>("");
+    const [customWorkout, setCustomWorkout] = useState({ name: "", details: "" });
 
     // Stage 3: Supplements (Array)
     const [supplements, setSupplements] = useState([{ name: "", dosage: "", timing: "" }]);
@@ -59,140 +67,213 @@ export default function ProgramBuilderPage() {
 
         console.log("Saving Program to DB:", {
             name: programName,
-            dietId: selectedDiet,
-            workoutId: selectedWorkout,
+            description: programDesc,
+            diet: dietMode === "library" ? { id: selectedDiet } : customDiet,
+            workout: workoutMode === "library" ? { id: selectedWorkout } : customWorkout,
             supplements,
             sleepProtocol,
             waterIntake
         });
 
         setLoading(false);
-        alert(`Success! Master Program "${programName}" has been saved to your library.`);
+        alert(`Success! Master Program "${programName}" has been saved.`);
     };
 
     return (
-        <div className="p-8 max-w-5xl mx-auto min-h-screen text-black">
+        <div className="p-8 max-w-6xl mx-auto min-h-screen bg-[#e6e6e6] text-black">
             <div className="mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-[#212121] uppercase tracking-tight mb-2">Master Program Builder</h1>
-                    <p className="text-zinc-500 font-medium">Combine nutrition, training, and recovery into a complete protocol.</p>
+                    <h1 className="text-4xl font-black text-[#212121] uppercase tracking-tight mb-2">Master Program Builder</h1>
+                    <p className="text-zinc-500 font-medium">Create comprehensive protocols for your clients.</p>
                 </div>
                 <Button
                     onClick={handleSave}
                     disabled={loading}
-                    className="bg-[#212121] hover:bg-black text-white font-bold h-12 px-8 shadow-xl hover:shadow-2xl transition-all"
+                    className="bg-[#212121] hover:bg-black text-white font-bold h-12 px-8 shadow-xl hover:shadow-2xl transition-all rounded-xl"
                 >
                     {loading ? "Saving..." : "Save Master Program"}
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Left Form */}
-                <div className="md:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column (Main Builder) */}
+                <div className="lg:col-span-2 space-y-8">
 
-                    {/* Step 1: Program Identity - Recreated to match original structure but cleaner */}
-                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-sm">
-                        <h2 className="font-bold text-white text-lg mb-6 flex items-center gap-3">
-                            <span className="text-[#cbfe00] font-mono text-sm">01</span>
+                    {/* Step 1: Program Identity */}
+                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-2xl">
+                        <h2 className="font-bold text-white text-xl mb-6 flex items-center gap-3">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#cbfe00] text-black text-sm font-bold">01</span>
                             Program Identity
                         </h2>
-                        <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Program Name</label>
-                            <Input
-                                value={programName}
-                                onChange={(e) => setProgramName(e.target.value)}
-                                placeholder="e.g. 12 Week Shred Transformation"
-                                className="bg-black/30 border-none text-white placeholder:text-zinc-600 h-14 rounded-xl focus:ring-1 focus:ring-[#cbfe00]"
-                            />
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Program Name</label>
+                                <Input
+                                    value={programName}
+                                    onChange={(e) => setProgramName(e.target.value)}
+                                    placeholder="e.g. 12 Week Shred Transformation"
+                                    className="bg-black/40 border-white/10 text-white placeholder:text-zinc-600 h-14 rounded-xl focus:ring-1 focus:ring-[#cbfe00] focus:border-[#cbfe00]"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Description / Notes</label>
+                                <Textarea
+                                    value={programDesc}
+                                    onChange={(e) => setProgramDesc(e.target.value)}
+                                    placeholder="Brief overview of this phase..."
+                                    className="bg-black/40 border-white/10 text-white placeholder:text-zinc-600 min-h-[80px] rounded-xl focus:ring-1 focus:ring-[#cbfe00] focus:border-[#cbfe00]"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Step 2: Core Protocols */}
-                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-sm">
-                        <h2 className="font-bold text-white text-lg mb-6 flex items-center gap-3">
-                            <span className="text-[#cbfe00] font-mono text-sm">02</span>
+                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-2xl">
+                        <h2 className="font-bold text-white text-xl mb-6 flex items-center gap-3">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#cbfe00] text-black text-sm font-bold">02</span>
                             Core Protocols
                         </h2>
-                        <div className="space-y-4">
-                            <div className="p-4 rounded-xl bg-black/30 border border-white/5 hover:border-[#cbfe00]/50 transition-colors group">
-                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                                    <Utensils className="h-3 w-3" /> Nutrition Protocol
+
+                        {/* Diet Section */}
+                        <div className="mb-8 p-6 rounded-2xl bg-white/5 border border-white/5">
+                            <div className="flex items-center justify-between mb-4">
+                                <label className="text-sm font-bold text-[#cbfe00] uppercase tracking-wider flex items-center gap-2">
+                                    <Utensils className="h-4 w-4" /> Nutrition Protocol
                                 </label>
+                                <Tabs value={dietMode} onValueChange={(v) => setDietMode(v as any)} className="w-[200px]">
+                                    <TabsList className="grid w-full grid-cols-2 bg-black/50">
+                                        <TabsTrigger value="library" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Library</TabsTrigger>
+                                        <TabsTrigger value="custom" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Custom</TabsTrigger>
+                                    </TabsList>
+                                </Tabs>
+                            </div>
+
+                            {dietMode === "library" ? (
                                 <Select onValueChange={setSelectedDiet} value={selectedDiet}>
-                                    <SelectTrigger className="bg-transparent border-none text-white h-10 p-0 focus:ring-0">
-                                        <SelectValue placeholder="Select Diet Template..." />
+                                    <SelectTrigger className="bg-black/40 border-white/10 text-white h-12">
+                                        <SelectValue placeholder="Select from Diet Library..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#212121] border-zinc-800 text-white">
+                                    <SelectContent className="bg-[#212121] border-zinc-700 text-white">
                                         {dietPlans.map(p => (
                                             <SelectItem key={p.id} value={p.id} className="focus:bg-[#cbfe00] focus:text-black">{p.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            ) : (
+                                <div className="space-y-3">
+                                    <Input
+                                        placeholder="Custom Diet Name"
+                                        className="bg-black/40 border-white/10 text-white h-12"
+                                        value={customDiet.name}
+                                        onChange={(e) => setCustomDiet({ ...customDiet, name: e.target.value })}
+                                    />
+                                    <Textarea
+                                        placeholder="Enter macros, meal timing, or specific instructions..."
+                                        className="bg-black/40 border-white/10 text-white min-h-[100px]"
+                                        value={customDiet.details}
+                                        onChange={(e) => setCustomDiet({ ...customDiet, details: e.target.value })}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Workout Section */}
+                        <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                            <div className="flex items-center justify-between mb-4">
+                                <label className="text-sm font-bold text-[#cbfe00] uppercase tracking-wider flex items-center gap-2">
+                                    <Dumbbell className="h-4 w-4" /> Training Protocol
+                                </label>
+                                <Tabs value={workoutMode} onValueChange={(v) => setWorkoutMode(v as any)} className="w-[200px]">
+                                    <TabsList className="grid w-full grid-cols-2 bg-black/50">
+                                        <TabsTrigger value="library" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Library</TabsTrigger>
+                                        <TabsTrigger value="custom" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Custom</TabsTrigger>
+                                    </TabsList>
+                                </Tabs>
                             </div>
 
-                            <div className="p-4 rounded-xl bg-black/30 border border-white/5 hover:border-[#cbfe00]/50 transition-colors group">
-                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                                    <Dumbbell className="h-3 w-3" /> Training Protocol
-                                </label>
+                            {workoutMode === "library" ? (
                                 <Select onValueChange={setSelectedWorkout} value={selectedWorkout}>
-                                    <SelectTrigger className="bg-transparent border-none text-white h-10 p-0 focus:ring-0">
-                                        <SelectValue placeholder="Select Workout Template..." />
+                                    <SelectTrigger className="bg-black/40 border-white/10 text-white h-12">
+                                        <SelectValue placeholder="Select from Workout Library..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#212121] border-zinc-800 text-white">
+                                    <SelectContent className="bg-[#212121] border-zinc-700 text-white">
                                         {workoutPlans.map(p => (
                                             <SelectItem key={p.id} value={p.id} className="focus:bg-[#cbfe00] focus:text-black">{p.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                            </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <Input
+                                        placeholder="Custom Workout Name"
+                                        className="bg-black/40 border-white/10 text-white h-12"
+                                        value={customWorkout.name}
+                                        onChange={(e) => setCustomWorkout({ ...customWorkout, name: e.target.value })}
+                                    />
+                                    <Textarea
+                                        placeholder="Enter splits, exercises, sets/reps..."
+                                        className="bg-black/40 border-white/10 text-white min-h-[100px]"
+                                        value={customWorkout.details}
+                                        onChange={(e) => setCustomWorkout({ ...customWorkout, details: e.target.value })}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     {/* Step 3: Sleep & Recovery */}
-                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-sm">
-                        <h2 className="font-bold text-white text-lg mb-6 flex items-center gap-3">
-                            <span className="text-[#cbfe00] font-mono text-sm">03</span>
-                            Sleep & Recovery Protocol
+                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-2xl">
+                        <h2 className="font-bold text-white text-xl mb-6 flex items-center gap-3">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#cbfe00] text-black text-sm font-bold">03</span>
+                            Recovery & Lifestyle
                         </h2>
 
-                        <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Daily Water Intake Target</label>
+                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Water Intake</label>
                                 <Input
                                     value={waterIntake}
                                     onChange={(e) => setWaterIntake(e.target.value)}
-                                    placeholder="e.g. 3-4 Liters"
-                                    className="bg-black/30 border-none text-white placeholder:text-zinc-600 focus:ring-1 focus:ring-[#cbfe00]"
+                                    placeholder="e.g. 4 Liters"
+                                    className="bg-black/40 border-white/10 text-white focus:ring-[#cbfe00]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Sleep Hygiene Guidelines</label>
+                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Sleep Target</label>
+                                <Input
+                                    placeholder="e.g. 8 Hours"
+                                    className="bg-black/40 border-white/10 text-white focus:ring-[#cbfe00]"
+                                />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Sleep Hygiene / Notes</label>
                                 <Textarea
                                     value={sleepProtocol}
                                     onChange={(e) => setSleepProtocol(e.target.value)}
-                                    placeholder="e.g. No caffeine after 2pm. Room temp 18°C. 7.5 hours minimum."
-                                    className="bg-black/30 border-none text-white placeholder:text-zinc-600 focus:ring-1 focus:ring-[#cbfe00] min-h-[120px]"
+                                    placeholder="Specific recovery instructions..."
+                                    className="bg-black/40 border-white/10 text-white min-h-[100px] focus:ring-[#cbfe00]"
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right Stack (Supplements) */}
-                <div className="space-y-6">
-                    <Card className="bg-[#212121] text-white border-zinc-800 shadow-sm rounded-[2rem] p-4">
-                        <CardHeader>
+                {/* Right Column (Supplements) */}
+                <div className="space-y-8">
+                    <Card className="bg-[#212121] text-white border-none shadow-2xl rounded-[2rem] overflow-hidden sticky top-8">
+                        <div className="h-2 w-full bg-[#cbfe00]"></div>
+                        <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-3 text-lg">
-                                <div className="h-10 w-10 rounded-full bg-[#cbfe00] flex items-center justify-center text-black">
-                                    <Pill className="h-5 w-5" />
+                                <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center text-[#cbfe00]">
+                                    <Pill className="h-4 w-4" />
                                 </div>
-                                Supplement<br />Stack
+                                Supplement Stack
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="bg-black/30 p-4 rounded-xl border border-white/5">
                                 <Input
-                                    placeholder="Name (e.g. Creatine)"
+                                    placeholder="Name (e.g. Whey Protein)"
                                     className="mb-2 bg-transparent border-b border-zinc-700 rounded-none px-0 text-white placeholder:text-zinc-600 focus:border-[#cbfe00] focus:ring-0"
                                     id="suppName"
                                 />
@@ -212,18 +293,22 @@ export default function ProgramBuilderPage() {
                                             timeEl.value = '';
                                         }
                                     }}
-                                    className="w-full bg-white text-black hover:bg-[#cbfe00] font-bold rounded-lg h-10 transition-colors"
+                                    className="w-full bg-[#cbfe00] text-black hover:bg-[#b0dc00] font-bold rounded-lg h-10 transition-colors"
                                 >
-                                    <Plus className="h-4 w-4 mr-2" /> Add to Stack
+                                    <Plus className="h-4 w-4 mr-2" /> Add Item
                                 </Button>
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                                 {supplements.map((s, index) => (
-                                    <div key={index} className="flex justify-between items-center p-3 hover:bg-white/5 rounded-lg transition-colors group border border-transparent hover:border-zinc-700">
+                                    <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-transparent hover:border-[#cbfe00]/30 transition-all group">
                                         <div>
-                                            <p className="font-bold text-white text-sm">{s.name || "Untitled"}</p>
-                                            <p className="text-xs text-zinc-500">{s.dosage} • {s.timing}</p>
+                                            {s.name ? (
+                                                <p className="font-bold text-white text-sm">{s.name}</p>
+                                            ) : (
+                                                <p className="font-bold text-zinc-500 text-sm italic">New Item</p>
+                                            )}
+                                            <p className="text-xs text-zinc-400">{s.dosage || "-"} • {s.timing || "-"}</p>
                                         </div>
                                         <Button size="icon" variant="ghost" className="h-8 w-8 text-zinc-600 hover:text-red-500 hover:bg-transparent" onClick={() => removeSupplement(index)}>
                                             <Minus className="h-4 w-4" />
@@ -231,7 +316,9 @@ export default function ProgramBuilderPage() {
                                     </div>
                                 ))}
                                 {supplements.length === 0 && (
-                                    <p className="text-center text-zinc-600 text-xs py-4">No supplements added yet.</p>
+                                    <div className="text-center py-8 opacity-50 border-2 border-dashed border-zinc-700 rounded-xl">
+                                        <p className="text-xs text-zinc-500">No supplements added.</p>
+                                    </div>
                                 )}
                             </div>
                         </CardContent>

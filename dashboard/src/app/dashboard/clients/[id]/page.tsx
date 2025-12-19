@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils, Clock } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils, Clock, CreditCard, Bell, MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { AssignPlanDialog } from "@/components/clients/assign-plan-dialog";
 import Link from "next/link";
@@ -99,245 +99,200 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
     const activeWorkoutProgram = programs.find((p: any) => p.is_current && p.program?.workout_plan_id);
 
     return (
-        <div className="space-y-6 max-w-6xl mx-auto">
+        <div className="space-y-6 max-w-6xl mx-auto min-h-screen p-6 bg-[#e6e6e6]">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="ghost" size="icon" asChild className="hover:bg-black/10">
                         <Link href="/dashboard/clients">
-                            <ArrowLeft className="h-4 w-4" />
+                            <ArrowLeft className="h-5 w-5 text-black" />
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold">{member.name}</h1>
-                        <p className="text-muted-foreground">Client Profile</p>
+                        <h1 className="text-4xl font-black text-[#212121] uppercase tracking-tighter">{member.name}</h1>
+                        <Badge variant="outline" className="border-black/20 text-black/60 font-mono mt-1">Client Profile</Badge>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
+                    <Button variant="outline" className="border-red-500/20 text-red-600 hover:bg-red-50 hover:border-red-500">
+                        <span className="flex items-center gap-2">
+                            Delete Client
+                        </span>
+                    </Button>
                     <AssignPlanDialog clientId={member.member_id} clientName={member.name} />
                 </div>
             </div>
 
-            {/* Client Info Cards */}
-            <div className="grid gap-6 md:grid-cols-2">
-                {/* Assigned Plans Card */}
-                <Card className="md:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Target className="h-5 w-5" />
-                            Current Plan Assignments
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2">
-                        <div className="p-4 border rounded-lg bg-muted/20">
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold flex items-center gap-2">
-                                    <Utensils className="h-4 w-4" /> Diet Plan
-                                </h3>
+            <div className="grid gap-6 md:grid-cols-3">
+                {/* Left Column (Stats & Info) */}
+                <div className="space-y-6">
+                    <Card className="bg-[#212121] border-none shadow-xl text-white">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-[#cbfe00]">
+                                <User className="h-5 w-5" />
+                                Personal Details
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                                <Phone className="h-4 w-4 text-zinc-400" />
+                                <div>
+                                    <p className="text-xs font-bold text-zinc-500 uppercase">WhatsApp</p>
+                                    <p className="text-sm font-bold text-white">{member.whatsapp_id || "Not provided"}</p>
+                                </div>
+                            </div>
+                            {member.email && (
+                                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                                    <Mail className="h-4 w-4 text-zinc-400" />
+                                    <div>
+                                        <p className="text-xs font-bold text-zinc-500 uppercase">Email</p>
+                                        <p className="text-sm font-bold text-white">{member.email}</p>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                                <Target className="h-4 w-4 text-zinc-400" />
+                                <div>
+                                    <p className="text-xs font-bold text-zinc-500 uppercase">Goal</p>
+                                    <p className="text-sm font-bold text-[#cbfe00] mt-1">
+                                        {member.goal?.replace('_', ' ').toUpperCase() || "NOT SET"}
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-white border-none shadow-xl">
+                        <CardHeader>
+                            <CardTitle className="text-black flex items-center gap-2">
+                                <CreditCard className="h-5 w-5" />
+                                Billing & Fees
+                            </CardTitle>
+                            <CardDescription>Monthly Retainer Management</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Monthly Fee</p>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-3xl font-black text-[#212121]">₹5,000</span>
+                                    <Badge className="bg-[#cbfe00] text-black hover:bg-[#b0dc00]">Active</Badge>
+                                </div>
+                            </div>
+
+                            <div className="pt-4 border-t border-zinc-100">
+                                <Button className="w-full bg-[#212121] text-white hover:bg-black font-bold h-12 shadow-lg">
+                                    <Bell className="h-4 w-4 mr-2 text-[#cbfe00]" />
+                                    Send Payment Reminder
+                                </Button>
+                                <p className="text-[10px] text-center text-zinc-400 mt-2">Sends a template message via WhatsApp</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Middle/Right Column (Plans & Content) */}
+                <div className="md:col-span-2 space-y-6">
+                    {/* Assigned Plans Card */}
+                    <Card className="bg-[#212121] border-none shadow-xl text-white">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-[#cbfe00]">
+                                <Target className="h-5 w-5" />
+                                Active Program Strategy
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-4 md:grid-cols-2">
+                            <div className="p-6 border border-white/10 rounded-2xl bg-black/20 hover:border-[#cbfe00]/50 transition-colors">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-black text-lg flex items-center gap-2 text-white">
+                                        <Utensils className="h-5 w-5 text-[#cbfe00]" /> Diet
+                                    </h3>
+                                    {activeDietProgram ? (
+                                        <Badge className="bg-[#cbfe00] text-black">Active</Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="border-zinc-700 text-zinc-500">None</Badge>
+                                    )}
+                                </div>
                                 {activeDietProgram ? (
-                                    <Badge variant="default" className="bg-green-600">Active</Badge>
+                                    <div>
+                                        <p className="text-xl font-bold text-white mb-1">{activeDietProgram.program.name}</p>
+                                        <p className="text-xs text-zinc-500 mb-4">Started {activeDietProgram.start_date}</p>
+                                        <Button variant="outline" className="w-full border-zinc-700 text-zinc-300 hover:text-white hover:border-white h-9 text-xs" asChild>
+                                            <Link href={`/dashboard/plans/diets/${activeDietProgram.program.diet_plan_id}`}>
+                                                View Protocol
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 ) : (
-                                    <Badge variant="secondary">Not Assigned</Badge>
+                                    <p className="text-sm text-zinc-500">No nutrition protocol assigned.</p>
                                 )}
                             </div>
-                            {activeDietProgram ? (
-                                <div>
-                                    <p className="text-lg font-medium">{activeDietProgram.program.name}</p>
-                                    <p className="text-xs text-muted-foreground">Started: {activeDietProgram.start_date}</p>
-                                    <Button variant="link" size="sm" className="px-0 h-auto mt-2" asChild>
-                                        <Link href={`/dashboard/plans/diets/${activeDietProgram.program.diet_plan_id}`}>
-                                            View Details
-                                        </Link>
-                                    </Button>
-                                </div>
-                            ) : (
-                                <p className="text-sm text-muted-foreground">No diet plan currently assigned.</p>
-                            )}
-                        </div>
 
-                        <div className="p-4 border rounded-lg bg-muted/20">
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold flex items-center gap-2">
-                                    <Dumbbell className="h-4 w-4" /> Workout Plan
-                                </h3>
+                            <div className="p-6 border border-white/10 rounded-2xl bg-black/20 hover:border-[#cbfe00]/50 transition-colors">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-black text-lg flex items-center gap-2 text-white">
+                                        <Dumbbell className="h-5 w-5 text-[#cbfe00]" /> Workout
+                                    </h3>
+                                    {activeWorkoutProgram ? (
+                                        <Badge className="bg-[#cbfe00] text-black">Active</Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="border-zinc-700 text-zinc-500">None</Badge>
+                                    )}
+                                </div>
                                 {activeWorkoutProgram ? (
-                                    <Badge variant="default" className="bg-blue-600">Active</Badge>
+                                    <div>
+                                        <p className="text-xl font-bold text-white mb-1">{activeWorkoutProgram.program.name}</p>
+                                        <p className="text-xs text-zinc-500 mb-4">Started {activeWorkoutProgram.start_date}</p>
+                                        <Button variant="outline" className="w-full border-zinc-700 text-zinc-300 hover:text-white hover:border-white h-9 text-xs" asChild>
+                                            <Link href={`/dashboard/plans/workouts/${activeWorkoutProgram.program.workout_plan_id}`}>
+                                                View Protocol
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 ) : (
-                                    <Badge variant="secondary">Not Assigned</Badge>
+                                    <p className="text-sm text-zinc-500">No training protocol assigned.</p>
                                 )}
                             </div>
-                            {activeWorkoutProgram ? (
-                                <div>
-                                    <p className="text-lg font-medium">{activeWorkoutProgram.program.name}</p>
-                                    <p className="text-xs text-muted-foreground">Started: {activeWorkoutProgram.start_date}</p>
-                                    <Button variant="link" size="sm" className="px-0 h-auto mt-2" asChild>
-                                        <Link href={`/dashboard/plans/workouts/${activeWorkoutProgram.program.workout_plan_id}`}>
-                                            View Details
-                                        </Link>
-                                    </Button>
-                                </div>
-                            ) : (
-                                <p className="text-sm text-muted-foreground">No workout plan currently assigned.</p>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
 
-                {/* Assignment History - NEW SECTION */}
-                <Card className="md:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Clock className="h-5 w-5" />
-                            Assignment History (Last 7 Days)
-                        </CardTitle>
-                        <CardDescription>Recent plan updates and assignments</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {programs && programs.length > 0 ? (
-                                programs.map((p: any) => (
-                                    <div key={p.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            {p.program?.diet_plan_id ? (
-                                                <Utensils className="h-4 w-4 text-orange-500" />
-                                            ) : (
-                                                <Dumbbell className="h-4 w-4 text-blue-500" />
-                                            )}
-                                            <div>
-                                                <p className="font-medium">{p.program?.name || 'Unknown Plan'}</p>
-                                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                    <span>Assigned: {new Date(p.created_at).toLocaleDateString()}</span>
-                                                    <span>•</span>
-                                                    <span>Start: {p.start_date}</span>
-                                                </div>
+                    {/* Chat History */}
+                    <Card className="flex flex-col h-[500px] bg-white border-none shadow-xl">
+                        <CardHeader className="border-b border-zinc-100">
+                            <CardTitle className="flex items-center gap-2 text-[#212121]">
+                                <MessageSquare className="h-5 w-5" />
+                                Communication History
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1 overflow-y-auto space-y-4 p-4 bg-slate-50">
+                            {messages && messages.length > 0 ? (
+                                messages.map((msg: any) => (
+                                    <div
+                                        key={msg.id}
+                                        className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}
+                                    >
+                                        <div
+                                            className={`max-w-[80%] rounded-2xl p-4 text-sm shadow-sm ${msg.role === 'user'
+                                                ? 'bg-white text-black rounded-tl-none'
+                                                : 'bg-[#212121] text-white rounded-tr-none'
+                                                }`}
+                                        >
+                                            <p>{msg.content}</p>
+                                            <div className={`text-[10px] mt-1 opacity-70 font-bold ${msg.role === 'user' ? 'text-zinc-400' : 'text-[#cbfe00]'}`}>
+                                                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {p.is_current ? (
-                                                <Badge variant="default" className="bg-green-600">Active</Badge>
-                                            ) : (
-                                                <Badge variant="secondary">History</Badge>
-                                            )}
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-sm text-muted-foreground text-center py-4">No assignment history found.</p>
+                                <div className="flex h-full items-center justify-center text-zinc-400 flex-col gap-2">
+                                    <MessageSquare className="h-8 w-8 opacity-20" />
+                                    <p className="font-medium text-sm">No messages exchanged yet</p>
+                                </div>
                             )}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Personal Information */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <User className="h-5 w-5" />
-                            Personal Information
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <Phone className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                                <p className="text-sm font-medium">WhatsApp Number</p>
-                                <p className="text-sm text-muted-foreground">{member.whatsapp_id || "Not provided"}</p>
-                            </div>
-                        </div>
-                        {member.email && (
-                            <div className="flex items-center gap-3">
-                                <Mail className="h-4 w-4 text-muted-foreground" />
-                                <div>
-                                    <p className="text-sm font-medium">Email</p>
-                                    <p className="text-sm text-muted-foreground">{member.email}</p>
-                                </div>
-                            </div>
-                        )}
-                        <div className="flex items-center gap-3">
-                            <Target className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                                <p className="text-sm font-medium">Goal</p>
-                                <Badge variant="outline" className="mt-1">
-                                    {member.goal?.replace('_', ' ').toUpperCase() || "Not set"}
-                                </Badge>
-                            </div>
-                        </div>
-                        {member.gender && (
-                            <div className="flex items-center gap-3">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <div>
-                                    <p className="text-sm font-medium">Gender</p>
-                                    <p className="text-sm text-muted-foreground capitalize">{member.gender}</p>
-                                </div>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Chat History */}
-                <Card className="flex flex-col h-[500px]">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Mail className="h-5 w-5" />
-                            WhatsApp History
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-1 overflow-y-auto space-y-4 p-4">
-                        {messages && messages.length > 0 ? (
-                            messages.map((msg: any) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}
-                                >
-                                    <div
-                                        className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.role === 'user'
-                                            ? 'bg-muted text-foreground'
-                                            : 'bg-primary text-primary-foreground'
-                                            }`}
-                                    >
-                                        <p>{msg.content}</p>
-                                        <div className={`text-[10px] mt-1 opacity-70 ${msg.role === 'user' ? 'text-left' : 'text-right'}`}>
-                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="flex h-full items-center justify-center text-muted-foreground">
-                                <p>No messages yet</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-            {/* Additional Info */}
-            < Card >
-                <CardHeader>
-                    <CardTitle>Health Metrics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-4 md:grid-cols-3">
-                        {member.weight_kg && (
-                            <div>
-                                <p className="text-sm font-medium">Weight</p>
-                                <p className="text-2xl font-bold">{member.weight_kg} kg</p>
-                            </div>
-                        )}
-                        {member.height_cm && (
-                            <div>
-                                <p className="text-sm font-medium">Height</p>
-                                <p className="text-2xl font-bold">{member.height_cm} cm</p>
-                            </div>
-                        )}
-                        {member.age && (
-                            <div>
-                                <p className="text-sm font-medium">Age</p>
-                                <p className="text-2xl font-bold">{member.age} years</p>
-                            </div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card >
-        </div >
+        </div>
     );
 }

@@ -23,21 +23,18 @@ app.use((req, res, next) => {
     next();
 });
 
-// RAILWAY/CLOUD: Always use the provided system PORT.
-// LOCAL: If .env forces 3000 (Next.js default), ignore it and use 4000 to avoid conflict.
-const isProduction = process.env.NODE_ENV === 'production';
+// Basic root handler for Railway Health Checks
+app.get('/', (req, res) => {
+    res.send('DailyFit Backend is Running! 🚀');
+});
+
+// RAILWAY DETECTION:
+// If on Railway, trust their dynamic PORT.
+// If Local, force 4000 to avoid conflict with Dashboard (3000).
+const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL;
 const envPort = process.env.PORT;
 
-let PORT = 4000; // Default fallback
-if (isProduction && envPort) {
-    PORT = parseInt(envPort);
-} else if (envPort && envPort !== '3000') {
-    // If local and user set a custom port (e.g. 5000), respect it.
-    PORT = parseInt(envPort);
-} else {
-    // If local and port is 3000 (or undefined), force 4000.
-    PORT = 4000;
-}
+const PORT = (isRailway && envPort) ? parseInt(envPort) : 4000;
 
 // Initialize Twilio client
 const twilioClient = twilio(
@@ -167,7 +164,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 DailyFit server running on port ${PORT}`);
     console.log(`📱 WhatsApp webhook: http://localhost:${PORT}/webhook/whatsapp`);
     console.log(`💚 Health check: http://localhost:${PORT}/health`);

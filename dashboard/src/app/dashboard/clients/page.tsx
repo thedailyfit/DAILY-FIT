@@ -40,7 +40,7 @@ async function getClients(): Promise<Client[]> {
             : "No Plan Assigned";
 
         return {
-            id: row.id,
+            id: row.member_id,
             name: row.name,
             status: (row.status && ['Active', 'Paused', 'Trial', 'Inactive'].includes(row.status))
                 ? row.status as ClientStatus

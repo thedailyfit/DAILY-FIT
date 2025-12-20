@@ -101,10 +101,10 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
             if (values.height) updates.height_cm = Number(values.height);
             // Zod's coerce.number() handles conversion from string to number,
             // but empty strings become 0. We want undefined/null for optional empty fields.
-            updates.age = (values.age === 0 && form.getValues('age') === '') ? null : values.age;
-            updates.height_cm = (values.height === 0 && form.getValues('height') === '') ? null : values.height;
-            updates.weight_kg = (values.weight === 0 && form.getValues('weight') === '') ? null : values.weight;
-            updates.monthly_fee = (values.monthly_fee === 0 && form.getValues('monthly_fee') === '') ? null : values.monthly_fee;
+            updates.age = values.age || null;
+            updates.height_cm = values.height || null;
+            updates.weight_kg = values.weight || null;
+            updates.monthly_fee = (values.monthly_fee === 0 && (form.getValues('monthly_fee') as any) === '') ? null : values.monthly_fee;
 
             const { error } = await supabase
                 .from('members')

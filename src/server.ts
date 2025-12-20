@@ -23,7 +23,8 @@ app.use((req, res, next) => {
     next();
 });
 
-const PORT = process.env.PORT || 3000;
+// Hardcoded to 4000 to avoid conflict with Next.js Dashboard (3000)
+const PORT = 4000;
 
 // Initialize Twilio client
 const twilioClient = twilio(

@@ -13,10 +13,24 @@ interface ProgressAnalysisInput {
 }
 
 interface WeeklyReportResponse {
-    week_summary: string; // "Great job hitting 4/5 workouts!"
-    insights: string[]; // ["Weight trending down 0.5kg", "Protein intake slightly low on weekends"]
-    risk_alert: string | null; // "Plateau detected" or "Burnout risk (7 days no rest)"
-    next_week_focus: string; // "Focus on hitting protein goal"
+    week_summary: string;
+    insights: string[];
+    risk_alert: string | null;
+    next_week_focus: string;
+}
+
+interface TrainerReportInput {
+    trainer_name: string;
+    total_clients: number;
+    active_clients: number; // adherence > 70%
+    at_risk_clients: string[]; // Names of people with low adherence
+    revenue_this_week: number;
+}
+
+interface TrainerReportResponse {
+    business_summary: string; // "You have 20 active clients."
+    client_alerts: string[]; // ["Follow up with Rahul (No activity)"]
+    upsell_opportunities: string[]; // ["Pitch 'Keto Add-on' to Priya"]
 }
 
 export class ProgressAnalysisAgent implements Agent {
@@ -28,18 +42,19 @@ export class ProgressAnalysisAgent implements Agent {
     ) { }
 
     async handleMessage(user: any, message: string, context: any): Promise<string | null> {
-        // usually triggered periodically
+        // usually triggered periodically by Scheduler
         return null;
     }
 
-    async generateWeeklyReport(input: ProgressAnalysisInput): Promise<WeeklyReportResponse> {
+    async generateWeeklyMemberReport(input: ProgressAnalysisInput): Promise<WeeklyReportResponse> {
         const systemPrompt = `
 You are ProgressAnalysisAgent for DailyFit.
-Analyze the user's weekly fitness data and generate a concise report using motivational but analytical tone.
+Generate a Sunday Weekly Report for a gym member.
+Tone: Motivational, Professional, but friendly.
 
 INPUT DATA:
 Goal: ${input.goal}
-Adherence: ${input.completed_workouts}/${input.planned_workouts} workouts completed.
+Adherence: ${input.completed_workouts}/${input.planned_workouts} workouts.
 Calorie Score: ${input.calorie_adherence_score}%
 Weight Log: ${JSON.stringify(input.weight_log)}
 
@@ -50,18 +65,32 @@ Output JSON format:
   "risk_alert": null,
   "next_week_focus": "Try to hit all 5 workouts."
 }
-
-LOGIC:
-- If adherence < 50%, be encouraging but firm about consistency.
-- If weight hasn't moved in 2 weeks (weight log) and goal is loss, flag "Plateau detected" in risk_alert.
-- If adherence > 90% and weight moving in right direction, celebrate!
 `;
+        return await this.llm.getAgentResponse<WeeklyReportResponse>(systemPrompt, input);
+    }
 
-        try {
-            return await this.llm.getAgentResponse<WeeklyReportResponse>(systemPrompt, input);
-        } catch (error) {
-            console.error("ProgressAnalysisAgent Error:", error);
-            throw error;
-        }
+    async generateTrainerReport(input: TrainerReportInput): Promise<TrainerReportResponse> {
+        const systemPrompt = `
+You are the Business Intelligence AI for a Gym Owner/Trainer.
+Generate a Weekly Sunday Business Digest.
+
+INPUT DATA:
+Trainer: ${input.trainer_name}
+Clients: ${input.active_clients}/${input.total_clients} Active.
+At Risk: ${input.at_risk_clients.join(', ')}
+
+OBJECTIVE:
+1. Summarize retention.
+2. Flag at-risk clients for follow-up.
+3. Suggest 2-3 specific Upsell/Add-on packs (e.g., "Supplements", "Personal Diet Review", "Advanced PPL Program") based on the context.
+
+Output JSON format:
+{
+  "business_summary": "Retention is good (80%).",
+  "client_alerts": ["Call Rahul - missing workouts"],
+  "upsell_opportunities": ["Pitch 'Whey Protein Pack' to active muscle gainers", "Offer '1-on-1 Form Check' to beginners"]
+}
+`;
+        return await this.llm.getAgentResponse<TrainerReportResponse>(systemPrompt, input);
     }
 }

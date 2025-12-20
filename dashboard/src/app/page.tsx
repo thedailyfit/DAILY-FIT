@@ -33,7 +33,7 @@ export default function LandingPage() {
               Automate Your Gym with <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400">Intelligent AI</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
               Replace manual sales, diet planning, and check-ins with DailyFit AI.
               The all-in-one Growth Operating System for modern fitness centers.
             </p>
@@ -174,14 +174,16 @@ export default function LandingPage() {
   );
 }
 
+import { SpotlightCard } from "@/components/spotlight-card";
+
 function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
-    <div className="p-8 rounded-2xl bg-card border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group cursor-default">
-      <div className="w-12 h-12 rounded-xl bg-background border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+    <SpotlightCard className="p-8 h-full bg-card/40 hover:bg-card/60 transition-colors">
+      <div className="w-12 h-12 rounded-xl bg-background/50 border border-white/10 flex items-center justify-center mb-6 shadow-inner">
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-3 text-white">{title}</h3>
-      <p className="text-gray-400 leading-relaxed">{desc}</p>
-    </div>
+      <h3 className="text-xl font-bold mb-3 text-white tracking-wide">{title}</h3>
+      <p className="text-gray-300 leading-relaxed font-medium">{desc}</p>
+    </SpotlightCard>
   )
 }

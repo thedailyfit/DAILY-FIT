@@ -69,13 +69,13 @@ function PricingCard({ title, price, desc, features, highlight = false }: { titl
                 <span className="text-4xl font-bold text-white">{price}</span>
                 {price !== 'Custom' && <span className="text-gray-500">/month</span>}
             </div>
-            <p className="text-gray-400 mb-8">{desc}</p>
+            <p className="text-gray-300 mb-8 font-medium">{desc}</p>
 
             <div className="space-y-4 mb-8 flex-1">
                 {features.map((feat, i) => (
                     <div key={i} className="flex items-start gap-3">
                         <Check className="w-5 h-5 text-blue-500 shrink-0" />
-                        <span className="text-sm text-gray-300">{feat}</span>
+                        <span className="text-sm text-gray-200 font-medium">{feat}</span>
                     </div>
                 ))}
             </div>

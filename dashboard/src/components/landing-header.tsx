@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Dumbbell } from 'lucide-react';
 import { useState } from 'react';
 
 export function LandingHeader() {
@@ -14,7 +14,7 @@ export function LandingHeader() {
                 {/* Logo */}
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-violet-600 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">D</span>
+                        <Dumbbell className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                         DailyFit AI

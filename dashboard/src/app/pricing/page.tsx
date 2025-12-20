@@ -19,9 +19,9 @@ export default function PricingPage() {
                     {/* Plan 1 */}
                     <PricingCard
                         title="Starter"
-                        price="₹2,999"
+                        price="$29"
                         desc="For Independent Trainers"
-                        features={["Up to 50 Clients", "Basic AI Chatbot", "Standard Diet Templates", "WhatsApp Support"]}
+                        features={["Up to 10 Clients", "Basic AI Chatbot", "Standard Diet Templates", "WhatsApp Support"]}
                     />
 
                     {/* Plan 2: Best Value */}
@@ -29,11 +29,11 @@ export default function PricingPage() {
                         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl blur opacity-75" />
                         <PricingCard
                             title="Pro Gym"
-                            price="₹5,999"
+                            price="$59"
                             desc="For Growing Gyms"
                             highlight
                             features={[
-                                "Unlimited Clients",
+                                "Up to 20 Clients",
                                 "Advanced AI Sales Agent",
                                 "Weekly Progress Reports",
                                 "All 15 Indian Diet Plans",

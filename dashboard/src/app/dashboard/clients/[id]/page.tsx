@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils, Clock, CreditCard, Bell, MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { AssignPlanDialog } from "@/components/clients/assign-plan-dialog";
+import { EditClientDialog } from "@/components/clients/edit-client-dialog";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -132,9 +133,26 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                 <User className="h-5 w-5" />
                                 Personal Details
                             </CardTitle>
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-zinc-500 hover:text-white">
-                                <User className="h-4 w-4" /> {/* Edit Icon placeholder */}
-                            </Button>
+                            <EditClientDialog
+                                client={{
+                                    id: member.member_id,
+                                    name: member.name,
+                                    email: member.email,
+                                    phone: member.whatsapp_id || member.phone_number || "", // normalizing phone
+                                    gender: member.gender,
+                                    age: member.age,
+                                    height_cm: member.height_cm,
+                                    weight_kg: member.weight_kg,
+                                    monthly_fee: member.monthly_fee,
+                                    goal: member.goal,
+                                    status: member.status || 'Active'
+                                }}
+                                trigger={
+                                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-zinc-500 hover:text-white">
+                                        <User className="h-4 w-4" />
+                                    </Button>
+                                }
+                            />
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
@@ -175,9 +193,28 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                     <Card className="bg-white border-none shadow-xl">
                         <CardHeader>
                             <CardTitle className="text-black flex items-center gap-2">
-                                <CreditCard className="h-5 w-5" />
                                 Billing & Fees
                             </CardTitle>
+                            <EditClientDialog
+                                client={{
+                                    id: member.member_id,
+                                    name: member.name,
+                                    email: member.email,
+                                    phone: member.whatsapp_id || member.phone_number || "",
+                                    gender: member.gender,
+                                    age: member.age,
+                                    height_cm: member.height_cm,
+                                    weight_kg: member.weight_kg,
+                                    monthly_fee: member.monthly_fee,
+                                    goal: member.goal,
+                                    status: member.status || 'Active'
+                                }}
+                                trigger={
+                                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-zinc-400 hover:text-black">
+                                        <User className="h-4 w-4" />
+                                    </Button>
+                                }
+                            />
                             <CardDescription>Monthly Retainer Management</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">

@@ -60,9 +60,10 @@ interface EditClientDialogProps {
         goal?: string | null
         status: string
     }
+    trigger?: React.ReactNode
 }
 
-export function EditClientDialog({ client }: EditClientDialogProps) {
+export function EditClientDialog({ client, trigger }: EditClientDialogProps) {
     const [open, setOpen] = useState(false)
     const router = useRouter()
     const supabase = createClient()
@@ -127,9 +128,11 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start pl-2 font-normal">
-                    Edit Profile
-                </Button>
+                {trigger ? trigger : (
+                    <Button variant="ghost" className="w-full justify-start pl-2 font-normal">
+                        Edit Profile
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] bg-white text-black max-h-[90vh] overflow-y-auto">
                 <DialogHeader>

@@ -97,11 +97,10 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
 
             const finalGoal = values.goal === "other" ? values.custom_goal : values.goal;
 
-            // 1. Create Member
-            const { data: member, error } = await supabase.from('members').insert({
+            // 1. Create Member Payload
+            const memberPayload: any = {
                 trainer_id: trainer.trainer_id,
                 name: values.name,
-                email: values.email || null,
                 whatsapp_id: values.whatsapp_number,
                 phone_number: values.whatsapp_number,
                 gender: values.gender,
@@ -111,7 +110,14 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
                 age: values.age || null,
                 monthly_fee: values.monthly_fee,
                 status: values.status,
-            }).select().single();
+            };
+
+            // Only add email if it has a value, to avoid schema errors if column is missing/optional
+            if (values.email && values.email.trim() !== "") {
+                memberPayload.email = values.email;
+            }
+
+            const { data: member, error } = await supabase.from('members').insert(memberPayload).select().single();
 
             if (error) throw error
 

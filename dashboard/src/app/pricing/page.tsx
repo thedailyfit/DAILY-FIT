@@ -17,11 +17,19 @@ export default function PricingPage() {
 
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {/* Plan 1 */}
+                    {/* Plan 1 */}
                     <PricingCard
                         title="Starter"
                         price="$29"
                         desc="For Independent Trainers"
-                        features={["Up to 10 Clients", "Basic AI Chatbot", "Standard Diet Templates", "WhatsApp Support"]}
+                        features={[
+                            "Up to 10 Clients",
+                            "WhatsApp AI Agent",
+                            "Trainer Dashboard",
+                            "Custom Program Builder",
+                            "Daily Workout Reminders",
+                            "Fee Renewal Reminders"
+                        ]}
                     />
 
                     {/* Plan 2: Best Value */}
@@ -34,11 +42,13 @@ export default function PricingPage() {
                             highlight
                             features={[
                                 "Up to 20 Clients",
-                                "Advanced AI Sales Agent",
-                                "Weekly Progress Reports",
-                                "All 15 Indian Diet Plans",
-                                "Excel Bulk Import",
-                                "Priority Phone Support"
+                                "Gym Owner Dashboard",
+                                "AI Diet/Workout Generator",
+                                "Meal Photo Calorie Tracking",
+                                "Upselling Add-ons Engine",
+                                "Lead Enquiry Follow-up",
+                                "Regional Diet Templates",
+                                "Daily Tracking & Challenges"
                             ]}
                         />
                     </div>

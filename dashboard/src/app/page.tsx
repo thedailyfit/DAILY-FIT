@@ -151,33 +151,48 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
               icon={<MessageSquare className="w-6 h-6 text-green-400" />}
-              title="WhatsApp AI Sales"
-              desc="The AI chats with leads 24/7, answers questions, and books appointments automatically."
+              title="WhatsApp Multi-System Agent"
+              desc="Conversational AI that captures leads, answers queries, and manages members 24/7."
             />
             <FeatureCard
               icon={<LineChart className="w-6 h-6 text-blue-400" />}
-              title="Sunday Business Reports"
-              desc="Get a detailed breakdown of revenue, new signups, and at-risk members every Sunday."
+              title="Advanced Owner Dashboard"
+              desc="Deep analytics on revenue, retention, and trainer performance with weekly reports."
             />
             <FeatureCard
               icon={<Utensils className="w-6 h-6 text-orange-400" />}
-              title="Indian Diet Templates"
-              desc="15+ regional diet plans (North, South, Jain, Keto) ready to assign in one click."
+              title="Custom Diet & Workout Plans"
+              desc="Create your own or use AI to generate personalized plans with regional Indian foods."
             />
             <FeatureCard
               icon={<Users className="w-6 h-6 text-violet-400" />}
-              title="Smart Onboarding"
-              desc="Excel Import for bulk members and unique AI-generated codes for easy check-ins."
+              title="Meal Photo Calorie Tracking"
+              desc="Members snap a photo of their food, and AI tracks calories and macros instantly."
             />
             <FeatureCard
               icon={<Zap className="w-6 h-6 text-yellow-400" />}
-              title="Workout Generator"
-              desc="Create personalized workout splits (PPL, Brosplit, Full Body) in seconds."
+              title="Automated Daily Nudges"
+              desc="Motivation, workout reminders, and habit tracking sent automatically to members."
             />
             <FeatureCard
               icon={<CheckCircle2 className="w-6 h-6 text-red-400" />}
-              title="Adherence Tracking"
-              desc="AI monitors if clients skip gym or cheat on diet and alerts you instantly."
+              title="Smart Fee Renewals"
+              desc="Automated reminders for membership fees and trainer package renewals."
+            />
+            <FeatureCard
+              icon={<Zap className="w-6 h-6 text-pink-400" />}
+              title="Upselling Engine"
+              desc="AI suggests add-ons like Whey Protein, Supplements, and Advanced Plans to members."
+            />
+            <FeatureCard
+              icon={<Users className="w-6 h-6 text-indigo-400" />}
+              title="Lead Enquiry Follow-up"
+              desc="Never lose a lead. AI follows up with prospects until they are ready to join."
+            />
+            <FeatureCard
+              icon={<CheckCircle2 className="w-6 h-6 text-cyan-400" />}
+              title="Daily Member Tracking"
+              desc="Weekly weight check-ins, step challenges, and cheat meal control notifications."
             />
           </div>
         </div>

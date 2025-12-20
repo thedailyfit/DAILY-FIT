@@ -1,83 +1,68 @@
-import Link from "next/link";
+"use client";
+
+import Image from "next/image";
+import { LandingHeader } from "@/components/landing-header";
+import { BookDemoModal } from "@/components/book-demo-modal";
 import { Button } from "@/components/ui/button";
-import { Bot, Users, Globe, Award } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 
 export default function AboutPage() {
     return (
-        <div className="flex flex-col min-h-screen bg-slate-950 text-slate-50 font-sans">
-            <header className="px-6 h-16 flex items-center justify-between border-b border-white/5 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
-                <div className="flex items-center gap-2">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="h-8 w-8 bg-gradient-to-tr from-indigo-500 to-violet-500 rounded-lg flex items-center justify-center">
-                            <Bot className="h-5 w-5 text-white" />
-                        </div>
-                        <span className="font-bold text-xl tracking-tight">DailyFit AI</span>
-                    </Link>
-                </div>
-                <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
-                    <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                    <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-                </nav>
-                <div className="flex gap-4">
-                    <Link href="/login">
-                        <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-white/5">
-                            Log in
-                        </Button>
-                    </Link>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background text-foreground">
+            <LandingHeader />
 
-            <main className="flex-1">
-                <section className="py-24 px-6 md:px-0">
-                    <div className="max-w-4xl mx-auto space-y-12">
-                        <div className="text-center space-y-6">
-                            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">
-                                Evaluating Fitness Intelligence
-                            </h1>
-                            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-                                We believe the future of fitness isn't just about harder workouts—it's about smarter coaching.
+            <main className="pt-32 pb-20 container mx-auto px-4 md:px-6">
+                <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+
+                    <div className="flex-1 space-y-8">
+                        <h1 className="text-4xl md:text-5xl font-bold">Empowering Gym Owners to <br /> <span className="text-blue-500">Scale Without Stress</span></h1>
+
+                        <div className="space-y-4 text-lg text-gray-400">
+                            <p>
+                                DailyFit started with a simple mission: **To help gym owners focus on fitness, not admin work.**
+                            </p>
+                            <p>
+                                We realized that most gym owners spend 70% of their time on sales calls, diet charts, and payment reminders. That's why we built **DailyFit AI** – an intelligent assistant that handles the boring stuff so you can build your empire.
                             </p>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-12 pt-12">
-                            <div className="space-y-6">
-                                <h2 className="text-2xl font-bold text-indigo-400">Our Mission</h2>
-                                <p className="text-slate-300 leading-relaxed text-lg">
-                                    DailyFit AI was born from a simple realization: Trainers are burnt out. The administrative burden of managing diets, check-ins, and payments leaves little time for actual coaching.
-                                </p>
-                                <p className="text-slate-300 leading-relaxed text-lg">
-                                    We built an "AI Operating System" that handles the grunt work. Our agents analyze food photos, track progress, and even handle payments, allowing gym owners to scale without sacrificing quality.
-                                </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5">
+                            <div className="p-6 bg-card border border-white/10 rounded-xl">
+                                <Phone className="w-8 h-8 text-blue-500 mb-4" />
+                                <h3 className="font-bold text-white mb-2">Call Us Directly</h3>
+                                <a href="tel:+918919205848" className="text-gray-300 hover:text-white transition">+91 89192 05848</a>
                             </div>
-                            <div className="relative h-full min-h-[300px] rounded-2xl overflow-hidden border border-white/10 bg-slate-900 group">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-violet-500/20" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <Bot className="h-32 w-32 text-indigo-500/50 group-hover:scale-110 transition-transform duration-700" />
-                                </div>
+                            <div className="p-6 bg-card border border-white/10 rounded-xl">
+                                <Mail className="w-8 h-8 text-violet-500 mb-4" />
+                                <h3 className="font-bold text-white mb-2">Email Support</h3>
+                                <a href="mailto:support@dailyfit.ai" className="text-gray-300 hover:text-white transition">support@dailyfit.ai</a>
                             </div>
                         </div>
 
-                        <div className="pt-24 grid grid-cols-2 md:grid-cols-4 gap-8">
-                            {[
-                                { label: "Active Users", val: "10,000+", icon: Users },
-                                { label: "Countries", val: "25", icon: Globe },
-                                { label: "Trainers Empowered", val: "500+", icon: Award },
-                                { label: "AI Interactions", val: "1M+", icon: Bot },
-                            ].map((stat, i) => (
-                                <div key={i} className="text-center p-6 bg-white/5 rounded-xl border border-white/5">
-                                    <stat.icon className="h-6 w-6 text-indigo-400 mx-auto mb-3" />
-                                    <div className="text-3xl font-bold text-white mb-1">{stat.val}</div>
-                                    <div className="text-sm text-slate-400">{stat.label}</div>
-                                </div>
-                            ))}
-                        </div>
+                        <BookDemoModal>
+                            <Button className="w-full sm:w-auto h-12 px-8 rounded-full bg-white text-black font-bold hover:bg-gray-200">
+                                Book a Strategy Call
+                            </Button>
+                        </BookDemoModal>
                     </div>
-                </section>
-            </main>
 
-            <footer className="py-8 text-center text-slate-600 text-sm border-t border-white/5">
-                © 2025 DailyFit Inc. Built for the future of fitness.
-            </footer>
+                    <div className="flex-1 relative">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                            <Image
+                                src="/about-image.png"
+                                alt="DailyFit Success Story"
+                                width={600}
+                                height={800}
+                                className="w-full h-auto object-cover"
+                            />
+                        </div>
+                        {/* Decorative Elements */}
+                        <div className="absolute -z-10 -bottom-10 -right-10 w-40 h-40 bg-blue-600 rounded-full blur-[100px] opacity-50" />
+                        <div className="absolute -z-10 -top-10 -left-10 w-40 h-40 bg-violet-600 rounded-full blur-[100px] opacity-50" />
+                    </div>
+
+                </div>
+            </main>
         </div>
     );
 }

@@ -1,126 +1,88 @@
-import Link from "next/link";
+"use client";
+
+import { LandingHeader } from "@/components/landing-header";
 import { Button } from "@/components/ui/button";
-import { Bot, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 export default function PricingPage() {
-    const tiers = [
-        {
-            name: "Solo Trainer",
-            price: "$29",
-            period: "/month",
-            desc: "For independent coaches handling up to 20 clients.",
-            cta: "Start Free Trial",
-            features: [
-                "Unlimted Clients",
-                "AI Meal & Workout Plans",
-                "Voice & Photo Logging",
-                "Basic Analytics",
-                "WhatsApp Integration"
-            ]
-        },
-        {
-            name: "Gym Studio",
-            price: "$99",
-            period: "/month",
-            desc: "For gym owners managing a team of trainers.",
-            cta: "Get Started",
-            featured: true,
-            features: [
-                "Everything in Solo",
-                "Up to 5 Trainers",
-                "Studio Dashboard",
-                "Revenue Analytics",
-                "White-label Branding",
-                "Priority Support"
-            ]
-        },
-        {
-            name: "Enterprise",
-            price: "Custom",
-            period: "",
-            desc: "For fitness franchises and large organizations.",
-            cta: "Contact Sales",
-            features: [
-                "Unlimited Trainers",
-                "Custom AI Training",
-                "API Access",
-                "Dedicated Account Manager",
-                "SLA & SSO"
-            ]
-        }
-    ];
-
     return (
-        <div className="flex flex-col min-h-screen bg-slate-950 text-slate-50 font-sans">
-            <header className="px-6 h-16 flex items-center justify-between border-b border-white/5 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
-                <div className="flex items-center gap-2">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="h-8 w-8 bg-gradient-to-tr from-indigo-500 to-violet-500 rounded-lg flex items-center justify-center">
-                            <Bot className="h-5 w-5 text-white" />
-                        </div>
-                        <span className="font-bold text-xl tracking-tight">DailyFit AI</span>
-                    </Link>
-                </div>
-                <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
-                    <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                    <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
-                </nav>
-                <div className="flex gap-4">
-                    <Link href="/login">
-                        <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-white/5">
-                            Log in
-                        </Button>
-                    </Link>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background text-foreground">
+            <LandingHeader />
 
-            <main className="flex-1 py-24 px-6">
-                <div className="max-w-6xl mx-auto space-y-16">
-                    <div className="text-center space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-bold">Simple, Transparent Pricing</h1>
-                        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-                            Choose the plan that fits your business stage. No hidden fees.
-                        </p>
+            <main className="pt-32 pb-20 container mx-auto px-4 md:px-6">
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Simple, Transparent Pricing</h1>
+                    <p className="text-gray-400 text-xl">Start your 7-day free trial on any plan.</p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    {/* Plan 1 */}
+                    <PricingCard
+                        title="Starter"
+                        price="₹2,999"
+                        desc="For Independent Trainers"
+                        features={["Up to 50 Clients", "Basic AI Chatbot", "Standard Diet Templates", "WhatsApp Support"]}
+                    />
+
+                    {/* Plan 2: Best Value */}
+                    <div className="relative transform md:-translate-y-4">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl blur opacity-75" />
+                        <PricingCard
+                            title="Pro Gym"
+                            price="₹5,999"
+                            desc="For Growing Gyms"
+                            highlight
+                            features={[
+                                "Unlimited Clients",
+                                "Advanced AI Sales Agent",
+                                "Weekly Progress Reports",
+                                "All 15 Indian Diet Plans",
+                                "Excel Bulk Import",
+                                "Priority Phone Support"
+                            ]}
+                        />
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 items-start">
-                        {tiers.map((tier, i) => (
-                            <div key={i} className={`relative p-8 rounded-2xl border ${tier.featured ? 'border-indigo-500 bg-indigo-900/10' : 'border-white/10 bg-white/5'} flex flex-col gap-6 hover:scale-105 transition-transform duration-300`}>
-                                {tier.featured && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-indigo-500 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg shadow-indigo-500/30">
-                                        Most Popular
-                                    </div>
-                                )}
-                                <div>
-                                    <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-bold">{tier.price}</span>
-                                        <span className="text-slate-400">{tier.period}</span>
-                                    </div>
-                                    <p className="text-slate-400 text-sm mt-2">{tier.desc}</p>
-                                </div>
-
-                                <Button className={`w-full ${tier.featured ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-white/10 hover:bg-white/20'} text-white border-0`}>
-                                    {tier.cta}
-                                </Button>
-
-                                <ul className="space-y-4 pt-4 border-t border-white/5">
-                                    {tier.features.map((feat, j) => (
-                                        <li key={j} className="flex gap-3 text-sm text-slate-300">
-                                            <Check className="h-5 w-5 text-indigo-400 shrink-0" />
-                                            {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
+                    {/* Plan 3 */}
+                    <PricingCard
+                        title="Enterprise"
+                        price="Custom"
+                        desc="For Multi-Location Chains"
+                        features={["Custom Branding", "Dedicated Account Manager", "API Access", "On-site Training"]}
+                    />
                 </div>
             </main>
-
-            <footer className="py-8 text-center text-slate-600 text-sm border-t border-white/5">
-                © 2025 DailyFit Inc.
-            </footer>
         </div>
     );
+}
+
+function PricingCard({ title, price, desc, features, highlight = false }: { title: string, price: string, desc: string, features: string[], highlight?: boolean }) {
+    return (
+        <div className={`relative p-8 rounded-2xl border ${highlight ? 'bg-card border-blue-500' : 'bg-card/50 border-white/10'} flex flex-col h-full`}>
+            {highlight && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                    Most Popular
+                </div>
+            )}
+            <h3 className="text-xl font-bold text-gray-200">{title}</h3>
+            <div className="mt-4 mb-2">
+                <span className="text-4xl font-bold text-white">{price}</span>
+                {price !== 'Custom' && <span className="text-gray-500">/month</span>}
+            </div>
+            <p className="text-gray-400 mb-8">{desc}</p>
+
+            <div className="space-y-4 mb-8 flex-1">
+                {features.map((feat, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-blue-500 shrink-0" />
+                        <span className="text-sm text-gray-300">{feat}</span>
+                    </div>
+                ))}
+            </div>
+
+            <Button className={`w-full h-12 rounded-xl font-bold ${highlight ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
+                Start 7-Day Free Trial
+            </Button>
+        </div>
+    )
 }

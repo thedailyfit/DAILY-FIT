@@ -75,8 +75,8 @@ export default function LandingPage() {
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-[2rem] blur-2xl opacity-30 animate-pulse" />
             <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/50 backdrop-blur-xl">
               <Image
-                src="/hero-image.png"
-                alt="DailyFit AI Dashboard"
+                src="/hero-real.png"
+                alt="DailyFit AI Dashboard in Action"
                 width={800}
                 height={600}
                 className="w-full h-auto object-cover"
@@ -95,6 +95,48 @@ export default function LandingPage() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* GALLERY SECTION */}
+      <section className="py-24 container mx-auto px-4 md:px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">DailyFit In Action</h2>
+          <p className="text-gray-300 text-lg">Real results in real gyms.</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="relative rounded-2xl overflow-hidden border border-white/10 group">
+            <Image
+              src="/gym-action.png"
+              alt="Personal Training Session"
+              width={600}
+              height={400}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-8 flex items-end">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Focus on Training</h3>
+                <p className="text-gray-300 text-sm">Let AI handle the admin while you handle the weights.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden border border-white/10 group">
+            <Image
+              src="/gym-consult.png"
+              alt="Client Consultation"
+              width={600}
+              height={400}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-8 flex items-end">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Personalized Plans</h3>
+                <p className="text-gray-300 text-sm">Deliver AI-generated diet & workout plans in seconds.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

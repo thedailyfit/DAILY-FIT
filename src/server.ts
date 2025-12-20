@@ -25,8 +25,19 @@ app.use((req, res, next) => {
 
 // RAILWAY/CLOUD: Always use the provided system PORT.
 // LOCAL: If .env forces 3000 (Next.js default), ignore it and use 4000 to avoid conflict.
+const isProduction = process.env.NODE_ENV === 'production';
 const envPort = process.env.PORT;
-const PORT = (envPort && envPort !== '3000') ? envPort : 4000;
+
+let PORT = 4000; // Default fallback
+if (isProduction && envPort) {
+    PORT = parseInt(envPort);
+} else if (envPort && envPort !== '3000') {
+    // If local and user set a custom port (e.g. 5000), respect it.
+    PORT = parseInt(envPort);
+} else {
+    // If local and port is 3000 (or undefined), force 4000.
+    PORT = 4000;
+}
 
 // Initialize Twilio client
 const twilioClient = twilio(

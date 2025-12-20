@@ -52,6 +52,11 @@ export function ClientActions({ client }: ClientActionsProps) {
         if (loading) return
         setLoading(true)
         try {
+            // 1. Try manual cleanup of dependencies first (failsafe if CASCADE is missing)
+            await supabase.from('client_programs').delete().eq('client_id', client.id);
+            await supabase.from('payments').delete().eq('member_id', client.id);
+
+            // 2. Delete the member
             const { error } = await supabase
                 .from('members')
                 .delete()
@@ -59,9 +64,9 @@ export function ClientActions({ client }: ClientActionsProps) {
 
             if (error) throw error
             router.refresh()
-        } catch (error) {
-            console.error(error)
-            alert("Failed to delete client")
+        } catch (error: any) {
+            console.error("Delete error:", error)
+            alert(`Failed to delete client: ${error.message || "Unknown error"}`)
         } finally {
             setLoading(false)
         }

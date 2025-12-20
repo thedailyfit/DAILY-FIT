@@ -102,7 +102,6 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
                 trainer_id: trainer.trainer_id,
                 name: values.name,
                 whatsapp_id: values.whatsapp_number,
-                phone_number: values.whatsapp_number,
                 gender: values.gender,
                 goal: finalGoal,
                 height_cm: values.height || null,

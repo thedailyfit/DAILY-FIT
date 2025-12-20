@@ -89,7 +89,7 @@ export function EditClientDialog({ client, trigger }: EditClientDialogProps) {
             // Sanitize values
             const updates: any = {
                 name: values.name,
-                phone_number: values.phone,
+                whatsapp_id: values.phone,
                 status: values.status,
                 // Only include optional fields if they have values or explicit null
                 email: values.email || null,

@@ -22,7 +22,7 @@ async function getClientProfile(id: string) {
         const { data: member, error: memberError } = await supabase
             .from("members")
             .select("*")
-            .eq("member_id", id)
+            .eq("id", id)
             .single();
 
         console.log('[ClientProfile] Query result:', { member, error: memberError });
@@ -119,7 +119,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                             Delete Client
                         </span>
                     </Button>
-                    <AssignPlanDialog clientId={member.member_id} clientName={member.name} />
+                    <AssignPlanDialog clientId={member.id} clientName={member.name} />
                 </div>
             </div>
 

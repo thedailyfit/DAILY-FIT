@@ -109,7 +109,7 @@ export function EditClientDialog({ client }: EditClientDialogProps) {
             const { error } = await supabase
                 .from('members')
                 .update(updates)
-                .eq('member_id', client.id)
+                .eq('id', client.id)
 
             if (error) {
                 throw error

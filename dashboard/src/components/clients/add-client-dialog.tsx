@@ -127,7 +127,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
 
                 if (prog) {
                     await supabase.from('client_programs').insert({
-                        client_id: member.member_id,
+                        client_id: member.id,
                         program_id: prog.id,
                         start_date: format(new Date(), 'yyyy-MM-dd'),
                         status: 'active',
@@ -148,7 +148,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
 
                 if (prog) {
                     await supabase.from('client_programs').insert({
-                        client_id: member.member_id,
+                        client_id: member.id,
                         program_id: prog.id,
                         start_date: format(new Date(), 'yyyy-MM-dd'),
                         status: 'active',

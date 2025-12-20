@@ -23,8 +23,10 @@ app.use((req, res, next) => {
     next();
 });
 
-// Hardcoded to 4000 to avoid conflict with Next.js Dashboard (3000)
-const PORT = 4000;
+// RAILWAY/CLOUD: Always use the provided system PORT.
+// LOCAL: If .env forces 3000 (Next.js default), ignore it and use 4000 to avoid conflict.
+const envPort = process.env.PORT;
+const PORT = (envPort && envPort !== '3000') ? envPort : 4000;
 
 // Initialize Twilio client
 const twilioClient = twilio(

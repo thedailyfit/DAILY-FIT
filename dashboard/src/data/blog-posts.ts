@@ -11,12 +11,13 @@ export type BlogPost = {
         type: 'header' | 'paragraph' | 'list' | 'quote' | 'visual';
         text?: string;
         items?: string[];
-        visualType?: 'retention-chart' | 'loop-cycle' | 'workload-chart' | 'whatsapp-automation';
+        visualType?: 'retention-chart' | 'loop-cycle' | 'workload-chart' | 'whatsapp-automation' | 'comparison-table';
         caption?: string;
     }[];
     seo: {
         keywords: string[];
         metaDescription: string;
+        schemaData?: any;
     }
 };
 

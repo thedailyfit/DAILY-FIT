@@ -33,13 +33,29 @@ export default function LandingPage() {
               <span>AI for Gym Owners 2.0</span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
               Automate Your Gym with <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400">Intelligent AI</span>
             </h1>
 
+            {/* Scrolling Text Effect */}
+            <div className="h-12 md:h-16 mb-6 overflow-hidden flex flex-col justify-center">
+              <div className="text-2xl md:text-4xl font-bold text-white flex items-center justify-center lg:justify-start gap-3">
+                <span className="text-gray-400">Automate</span>
+                <div className="relative h-12 md:h-16 w-64 overflow-hidden border-b-2 border-green-500/50">
+                  <div className="animate-scroll-text absolute top-0 left-0 w-full text-green-400">
+                    <div className="h-12 md:h-16 flex items-center">workouts.</div>
+                    <div className="h-12 md:h-16 flex items-center">nutrition.</div>
+                    <div className="h-12 md:h-16 flex items-center">engagement.</div>
+                    <div className="h-12 md:h-16 flex items-center">renewals.</div>
+                    {/* Duplicate first for smooth loop */}
+                    <div className="h-12 md:h-16 flex items-center">workouts.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              Replace manual sales, diet planning, and check-ins with DailyFit AI.
-              The all-in-one Growth Operating System for modern fitness centers.
+              Replace manual sales, diet planning, and check-ins with DailyFit AI a WhatsApp-first fitness automation system built for gyms and trainers.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">

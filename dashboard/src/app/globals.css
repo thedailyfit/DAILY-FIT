@@ -69,13 +69,16 @@
 
 .dark {
   /* Premium Dark / Midnight Blue Theme */
-  --background: oklch(0.10 0.03 260); /* Deep Midnight Blue */
+  --background: oklch(0.10 0.03 260);
+  /* Deep Midnight Blue */
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.14 0.04 260); /* Slightly lighter midnight */
+  --card: oklch(0.14 0.04 260);
+  /* Slightly lighter midnight */
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.14 0.04 260);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.48 0.25 260); /* Vibrant Electric Blue/Indigo */
+  --primary: oklch(0.48 0.25 260);
+  /* Vibrant Electric Blue/Indigo */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.25 0.05 260);
   --secondary-foreground: oklch(0.985 0 0);
@@ -118,7 +121,56 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateY(0%);
+  }
+
+  /* workouts */
+  20% {
+    transform: translateY(0%);
+  }
+
+  25% {
+    transform: translateY(-100%);
+  }
+
+  /* nutrition */
+  45% {
+    transform: translateY(-100%);
+  }
+
+  50% {
+    transform: translateY(-200%);
+  }
+
+  /* engagement */
+  70% {
+    transform: translateY(-200%);
+  }
+
+  75% {
+    transform: translateY(-300%);
+  }
+
+  /* renewals */
+  95% {
+    transform: translateY(-300%);
+  }
+
+  100% {
+    transform: translateY(-400%);
+  }
+
+  /* workouts (loop) */
+}
+
+.animate-scroll-text {
+  animation: scroll-text 10s infinite cubic-bezier(0.1, 0, 0.2, 1);
 }

@@ -172,8 +172,8 @@ export default function PricingPage() {
                         </Link>
                     </div>
 
-                    <div className="bg-black/30 inline-block px-6 py-3 rounded-xl border border-white/5">
-                        <p className="text-blue-300 italic font-medium">“If you retain just one extra member per month, DailyFit AI pays for itself.”</p>
+                    <div className="bg-black/30 inline-block px-8 py-6 rounded-2xl border border-white/5 mt-4">
+                        <p className="text-blue-300 italic font-bold text-2xl md:text-3xl leading-snug">“If you retain just one extra member per month, DailyFit AI pays for itself.”</p>
                     </div>
                 </div>
 

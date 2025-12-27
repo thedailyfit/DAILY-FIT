@@ -10,14 +10,14 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const getPostIcon = (category: string) => {
-    let src = "/blog-thumbs/growth.png"; // Default
-    if (category.includes("Retention")) src = "/blog-thumbs/retention.png";
-    if (category.includes("Productivity")) src = "/blog-thumbs/ai.png";
-    if (category.includes("AI")) src = "/blog-thumbs/ai.png";
-    if (category.includes("WhatsApp")) src = "/blog-thumbs/whatsapp.png";
-    if (category.includes("Marketing")) src = "/blog-thumbs/whatsapp.png";
-    if (category.includes("Operations")) src = "/blog-thumbs/retention.png";
-    if (category.includes("Software")) src = "/blog-thumbs/ai.png";
+    let src = "/blog-thumbs/real-growth.png"; // Default
+    if (category.includes("Retention")) src = "/blog-thumbs/real-retention.png";
+    if (category.includes("Productivity")) src = "/blog-thumbs/real-ai.png";
+    if (category.includes("AI")) src = "/blog-thumbs/real-ai.png";
+    if (category.includes("WhatsApp")) src = "/blog-thumbs/real-whatsapp.png";
+    if (category.includes("Marketing")) src = "/blog-thumbs/real-whatsapp.png";
+    if (category.includes("Operations")) src = "/blog-thumbs/real-retention.png";
+    if (category.includes("Software")) src = "/blog-thumbs/real-ai.png";
 
     return (
         <Image

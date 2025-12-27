@@ -243,6 +243,30 @@ const ComparisonTable = () => (
 );
 
 
+// 6. Feature Grid Visual
+const FeatureGrid = () => (
+    <div className="my-12 p-8 bg-[#0F0F0F] rounded-3xl border border-white/10">
+        <h4 className="text-center text-xl font-bold text-white mb-8">Essential AI Software Features</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+                { title: "Daily Automation", desc: "Delivers plans & reminders automatically.", icon: <Zap className="w-5 h-5 text-yellow-400" /> },
+                { title: "Personalization", desc: "Adapts to user goals & history.", icon: <BrainCircuit className="w-5 h-5 text-purple-400" /> },
+                { title: "Trainer Control", desc: "Trainers can edit & override AI.", icon: <User className="w-5 h-5 text-blue-400" /> },
+                { title: "WhatsApp Delivery", desc: "No apps to download. 98% open rates.", icon: <MessageCircle className="w-5 h-5 text-green-400" /> }
+            ].map((feat, i) => (
+                <div key={i} className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 flex gap-4 hover:border-blue-500/30 transition-colors">
+                    <div className="shrink-0 mt-1">{feat.icon}</div>
+                    <div>
+                        <h5 className="font-bold text-white mb-1">{feat.title}</h5>
+                        <p className="text-sm text-gray-400">{feat.desc}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
+
 export default function BlogPostPage() {
     const params = useParams();
     const post = BLOG_POSTS.find(p => p.slug === params.slug);
@@ -326,6 +350,7 @@ export default function BlogPostPage() {
                             if (block.visualType === 'workload-chart') return <WorkloadChart key={i} />;
                             if (block.visualType === 'whatsapp-automation') return <WhatsappAutomation key={i} />;
                             if (block.visualType === 'comparison-table') return <ComparisonTable key={i} />;
+                            if (block.visualType === 'feature-grid') return <FeatureGrid key={i} />;
                         }
 
                         return null;

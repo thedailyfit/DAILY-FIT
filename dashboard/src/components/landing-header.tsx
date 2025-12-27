@@ -10,15 +10,15 @@ export function LandingHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
-            <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+        <header className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-50">
+            <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl px-6 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-violet-600 rounded-lg flex items-center justify-center">
-                        <Dumbbell className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-violet-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <Dumbbell className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                        DailyFit AI
+                    <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-200">
+                        DailyFit
                     </span>
                 </Link>
 
@@ -40,11 +40,11 @@ export function LandingHeader() {
 
                 {/* Desktop CTA */}
                 <div className="hidden md:flex items-center gap-4">
-                    <BookDemoModal>
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 shadow-lg shadow-blue-500/20">
-                            Book Demo
+                    <Link href="/login">
+                        <Button className="bg-white hover:bg-gray-200 text-black font-bold rounded-full px-6 h-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105">
+                            Start 7-Day Free Trial
                         </Button>
-                    </BookDemoModal>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Toggle */}
@@ -58,17 +58,17 @@ export function LandingHeader() {
 
             {/* Mobile Menu */}
             {isMenuOpen && (
-                <div className="md:hidden bg-background border-b border-white/10 p-4 space-y-4 animate-in slide-in-from-top-4">
+                <div className="absolute top-20 left-0 w-full bg-[#0F0F0F] border border-white/10 rounded-2xl p-4 space-y-4 animate-in slide-in-from-top-4 shadow-2xl z-50">
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">Home</Link>
                     <Link href="/about" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">About</Link>
                     <Link href="/blog" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">Blog</Link>
                     <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">Pricing</Link>
                     <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
-                        <BookDemoModal>
+                        <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full">
-                                Book Demo
+                                Start 7-Day Free Trial
                             </Button>
-                        </BookDemoModal>
+                        </Link>
                     </div>
                 </div>
             )}

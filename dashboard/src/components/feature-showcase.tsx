@@ -32,7 +32,7 @@ export function FeatureShowcase() {
     return (
         <section className="py-24 container mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-5xl font-bold mb-4">Your entire gym, inside <span className="text-green-500">WhatsApp</span>.</h2>
+                <h2 className="text-3xl md:text-5xl font-bold mb-4">Your entire gym inside <span className="text-green-500">WhatsApp</span></h2>
                 <p className="text-gray-400 text-lg">No new apps to download. It just works.</p>
             </div>
 

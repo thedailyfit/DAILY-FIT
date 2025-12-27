@@ -39,13 +39,13 @@ export default function LandingPage() {
                 <span className="text-gray-400">Automate</span>
                 <div className="relative h-12 md:h-16 w-64 overflow-hidden">
                   <div className="animate-scroll-text absolute top-0 left-0 w-full text-green-400">
-                    <div className="h-12 md:h-16 flex items-center">workouts.</div>
-                    <div className="h-12 md:h-16 flex items-center">nutrition.</div>
-                    <div className="h-12 md:h-16 flex items-center">engagement.</div>
-                    <div className="h-12 md:h-16 flex items-center">renewals.</div>
-                    <div className="h-12 md:h-16 flex items-center">follow-ups.</div>
+                    <div className="h-12 md:h-16 flex items-center">Workouts</div>
+                    <div className="h-12 md:h-16 flex items-center">Nutrition</div>
+                    <div className="h-12 md:h-16 flex items-center">Engagement</div>
+                    <div className="h-12 md:h-16 flex items-center">Renewals</div>
+                    <div className="h-12 md:h-16 flex items-center">Follow-ups</div>
                     {/* Duplicate first for smooth loop */}
-                    <div className="h-12 md:h-16 flex items-center">workouts.</div>
+                    <div className="h-12 md:h-16 flex items-center">Workouts</div>
                   </div>
                 </div>
               </div>

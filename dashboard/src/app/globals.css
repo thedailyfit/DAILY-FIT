@@ -188,38 +188,7 @@
 
   /* Stay on duplicate, then snap to 0 */
 }
-}
-
-/* nutrition */
-45% {
-  transform: translateY(-100%);
-}
-
-50% {
-  transform: translateY(-200%);
-}
-
-/* engagement */
-70% {
-  transform: translateY(-200%);
-}
-
-75% {
-  transform: translateY(-300%);
-}
-
-/* renewals */
-95% {
-  transform: translateY(-300%);
-}
-
-100% {
-  transform: translateY(-400%);
-}
-
-/* workouts (loop) */
-}
 
 .animate-scroll-text {
-  animation: scroll-text 10s infinite cubic-bezier(0.1, 0, 0.2, 1);
+  animation: scroll-text 12s infinite cubic-bezier(0.1, 0, 0.2, 1);
 }

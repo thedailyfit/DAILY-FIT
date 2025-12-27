@@ -3,7 +3,7 @@
 import { motion, useInView, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, MessageSquare, Zap, TrendingUp, Users, Brain, Shield, ArrowRight, Heart, Star, Activity, Clock, LayoutGrid, Fingerprint, Layers } from "lucide-react";
+import { CheckCircle2, MessageSquare, Zap, TrendingUp, Users, Brain, Shield, ArrowRight, Heart, Star, Fingerprint, Layers, Cpu, Network, Workflow } from "lucide-react";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { LandingHeader } from "@/components/landing-header";
@@ -44,7 +44,7 @@ export default function AboutPage() {
         <div ref={containerRef} className="min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
             <LandingHeader />
 
-            {/* 1. HERO SECTION - SHORTER 2 LINES */}
+            {/* 1. HERO SECTION - Updated Text */}
             <section className="pt-32 pb-12 md:pt-40 md:pb-16 container mx-auto px-4 md:px-6 text-center relative">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
 
@@ -65,8 +65,8 @@ export default function AboutPage() {
                     </motion.div>
 
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight">
-                        Building the future of <br className="hidden md:block" />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">daily fitness engagement</span> for gyms
+                        Building the future of daily fitness <br className="hidden md:block" />
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">engagement for gyms and trainers</span>
                     </h1>
 
                     <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
@@ -91,7 +91,7 @@ export default function AboutPage() {
                 </motion.div>
             </section>
 
-            {/* 2. METRICS STRIP - TIGHTER SPACING, BLENDED */}
+            {/* 2. METRICS STRIP */}
             <section className="py-12 relative border-b border-white/5">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
@@ -162,11 +162,11 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* 4. CORE PHILOSOPHY - SINGLE LINE TITLE */}
+            {/* 4. CORE PHILOSOPHY - Fixed Scrollbar Issue */}
             <section className="py-20 bg-white/[0.02]">
                 <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                     <div className="text-center mb-16 max-w-4xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4 whitespace-nowrap overflow-x-auto">Removing friction from operations</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Removing friction from operations</h2>
                         <p className="text-lg text-gray-400 max-w-2xl mx-auto">
                             <span className="text-blue-500 font-semibold">DailyFit AI</span> is built on three core principles that drive our product decisions.
                         </p>
@@ -196,17 +196,17 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* 5. FOUNDER BLOCK - REVERTED TO DARK CARD STYLE */}
+            {/* 5. FOUNDER BLOCK - Dark Card Replica */}
             <section className="py-24 container mx-auto px-4 md:px-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="max-w-5xl mx-auto bg-[#050A15] rounded-[2rem] p-8 md:p-16 border border-white/5 relative overflow-hidden shadow-2xl"
+                    className="max-w-5xl mx-auto bg-gradient-to-br from-[#0c1220] to-[#000000] rounded-[2rem] p-8 md:p-16 border border-white/5 relative overflow-hidden shadow-2xl"
                 >
-                    {/* Subtle top glow */}
-                    <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+                    {/* Subtle light leak matching screenshot direction */}
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 blur-[130px] rounded-full pointer-events-none"></div>
 
                     <div className="relative z-10">
                         <div className="mb-10 border-b border-white/5 pb-6">
@@ -232,8 +232,10 @@ export default function AboutPage() {
                                         key={i}
                                         className="flex items-center gap-3 text-gray-200 bg-white/5 p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-colors"
                                     >
-                                        <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
-                                        <span>{text}</span>
+                                        <div className="bg-blue-500/10 rounded-full p-1 shrink-0">
+                                            <CheckCircle2 className="w-4 h-4 text-blue-500" />
+                                        </div>
+                                        <span className="font-medium text-gray-200">{text}</span>
                                     </div>
                                 ))}
                             </div>
@@ -265,38 +267,62 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* 7. UNDER THE HOOD - SHORT & VISUAL */}
-            <section className="py-24 bg-[#080808]">
-                <div className="container mx-auto px-4 text-center max-w-4xl">
+            {/* 7. UNDER THE HOOD - VISUAL GRAPHICS/MOTION */}
+            <section className="py-32 bg-[#030303] relative overflow-hidden">
+                {/* Cyber Grid Background */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-[#030303] via-transparent to-[#030303]"></div>
+
+                <div className="container mx-auto px-4 text-center relative z-10 max-w-5xl">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="space-y-6"
+                        className="mb-16 space-y-4"
                     >
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
-                            <Fingerprint className="w-3 h-3" /> Architecture
+                            <Cpu className="w-3 h-3" /> Architecture
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">Under the Hood</h2>
-                        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                            DailyFit AI runs on a modular AI-agent architecture designed for reliability and scale.
+                        <h2 className="text-3xl md:text-5xl font-bold text-white">Under the Hood</h2>
+                        <p className="text-lg text-gray-400">
+                            Modular AI-agent architecture designed for reliability at scale.
                         </p>
-
-                        <div className="flex flex-wrap justify-center gap-3 pt-8">
-                            {[
-                                "Plan Generation Agents",
-                                "Personalization Engine",
-                                "Photo Calorie Estimation",
-                                "Trainer Learning Loops",
-                                "Auto-Scheduling"
-                            ].map((item, i) => (
-                                <div key={i} className="px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:border-blue-500/40 hover:text-white transition-all cursor-default flex items-center gap-2 text-sm font-medium">
-                                    <Layers className="w-4 h-4 text-blue-500" />
-                                    {item}
-                                </div>
-                            ))}
-                        </div>
                     </motion.div>
+
+                    {/* Visual Network Graphic */}
+                    <div className="relative h-[400px] md:h-[300px] flex items-center justify-center">
+                        {/* Connecting Lines (Simulated with absolute divs) */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                            <div className="w-[300px] h-[300px] border border-blue-500/30 rounded-full animate-pulse"></div>
+                            <div className="absolute w-[450px] h-[200px] border border-purple-500/20 rounded-[100%] rotate-12"></div>
+                        </div>
+
+                        {/* Central Brain Node */}
+                        <div className="relative z-20 flex flex-col items-center">
+                            <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.5)] relative">
+                                <div className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-20"></div>
+                                <Brain className="w-10 h-10 text-white" />
+                            </div>
+                            <div className="mt-4 font-bold text-white">Core Orchestrator</div>
+                        </div>
+
+                        {/* Satellite Nodes */}
+                        {[
+                            { icon: Layers, label: "Plan Generation", pos: "top-0 left-1/2 -translate-x-1/2 -translate-y-6 md:-translate-y-12" },
+                            { icon: Fingerprint, label: "Personalization", pos: "bottom-0 left-1/2 -translate-x-1/2 translate-y-6 md:translate-y-12" },
+                            { icon: Network, label: "Scheduling", pos: "top-1/2 left-0 -translate-x-4 md:-translate-x-12 -translate-y-1/2" },
+                            { icon: Workflow, label: "Learning Loops", pos: "top-1/2 right-0 translate-x-4 md:translate-x-12 -translate-y-1/2" },
+                        ].map((node, i) => (
+                            <div key={i} className={`absolute ${node.pos} flex flex-col items-center z-20 group`}>
+                                <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center hover:border-blue-500/50 hover:bg-blue-900/20 transition-all duration-300 shadow-lg">
+                                    <node.icon className="w-6 h-6 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                                </div>
+                                <div className="mt-2 text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider bg-black/50 px-2 py-1 rounded backdrop-blur-sm whitespace-nowrap">
+                                    {node.label}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
@@ -307,11 +333,9 @@ export default function AboutPage() {
                 </div>
 
                 <div className="max-w-4xl mx-auto relative">
-                    {/* Center Line */}
                     <div className="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2"></div>
 
                     <div className="space-y-24">
-                        {/* STAGE 1 - Right Side */}
                         <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
                             <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#000] border-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)] z-10 mt-6"></div>
                             <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right hidden md:block"></div>
@@ -324,7 +348,6 @@ export default function AboutPage() {
                             </div>
                         </div>
 
-                        {/* STAGE 2 - Left Side */}
                         <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
                             <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#000] border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)] z-10 mt-6"></div>
                             <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right w-full">
@@ -337,7 +360,6 @@ export default function AboutPage() {
                             <div className="md:w-1/2 md:pl-16 hidden md:block"></div>
                         </div>
 
-                        {/* STAGE 3 - Right Side */}
                         <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
                             <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#000] border-2 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] z-10 mt-6"></div>
                             <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right hidden md:block"></div>
@@ -350,7 +372,6 @@ export default function AboutPage() {
                             </div>
                         </div>
 
-                        {/* NOW - Left Side */}
                         <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
                             <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,1)] z-10 mt-6"></div>
                             <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right w-full">
@@ -366,7 +387,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* 9. WHY WE'RE BUILDING THIS - SMALLER TEXT */}
+            {/* 9. WHY WE'RE BUILDING THIS */}
             <section className="py-24 container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}

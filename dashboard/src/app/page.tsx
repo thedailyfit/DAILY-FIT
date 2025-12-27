@@ -348,27 +348,31 @@ export default function LandingPage() {
       {/* FAQ SECTION */}
       <FAQSection />
 
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-900 px-6 py-16 md:px-16 md:py-24 text-center">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-        <div className="relative z-10 max-w-3xl mx-auto space-y-8">
-          <h2 className="text-3xl md:text-5xl font-bold text-white">Ready to Upgrade Your Gym?</h2>
-          <p className="text-blue-200 text-lg">Join 500+ Gym Owners automating their success with DailyFit.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/pricing">
-              <Button className="h-14 px-10 rounded-full bg-white text-blue-900 hover:bg-gray-100 font-bold text-lg">
-                Start 7-Day Free Trial
-              </Button>
-            </Link>
-            <div className="text-white/80 flex items-center justify-center gap-2">
-              <span>or Call us:</span>
-              <a href="tel:+918919205848" className="font-bold hover:underline">+91 89192 05848</a>
-            </div>
+    </section>
+
+      {/* CTA SECTION */ }
+  <section className="py-24 container mx-auto px-4 md:px-6">
+    <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-900 px-6 py-16 md:px-16 md:py-24 text-center">
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+      <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+        <h2 className="text-3xl md:text-5xl font-bold text-white">Ready to Upgrade Your Gym?</h2>
+        <p className="text-blue-200 text-lg">Join 500+ Gym Owners automating their success with DailyFit.</p>
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <Link href="/pricing">
+            <Button className="h-14 px-10 rounded-full bg-white text-blue-900 hover:bg-gray-100 font-bold text-lg">
+              Start 7-Day Free Trial
+            </Button>
+          </Link>
+          <div className="text-white/80 flex items-center justify-center gap-2">
+            <span>or Call us:</span>
+            <a href="tel:+918919205848" className="font-bold hover:underline">+91 89192 05848</a>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-      {/* FOOTER */ }
+  {/* FOOTER */ }
   <footer className="border-t border-white/10 py-12 bg-black/40">
     <div className="container mx-auto px-4 text-center text-gray-500">
       <p className="mb-4 text-lg font-bold text-white">DailyFit AI Solutions</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Marquee } from "@/components/ui/marquee"; // converting to use a custom simple marquee if ui lib not present, or just raw framer motion.
+
 // Actually, let's build a raw framer motion one to be unrelated to any missing UI lib.
 
 import { motion } from "framer-motion";

@@ -16,8 +16,7 @@ const getPostIcon = (category: string) => {
     if (category.includes("AI")) src = "/blog-thumbs/real-tech.png"; // New Tech Image
     if (category.includes("WhatsApp")) src = "/blog-thumbs/real-whatsapp.png";
     if (category.includes("Marketing")) src = "/blog-thumbs/real-whatsapp.png";
-    if (category.includes("Operations")) src = "/blog-thumbs/real-consult.png"; // New Consult/Sales Image
-    if (category.includes("Software")) src = "/blog-thumbs/real-tech.png"; // Reuse Tech for Software
+    if (category.includes("Software")) src = "/blog-thumbs/real-software.png"; // Unique Software Image
 
     return (
         <Image

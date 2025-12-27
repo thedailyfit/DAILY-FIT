@@ -48,6 +48,7 @@ export default function LandingPage() {
                     <div className="h-12 md:h-16 flex items-center">nutrition.</div>
                     <div className="h-12 md:h-16 flex items-center">engagement.</div>
                     <div className="h-12 md:h-16 flex items-center">renewals.</div>
+                    <div className="h-12 md:h-16 flex items-center">follow-ups.</div>
                     {/* Duplicate first for smooth loop */}
                     <div className="h-12 md:h-16 flex items-center">workouts.</div>
                   </div>

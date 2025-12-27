@@ -133,42 +133,91 @@
   }
 
   /* workouts */
-  20% {
+  15% {
     transform: translateY(0%);
   }
 
-  25% {
-    transform: translateY(-100%);
+  16.66% {
+    transform: translateY(-16.66%);
   }
 
   /* nutrition */
-  45% {
-    transform: translateY(-100%);
+  31.66% {
+    transform: translateY(-16.66%);
   }
 
-  50% {
-    transform: translateY(-200%);
+  33.33% {
+    transform: translateY(-33.33%);
   }
 
   /* engagement */
-  70% {
-    transform: translateY(-200%);
+  48.33% {
+    transform: translateY(-33.33%);
   }
 
-  75% {
-    transform: translateY(-300%);
+  50% {
+    transform: translateY(-50%);
   }
 
   /* renewals */
-  95% {
-    transform: translateY(-300%);
+  65% {
+    transform: translateY(-50%);
+  }
+
+  66.66% {
+    transform: translateY(-66.66%);
+  }
+
+  /* follow-ups */
+  81.66% {
+    transform: translateY(-66.66%);
+  }
+
+  83.33% {
+    transform: translateY(-83.33%);
+  }
+
+  /* workouts (loop point) */
+  98.33% {
+    transform: translateY(-83.33%);
   }
 
   100% {
-    transform: translateY(-400%);
+    transform: translateY(-83.33%);
   }
 
-  /* workouts (loop) */
+  /* Stay on duplicate, then snap to 0 */
+}
+}
+
+/* nutrition */
+45% {
+  transform: translateY(-100%);
+}
+
+50% {
+  transform: translateY(-200%);
+}
+
+/* engagement */
+70% {
+  transform: translateY(-200%);
+}
+
+75% {
+  transform: translateY(-300%);
+}
+
+/* renewals */
+95% {
+  transform: translateY(-300%);
+}
+
+100% {
+  transform: translateY(-400%);
+}
+
+/* workouts (loop) */
 }
 
 .animate-scroll-text {

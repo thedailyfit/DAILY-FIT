@@ -154,6 +154,8 @@ export default function BlogPostPage() {
                         if (block.type === 'visual') {
                             if (block.visualType === 'retention-chart') return <RetentionChart key={i} />;
                             if (block.visualType === 'loop-cycle') return <LoopCycle key={i} />;
+                            if (block.visualType === 'workload-chart') return <WorkloadChart key={i} />;
+                            if (block.visualType === 'whatsapp-automation') return <WhatsappAutomation key={i} />;
                         }
 
                         return null;

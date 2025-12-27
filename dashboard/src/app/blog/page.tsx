@@ -20,7 +20,7 @@ const getPostIcon = (category: string) => {
 
     return (
         <Image
-            src={`${src}?v=3`}
+            src={src}
             alt={category}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"

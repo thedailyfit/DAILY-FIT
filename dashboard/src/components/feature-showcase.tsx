@@ -2,9 +2,16 @@
 
 import { motion } from "framer-motion";
 import { Check, CheckCheck, TrendingUp, Dumbbell, Utensils, Zap, Activity, Trophy } from "lucide-react";
+import Image from "next/image";
 
-const WhatsappBubble = ({ isUser, message, time, isImage = false }: { isUser: boolean, message: React.ReactNode, time: string, isImage?: boolean }) => (
-    <div className={`flex flex-col mb-4 ${isUser ? "items-end" : "items-start"}`}>
+const WhatsappBubble = ({ isUser, message, time, isImage = false, delay }: { isUser: boolean, message: React.ReactNode, time: string, isImage?: boolean, delay: number }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: delay }}
+        className={`flex flex-col mb-4 ${isUser ? "items-end" : "items-start"}`}
+    >
         <div className={`max-w-[85%] rounded-lg p-3 relative shadow-sm ${isUser ? "bg-[#005c4b] text-[#e9edef]" : "bg-[#202c33] text-[#e9edef]"}`}>
             {!isImage ? (
                 <div className="text-sm leading-relaxed">{message}</div>
@@ -18,7 +25,7 @@ const WhatsappBubble = ({ isUser, message, time, isImage = false }: { isUser: bo
                 {isUser && <CheckCheck className="w-3 h-3 text-[#53bdeb]" />}
             </div>
         </div>
-    </div>
+    </motion.div>
 );
 
 export function FeatureShowcase() {
@@ -35,8 +42,9 @@ export function FeatureShowcase() {
                 <div className="bg-[#111b21] rounded-[30px] border border-[#202c33] overflow-hidden flex flex-col group hover:border-[#00a884]/30 transition-all duration-300 shadow-2xl">
                     {/* Header with Gym Logo */}
                     <div className="bg-[#202c33] p-4 flex items-center gap-3 border-b border-[#2a3942]">
-                        <div className="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center font-bold text-white shadow-md">
-                            <Dumbbell className="w-5 h-5" />
+                        {/* Mimic Gold's Gym Logo with generic assets if needed, or stick to consistent icon style */}
+                        <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center font-bold text-black shadow-md border-2 border-yellow-600">
+                            <Dumbbell className="w-6 h-6 fill-black" />
                         </div>
                         <div>
                             <div className="font-semibold text-white">Gold's Gym Venice</div>
@@ -46,8 +54,8 @@ export function FeatureShowcase() {
 
                     {/* Chat Area */}
                     <div className="p-4 flex-1 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d706cded50.png')] bg-repeat bg-opacity-5">
-                        <WhatsappBubble isUser={true} time="06:30 AM" message="Start today's plan" />
-                        <WhatsappBubble isUser={false} time="06:30 AM" message={
+                        <WhatsappBubble isUser={true} time="06:30 AM" message="Start today's plan" delay={0.2} />
+                        <WhatsappBubble isUser={false} time="06:30 AM" delay={1.5} message={
                             <div className="space-y-2">
                                 <p className="font-bold text-[#e9edef] mb-1">🚀 Day 14: Pull Day</p>
                                 <div className="p-2 bg-white/5 rounded flex items-center gap-2 border border-white/5">
@@ -70,8 +78,8 @@ export function FeatureShowcase() {
                 {/* CARD 2: FEE REMINDER */}
                 <div className="bg-[#111b21] rounded-[30px] border border-[#202c33] overflow-hidden flex flex-col group hover:border-[#00a884]/30 transition-all duration-300 shadow-2xl">
                     <div className="bg-[#202c33] p-4 flex items-center gap-3 border-b border-[#2a3942]">
-                        <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center font-bold text-white shadow-md">
-                            <Zap className="w-5 h-5 fill-white" />
+                        <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center font-bold text-white shadow-md border-2 border-red-700">
+                            <Zap className="w-6 h-6 fill-white" />
                         </div>
                         <div>
                             <div className="font-semibold text-white">MetroFlex London</div>
@@ -79,7 +87,7 @@ export function FeatureShowcase() {
                         </div>
                     </div>
                     <div className="p-4 flex-1 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d706cded50.png')] bg-repeat bg-opacity-5">
-                        <WhatsappBubble isUser={false} time="10:00 AM" message={
+                        <WhatsappBubble isUser={false} time="10:00 AM" delay={0.5} message={
                             <div>
                                 <span>👋 Hi James, your membership expires in <b>3 days</b>.</span>
                                 <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-center">
@@ -87,8 +95,8 @@ export function FeatureShowcase() {
                                 </div>
                             </div>
                         } />
-                        <WhatsappBubble isUser={true} time="10:05 AM" message="Paid via Card. Check pls." />
-                        <WhatsappBubble isUser={false} time="10:06 AM" message={
+                        <WhatsappBubble isUser={true} time="10:05 AM" message="Paid via Card. Check pls." delay={2.5} />
+                        <WhatsappBubble isUser={false} time="10:06 AM" delay={4} message={
                             <div className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-green-500" />
                                 <span>Payment Verified! Receipt #992 generated.</span>

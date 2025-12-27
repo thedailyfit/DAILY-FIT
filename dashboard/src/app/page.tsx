@@ -203,17 +203,30 @@ export default function LandingPage() {
       <ReviewMarquee />
 
       {/* 6. SHORT CTA SECTION */}
-      <section className="py-20 container mx-auto px-4 text-center">
-        <div className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 rounded-[30px] border border-white/10 p-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to transform?</h2>
-            <Link href="/pricing">
-              <Button className="h-16 px-12 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all w-full md:w-auto">
-                Start Free Trial
-              </Button>
-            </Link>
-            <p className="mt-4 text-sm text-blue-200">No credit card required • Cancel anytime</p>
+      <section className="py-24 container mx-auto px-4 text-center">
+        <div className="relative rounded-[3rem] p-1 bg-gradient-to-b from-blue-500/20 to-purple-500/20 max-w-5xl mx-auto">
+          <div className="bg-black/80 backdrop-blur-xl rounded-[2.9rem] py-20 px-6 md:px-20 overflow-hidden relative border border-white/10">
+
+            {/* Background Glows */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 blur-[100px] rounded-full pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+
+            <div className="relative z-10 flex flex-col items-center">
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight">
+                Ready to <span className="text-blue-500">Transform</span>?
+              </h2>
+              <p className="text-gray-400 text-xl mb-10 max-w-2xl">
+                Join the elite circle of gym owners who have automated their growth.
+              </p>
+
+              <Link href="/pricing" className="group">
+                <Button className="h-16 px-16 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl shadow-2xl shadow-blue-900/50 hover:shadow-blue-600/50 hover:scale-105 transition-all w-full md:w-auto flex items-center gap-3">
+                  Start Free Trial <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </Button>
+              </Link>
+              <p className="mt-6 text-sm text-gray-500 font-medium">No credit card required • 14-day free trial</p>
+            </div>
           </div>
         </div>
       </section>

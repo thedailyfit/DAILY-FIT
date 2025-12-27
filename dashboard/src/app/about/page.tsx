@@ -152,7 +152,7 @@ export default function AboutPage() {
                                     <Zap className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <div className="text-xl font-bold text-white">Consistency > Intensity</div>
+                                    <div className="text-xl font-bold text-white">Consistency &gt; Intensity</div>
                                     <div className="text-gray-400">Small daily actions win.</div>
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ import { LandingHeader } from "@/components/landing-header";
 import { BookDemoModal } from "@/components/book-demo-modal";
 import { ReviewMarquee } from "@/components/review-marquee";
 import { FAQSection } from "@/components/faq-section";
+import { BeforeAfter } from "@/components/before-after";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, MessageSquare, LineChart, Utensils, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";

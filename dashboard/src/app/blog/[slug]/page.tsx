@@ -102,6 +102,15 @@ export default function BlogPostPage() {
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <LandingHeader />
 
+            {/* SCHEMA MARKUP */}
+            {post.seo.schemaData && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(post.seo.schemaData) }}
+                />
+            )}
+
+
             {/* HERO HERO */}
             <section className={`pt-40 pb-20 relative overflow-hidden ${post.heroImage}`}>
                 <div className="absolute inset-0 bg-black/60"></div>
@@ -156,6 +165,7 @@ export default function BlogPostPage() {
                             if (block.visualType === 'loop-cycle') return <LoopCycle key={i} />;
                             if (block.visualType === 'workload-chart') return <WorkloadChart key={i} />;
                             if (block.visualType === 'whatsapp-automation') return <WhatsappAutomation key={i} />;
+                            if (block.visualType === 'comparison-table') return <ComparisonTable key={i} />;
                         }
 
                         return null;

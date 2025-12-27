@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Dumbbell } from 'lucide-react';
 import { useState } from 'react';
+import { BookDemoModal } from '@/components/book-demo-modal';
 
 export function LandingHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,14 +13,14 @@ export function LandingHeader() {
         <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
             <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
                 {/* Logo */}
-                <div className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-violet-600 rounded-lg flex items-center justify-center">
                         <Dumbbell className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                         DailyFit AI
                     </span>
-                </div>
+                </Link>
 
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
@@ -29,6 +30,9 @@ export function LandingHeader() {
                     <Link href="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
                         About
                     </Link>
+                    <Link href="/blog" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                        Blog
+                    </Link>
                     <Link href="/pricing" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
                         Pricing
                     </Link>
@@ -36,14 +40,11 @@ export function LandingHeader() {
 
                 {/* Desktop CTA */}
                 <div className="hidden md:flex items-center gap-4">
-                    <Link href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
-                        Login
-                    </Link>
-                    <Link href="/pricing">
+                    <BookDemoModal>
                         <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 shadow-lg shadow-blue-500/20">
-                            Start Free Trial
+                            Book Demo
                         </Button>
-                    </Link>
+                    </BookDemoModal>
                 </div>
 
                 {/* Mobile Menu Toggle */}
@@ -60,14 +61,14 @@ export function LandingHeader() {
                 <div className="md:hidden bg-background border-b border-white/10 p-4 space-y-4 animate-in slide-in-from-top-4">
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">Home</Link>
                     <Link href="/about" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">About</Link>
+                    <Link href="/blog" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">Blog</Link>
                     <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block text-sm font-medium text-gray-300 hover:text-white">Pricing</Link>
                     <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
-                        <Link href="/login" onClick={() => setIsMenuOpen(false)} className="text-center text-sm font-medium text-gray-300">Login</Link>
-                        <Link href="/pricing" onClick={() => setIsMenuOpen(false)}>
+                        <BookDemoModal>
                             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full">
-                                Start Free Trial
+                                Book Demo
                             </Button>
-                        </Link>
+                        </BookDemoModal>
                     </div>
                 </div>
             )}

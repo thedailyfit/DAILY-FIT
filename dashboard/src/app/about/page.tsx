@@ -64,12 +64,12 @@ export default function AboutPage() {
                         <span>The DailyFit Story</span>
                     </motion.div>
 
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.15] max-w-[90vw] mx-auto">
                         Building the future of daily fitness <br className="hidden md:block" />
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">engagement for gyms and trainers</span>
                     </h1>
 
-                    <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
+                    <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto pt-4">
                         We’re building a WhatsApp-first AI platform that helps gyms deliver daily guidance, consistency, and measurable progress — without the burnout.
                     </p>
 

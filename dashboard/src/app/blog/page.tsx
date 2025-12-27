@@ -20,14 +20,13 @@ const getPostIcon = (category: string) => {
     if (category.includes("Software")) src = "/blog-thumbs/ai.png";
 
     return (
-        <div className="w-full h-full relative p-1">
-            <Image
-                src={src}
-                alt={category}
-                fill
-                className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-transform duration-500 group-hover:scale-110"
-            />
-        </div>
+        <Image
+            src={src}
+            alt={category}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            priority
+        />
     );
 };
 
@@ -70,16 +69,16 @@ export default function BlogIndexPage() {
                             <Link href={`/blog/${post.slug}`} className="group block h-full">
                                 <article className="h-full bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col">
                                     {/* Image Placeholder / Gradient */}
-                                    <div className={`h-48 w-full ${post.heroImage} relative flex items-center justify-center overflow-hidden`}>
-                                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                                    {/* Image Placeholder / Gradient */}
+                                    <div className="h-64 w-full relative overflow-hidden">
+                                        {/* Full Cover Image */}
+                                        {getPostIcon(post.category)}
 
-                                        {/* Dynamic Icon Visual */}
-                                        <div className="relative z-10 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                                            {getPostIcon(post.category)}
-                                        </div>
+                                        {/* Gradient Overlay for Text Readability */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-60" />
 
-                                        <div className="absolute bottom-4 left-4 z-20">
-                                            <span className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/10">
+                                        <div className="absolute top-4 left-4 z-20">
+                                            <span className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/10 shadow-lg">
                                                 {post.category}
                                             </span>
                                         </div>

@@ -29,11 +29,6 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="flex-1 space-y-8 text-center lg:text-left"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
-              <Zap className="w-4 h-4 fill-blue-400" />
-              <span>AI for Gym Owners 2.0</span>
-            </div>
-
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
               Automate Your Gym with <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400">Intelligent AI</span>
             </h1>
@@ -57,7 +52,6 @@ export default function LandingPage() {
             </div>
 
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              See DailyFit AI automate workouts, engagement, and renewals — in real time. <br className="hidden md:block" />
               Replace manual sales, diet planning, and check-ins with DailyFit AI a WhatsApp-first fitness automation system built for gyms and trainers.
             </p>
 

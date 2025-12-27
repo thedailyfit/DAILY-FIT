@@ -4,7 +4,7 @@ import { useParams, notFound } from "next/navigation"; // Correct hook for Next.
 import { BLOG_POSTS } from "@/data/blog-posts";
 import { LandingHeader } from "@/components/landing-header";
 import { SiteFooter } from "@/components/site-footer";
-import { ArrowLeft, Share2, Facebook, Twitter, Linkedin, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Share2, Facebook, Twitter, Linkedin, CheckCircle2, Zap, BrainCircuit, User, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 

@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, useInView, useSpring, useTransform, useScroll } from "framer-motion";
+import { motion, useInView, useSpring, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, MessageSquare, Zap, TrendingUp, Users, Brain, Shield, ArrowRight, Heart, Star } from "lucide-react";
+import { CheckCircle2, MessageSquare, Zap, TrendingUp, Users, Brain, Shield, ArrowRight, Heart, Star, LayoutGrid, Fingerprint, Clock, Activity } from "lucide-react";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { LandingHeader } from "@/components/landing-header";
@@ -28,11 +28,11 @@ function AnimatedCounter({ value, label, suffix = "" }: { value: number, label: 
     }, [springValue]);
 
     return (
-        <div ref={ref} className="space-y-2">
-            <div className="text-4xl md:text-6xl font-bold text-white tabular-nums tracking-tight">
+        <div ref={ref} className="space-y-1">
+            <div className="text-4xl md:text-5xl font-bold text-white tabular-nums tracking-tight">
                 {displayValue}{suffix}
             </div>
-            <div className="text-sm md:text-base text-gray-500 font-medium uppercase tracking-wide">{label}</div>
+            <div className="text-sm text-gray-400 font-medium uppercase tracking-wide">{label}</div>
         </div>
     );
 }
@@ -45,14 +45,14 @@ export default function AboutPage() {
             <LandingHeader />
 
             {/* 1. HERO SECTION */}
-            <section className="pt-32 pb-24 md:pt-48 md:pb-32 container mx-auto px-4 md:px-6 text-center relative">
+            <section className="pt-32 pb-20 md:pt-48 md:pb-24 container mx-auto px-4 md:px-6 text-center relative">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
 
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="max-w-5xl mx-auto space-y-10 relative z-10"
+                    className="max-w-5xl mx-auto space-y-8 relative z-10"
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -65,8 +65,8 @@ export default function AboutPage() {
                     </motion.div>
 
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.1]">
-                        Crafting a smarter path from <br className="hidden md:block" />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">gyms to lasting results.</span>
+                        Building the future of <br className="hidden md:block" />
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">daily fitness engagement</span> for gyms.
                     </h1>
 
                     <p className="text-xl md:text-2xl text-gray-400 leading-relaxed max-w-3xl mx-auto">
@@ -81,7 +81,7 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6"
                     >
                         <Link href="/pricing" className="w-full sm:w-auto">
                             <Button className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-200 font-bold text-lg w-full sm:w-auto shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-transform hover:scale-105">
@@ -95,14 +95,15 @@ export default function AboutPage() {
                 </motion.div>
             </section>
 
-            {/* 2. METRICS STRIP - ANIMATED */}
-            <section className="py-20 border-y border-white/5 bg-white/[0.02]">
-                <div className="container mx-auto px-4">
+            {/* 2. METRICS STRIP - BLENDED BACKGROUND */}
+            <section className="py-16 relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none" />
+                <div className="container mx-auto px-4 relative z-10">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
                         <AnimatedCounter value={1000} suffix="+" label="Daily Interactions" />
                         <AnimatedCounter value={40} suffix="K+" label="Messages Delivered" />
                         <AnimatedCounter value={99} suffix="%+" label="Open Rate" />
-                        <AnimatedCounter value={500} suffix="+" label="Gyms & Trainers" />
+                        <AnimatedCounter value={500} suffix="+" label="Built for Gyms" />
                     </div>
                 </div>
             </section>
@@ -142,18 +143,22 @@ export default function AboutPage() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 blur-[100px] opacity-20 rounded-full" />
                         <div className="bg-[#0A0A0A] p-10 md:p-14 rounded-[3rem] border border-white/10 relative z-10 shadow-2xl overflow-hidden group">
-                            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-                            <h3 className="text-2xl md:text-3xl font-bold mb-6 relative z-10">Our Mission</h3>
-                            <p className="text-3xl md:text-4xl font-extralight text-white leading-tight relative z-10">
-                                To make daily engagement <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400 font-normal">effortless</span> for every gym and trainer.
-                            </p>
-                            <div className="mt-12 flex items-center gap-6 relative z-10">
-                                <div className="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
-                                    <Zap className="w-8 h-8" />
-                                </div>
-                                <div>
-                                    <div className="text-xl font-bold text-white">Consistency &gt; Intensity</div>
-                                    <div className="text-gray-400">Small daily actions win.</div>
+                            {/* Light effect */}
+                            <div className="absolute -top-32 -right-32 w-64 h-64 bg-white/5 blur-[80px] rounded-full pointer-events-none" />
+
+                            <div className="relative z-10">
+                                <h3 className="text-2xl md:text-3xl font-bold mb-6">Our Mission</h3>
+                                <p className="text-3xl md:text-4xl font-extralight text-white leading-tight">
+                                    To make daily engagement <span className="text-blue-400 font-normal">effortless</span> for every gym and trainer.
+                                </p>
+                                <div className="mt-12 flex items-center gap-6">
+                                    <div className="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                                        <Zap className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <div className="text-xl font-bold text-white">Consistency &gt; Intensity</div>
+                                        <div className="text-gray-400">Small daily actions win.</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -162,9 +167,9 @@ export default function AboutPage() {
             </section>
 
             {/* 4. CORE PHILOSOPHY */}
-            <section className="py-32 bg-white/[0.02]">
+            <section className="py-24">
                 <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-                    <div className="text-center mb-20 max-w-3xl mx-auto">
+                    <div className="text-center mb-16 max-w-3xl mx-auto">
                         <h2 className="text-4xl md:text-5xl font-bold mb-6">Removing friction from operations</h2>
                         <p className="text-xl text-gray-400">DailyFit AI is built on three core principles that drive our product decisions.</p>
                     </div>
@@ -180,10 +185,10 @@ export default function AboutPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                                className="p-8 md:p-12 rounded-[2rem] bg-black border border-white/10 hover:border-white/20 transition-all hover:-translate-y-2 duration-300 group"
+                                className="p-8 md:p-12 rounded-[2rem] bg-zinc-900/30 border border-white/5 hover:border-white/10 transition-all hover:-translate-y-2 duration-300 group"
                             >
                                 <item.icon className={`w-12 h-12 ${item.color} mb-8`} />
-                                <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">{item.title}</h3>
+                                <h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3>
                                 <p className="text-gray-400 leading-relaxed text-lg">
                                     {item.desc}
                                 </p>
@@ -194,19 +199,19 @@ export default function AboutPage() {
             </section>
 
             {/* 5. FOUNDER BLOCK */}
-            <section className="py-32 container mx-auto px-4 md:px-6">
+            <section className="py-24 container mx-auto px-4 md:px-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
-                    className="max-w-6xl mx-auto bg-gradient-to-b from-gray-900 via-gray-900 to-black rounded-[3rem] p-8 md:p-20 border border-white/10 relative overflow-hidden"
+                    className="max-w-6xl mx-auto bg-[#080808] rounded-[3rem] p-8 md:p-20 border border-white/5 relative overflow-hidden"
                 >
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[150px] rounded-full pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-900/10 blur-[100px] rounded-full pointer-events-none"></div>
 
                     <div className="relative z-10">
-                        <div className="mb-12 border-b border-white/10 pb-8">
-                            <h2 className="text-4xl md:text-5xl font-bold mb-2">Founder & Team Ethos</h2>
+                        <div className="mb-12 border-b border-white/5 pb-8">
+                            <h2 className="text-4xl md:text-5xl font-bold mb-2">Founder Ethos</h2>
                             <p className="text-xl text-blue-400 font-medium">Akhilesh Reddy — Founder, DailyFit AI</p>
                         </div>
 
@@ -244,57 +249,188 @@ export default function AboutPage() {
                 </motion.div>
             </section>
 
-            {/* 6. PRODUCT PILLARS & JOURNEY */}
+            {/* 6. PRODUCT PILLARS */}
             <section className="py-24 container mx-auto px-4 md:px-6">
-                {/* PRODUCT PILLARS */}
-                <div className="mb-32">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-6xl font-bold mb-6">What We're Built On</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                        {[
-                            { icon: Zap, color: "blue", title: "Daily Guidance", desc: "Automated daily workout and diet plans delivered directly on WhatsApp." },
-                            { icon: Brain, color: "purple", title: "Adaptive Intelligence", desc: "AI that learns from member behavior and trainer edits to improve plans over time." },
-                            { icon: MessageSquare, color: "green", title: "WhatsApp-First", desc: "No apps. No friction. Just consistent engagement where users already are." },
-                            { icon: Shield, color: "orange", title: "Trainer Empowerment", desc: "Trainers stay in control with dashboards, overrides, and deep insights." }
-                        ].map((card, i) => (
-                            <div key={i} className="group p-10 rounded-[2rem] bg-gradient-to-br from-gray-900/50 to-black border border-white/10 hover:border-white/20 transition-all hover:shadow-2xl">
-                                <div className={`w-14 h-14 bg-${card.color}-900/20 text-${card.color}-400 rounded-2xl flex items-center justify-center mb-6 ring-1 ring-${card.color}-500/20 group-hover:scale-110 transition-transform`}>
-                                    <card.icon className="w-7 h-7" />
-                                </div>
-                                <h3 className="text-2xl font-bold mb-3 text-white">{card.title}</h3>
-                                <p className="text-gray-400 text-lg leading-relaxed">{card.desc}</p>
-                            </div>
-                        ))}
-                    </div>
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-6xl font-bold mb-6">What We're Built On</h2>
                 </div>
+                <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto mb-32">
+                    {[
+                        { icon: Zap, color: "blue", title: "Daily Guidance", desc: "Automated daily workout and diet plans delivered directly on WhatsApp." },
+                        { icon: Brain, color: "purple", title: "Adaptive Intelligence", desc: "AI that learns from member behavior and trainer edits to improve plans over time." },
+                        { icon: MessageSquare, color: "green", title: "WhatsApp-First", desc: "No apps. No friction. Just consistent engagement where users already are." },
+                        { icon: Shield, color: "orange", title: "Trainer Empowerment", desc: "Trainers stay in control with dashboards, overrides, and deep insights." }
+                    ].map((card, i) => (
+                        <div key={i} className="group p-10 rounded-[2rem] bg-zinc-900/20 border border-white/10 hover:bg-zinc-900/40 transition-all hover:shadow-2xl">
+                            <div className={`w-14 h-14 bg-${card.color}-900/20 text-${card.color}-400 rounded-2xl flex items-center justify-center mb-6 ring-1 ring-${card.color}-500/20`}>
+                                <card.icon className="w-7 h-7" />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-3 text-white">{card.title}</h3>
+                            <p className="text-gray-400 text-lg leading-relaxed">{card.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
-                {/* JOURNEY Timeline - Simplyfied & Clean */}
-                <div className="max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold mb-16 text-center">Our Build Journey</h2>
-                    <div className="space-y-12 border-l-2 border-white/10 ml-4 md:ml-0 md:pl-0">
-                        {[
-                            { stage: "Stage 1", title: "Core Problems", desc: "Identified retention & trainer burnout as the enemies of growth." },
-                            { stage: "Stage 2", title: "WhatsApp Testing", desc: "Verified that WhatsApp is the only channel with 100% open rates." },
-                            { stage: "Stage 3", title: "AI Agents Live", desc: "Built the agents that generate workout and diet plans instantly." },
-                            { stage: "Now", title: "Full Platform Scale", desc: "Expanding into a comprehensive automation suite for gyms worldwide." }
-                        ].map((step, i) => (
-                            <div key={i} className="relative pl-12 md:pl-0 md:flex md:items-center md:gap-12 group">
-                                <div className="absolute left-[-5px] top-2 md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-black z-10 group-last:bg-white"></div>
-                                <div className="md:w-1/2 md:text-right md:pr-12 md:group-odd:order-1 md:group-even:order-2">
-                                    <span className="text-blue-500 font-bold text-xs uppercase tracking-widest">{step.stage}</span>
+            {/* 7. UNDER THE HOOD - VISUAL APPEALING */}
+            <section className="py-32 bg-[#050505] relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+                <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-6xl">
+                    <div className="flex flex-col md:flex-row gap-16 items-center">
+                        <div className="flex-1 space-y-8">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold uppercase tracking-wider">
+                                <Fingerprint className="w-4 h-4" /> System Architecture
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-bold text-white">Under the Hood</h2>
+                            <p className="text-xl text-gray-400 leading-relaxed">
+                                DailyFit AI runs on a modular AI-agent architecture designed for reliability and scale.
+                                Orchestrated complex workflows feel simple to the user.
+                            </p>
+                            <ul className="space-y-4">
+                                {[
+                                    "Plan generation agents (workout + nutrition)",
+                                    "Personalization agents that adapt based on behavior",
+                                    "Trainer override learning loops",
+                                    "Automated scheduling & messaging"
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-gray-300">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Visual Tech Grid */}
+                        <div className="flex-1 w-full">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-4 pt-8">
+                                    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/10 backdrop-blur-sm">
+                                        <Activity className="w-8 h-8 text-green-400 mb-4" />
+                                        <h4 className="font-bold text-white">Generation</h4>
+                                        <p className="text-xs text-gray-500 mt-2">Workout & Diet Logic</p>
+                                    </div>
+                                    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/10 backdrop-blur-sm">
+                                        <Clock className="w-8 h-8 text-orange-400 mb-4" />
+                                        <h4 className="font-bold text-white">Scheduler</h4>
+                                        <p className="text-xs text-gray-500 mt-2">Timed Delivery</p>
+                                    </div>
                                 </div>
-                                <div className="md:w-1/2 md:group-odd:order-2 md:group-even:order-1">
-                                    <h3 className="text-xl font-bold text-white mb-1">{step.title}</h3>
-                                    <p className="text-gray-400">{step.desc}</p>
+                                <div className="space-y-4">
+                                    <div className="p-6 rounded-2xl bg-blue-900/20 border border-blue-500/30 backdrop-blur-sm relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-blue-500/10 animate-pulse"></div>
+                                        <Brain className="w-8 h-8 text-blue-400 mb-4 relative z-10" />
+                                        <h4 className="font-bold text-white relative z-10">Core Brain</h4>
+                                        <p className="text-xs text-blue-300 mt-2 relative z-10">Orchestrator Agent</p>
+                                    </div>
+                                    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/10 backdrop-blur-sm">
+                                        <LayoutGrid className="w-8 h-8 text-purple-400 mb-4" />
+                                        <h4 className="font-bold text-white">Learning</h4>
+                                        <p className="text-xs text-gray-500 mt-2">Feedback Loops</p>
+                                    </div>
                                 </div>
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* 7. WHY WE'RE BUILDING THIS - REDESIGNED */}
+            {/* 8. BUILD JOURNEY - PRECISE SCREENSHOT REPLICA */}
+            <section className="py-32 container mx-auto px-4 md:px-6">
+                <div className="text-center mb-24">
+                    <h2 className="text-4xl md:text-5xl font-bold">Our Build Journey</h2>
+                </div>
+
+                <div className="max-w-4xl mx-auto relative">
+                    {/* Center Line */}
+                    <div className="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2"></div>
+
+                    <div className="space-y-24">
+                        {/* STAGE 1 - Right Side */}
+                        <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
+                            {/* Dot - Blue */}
+                            <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#000] border-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)] z-10 mt-6"></div>
+
+                            <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right hidden md:block">
+                                {/* Empty Left Side */}
+                            </div>
+
+                            <div className="ml-12 md:ml-0 md:w-1/2 md:pl-16">
+                                <div className="p-8 rounded-2xl border border-white/10 bg-[#080808] hover:border-blue-500/50 transition-colors">
+                                    <span className="text-blue-500 text-xs font-bold uppercase tracking-widest mb-2 block">Stage 1</span>
+                                    <h3 className="text-xl font-bold text-white mb-2">Core Problems Identified</h3>
+                                    <p className="text-gray-400 text-sm leading-relaxed">
+                                        Identified retention & trainer burnout as the enemies of growth.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* STAGE 2 - Left Side */}
+                        <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
+                            {/* Dot - Purple */}
+                            <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#000] border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)] z-10 mt-6"></div>
+
+                            <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right w-full">
+                                <div className="p-8 rounded-2xl border border-white/10 bg-[#080808] hover:border-purple-500/50 transition-colors">
+                                    <span className="text-purple-500 text-xs font-bold uppercase tracking-widest mb-2 block">Stage 2</span>
+                                    <h3 className="text-xl font-bold text-white mb-2">WhatsApp Testing</h3>
+                                    <p className="text-gray-400 text-sm leading-relaxed">
+                                        Verified that WhatsApp is the only channel with 100% open rates.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="md:w-1/2 md:pl-16 hidden md:block">
+                                {/* Empty Right Side */}
+                            </div>
+                        </div>
+
+                        {/* STAGE 3 - Right Side */}
+                        <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
+                            {/* Dot - Green */}
+                            <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#000] border-2 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] z-10 mt-6"></div>
+
+                            <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right hidden md:block">
+                                {/* Empty Left Side */}
+                            </div>
+
+                            <div className="ml-12 md:ml-0 md:w-1/2 md:pl-16">
+                                <div className="p-8 rounded-2xl border border-white/10 bg-[#080808] hover:border-green-500/50 transition-colors">
+                                    <span className="text-green-500 text-xs font-bold uppercase tracking-widest mb-2 block">Stage 3</span>
+                                    <h3 className="text-xl font-bold text-white mb-2">AI Agents Live</h3>
+                                    <p className="text-gray-400 text-sm leading-relaxed">
+                                        Built the agents that generate workout and diet plans instantly.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* NOW - Left Side */}
+                        <div className="relative flex flex-col md:flex-row items-center md:items-start w-full group">
+                            {/* Dot - White */}
+                            <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,1)] z-10 mt-6"></div>
+
+                            <div className="ml-12 md:ml-0 md:w-1/2 md:pr-16 md:text-right w-full">
+                                <div className="p-8 rounded-2xl border border-white/10 bg-[#080808] hover:border-white/50 transition-colors">
+                                    <span className="text-white text-xs font-bold uppercase tracking-widest mb-2 block">Now</span>
+                                    <h3 className="text-xl font-bold text-white mb-2">Full Platform Scale</h3>
+                                    <p className="text-gray-400 text-sm leading-relaxed">
+                                        Expanding into a comprehensive automation suite for gyms worldwide.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="md:w-1/2 md:pl-16 hidden md:block">
+                                {/* Empty Right Side */}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            {/* 9. WHY WE'RE BUILDING THIS */}
             <section className="py-32 bg-black container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
@@ -337,7 +473,7 @@ export default function AboutPage() {
                 </motion.div>
             </section>
 
-            {/* 8. FINAL CTA BANNER */}
+            {/* 10. FINAL CTA BANNER */}
             <section className="py-24 container mx-auto px-4 text-center">
                 <div className="max-w-4xl mx-auto space-y-8">
                     <h2 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">

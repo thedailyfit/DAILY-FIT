@@ -23,167 +23,87 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
     {
-        slug: "how-gyms-increase-retention-using-dailyfit-ai",
-        title: "How Gyms Increase Retention Using DailyFit AI",
-        excerpt: "Most gyms lose members not because of facilities, but because of a lack of daily guidance. Discover how AI-driven engagement fixes the retention leak.",
+        slug: "why-most-gyms-lose-members-after-30-days",
+        title: "Why Most Gyms Lose Members After 30 Days",
+        excerpt: "Retention issues are rarely caused by facilities. They are caused by a lack of daily feedback. Discover the 'Month 1 Cliff' and how to fix it.",
         date: "October 24, 2025",
         readTime: "6 min read",
         author: "DailyFit Team",
-        category: "Gym Growth",
-        heroImage: "bg-gradient-to-br from-blue-900 via-black to-black",
+        category: "Retention Strategy",
+        heroImage: "bg-gradient-to-br from-red-900 via-black to-black",
         seo: {
-            keywords: ["gym retention", "AI gym retention", "gym member engagement", "DailyFit AI", "WhatsApp fitness coaching"],
-            metaDescription: "Discover why gym retention drops after 30 days and how DailyFit AI's automated WhatsApp engagement system drastically improves member consistency and profitability."
+            keywords: ["gym retention", "member churn", "fitness business", "DailyFit AI"],
+            metaDescription: "Most gym members quit after 30 days due to a lack of feedback. Learn how automated daily engagement solves this."
         },
         content: [
-            {
-                type: 'header',
-                text: "Retention Is the Real Gym Business Problem"
-            },
-            {
-                type: 'paragraph',
-                text: "Most gyms focus heavily on new memberships. Ads, offers, free trials, discounts. But the real profitability of a gym depends on how long members stay, not how many join."
-            },
-            {
-                type: 'paragraph',
-                text: "Across the fitness industry, a common pattern exists:"
-            },
-            {
-                type: 'list',
-                items: [
-                    "Strong enthusiasm in the first week",
-                    "Confusion by week three",
-                    "Dropout by day 30–45"
-                ]
-            },
-            {
-                type: 'paragraph',
-                text: "This is not because members are lazy or unmotivated. It happens because gyms lack a daily engagement system."
-            },
-            {
-                type: 'header',
-                text: "Why Gym Retention Drops After the First Month"
-            },
-            {
-                type: 'paragraph',
-                text: "Retention issues are rarely caused by facilities or trainers. They are caused by uncertainty. Most members silently ask themselves: 'What workout should I do today?' 'Am I doing this right?' 'Is this even working?'"
-            },
-            {
-                type: 'visual',
-                visualType: 'retention-chart',
-                caption: "Typical industry retention drop-off without daily engagement."
-            },
-            {
-                type: 'paragraph',
-                text: "When these questions remain unanswered daily, motivation collapses. Retention fails not because of effort — but because of missing systems."
-            },
-            {
-                type: 'header',
-                text: "The Daily Engagement Loop That Improves Retention"
-            },
-            {
-                type: 'paragraph',
-                text: "DailyFit AI creates a simple but powerful loop: Plan → Act → Log → Feedback → Adapt. This repeats every day."
-            },
-            {
-                type: 'visual',
-                visualType: 'loop-cycle',
-                caption: "The Habit-Forming Daily Loop powered by AI."
-            },
-            {
-                type: 'header',
-                text: "Why WhatsApp Is the Retention Channel That Works"
-            },
-            {
-                type: 'paragraph',
-                text: "Fitness apps struggle because members forget to open them. WhatsApp is different: near 100% open rates, no learning curve, and it's already part of daily life."
-            },
-            {
-                type: 'header',
-                text: "Conclusion: Retention Is the Competitive Advantage"
-            },
-            {
-                type: 'paragraph',
-                text: "Gyms that win long-term are not the ones with the best offers. They are the ones with the best daily engagement systems. DailyFit AI helps gyms retain members longer, support trainers better, and build predictable recurring revenue."
-            }
+            { type: 'header', text: "The Month 1 Cliff" },
+            { type: 'paragraph', text: "New members start with high motivation. By week 3, they are confused. By day 30, they quit. This pattern destroys gym profitability." },
+            { type: 'visual', visualType: 'retention-chart', caption: "The Retention Drop-off curve." },
+            { type: 'paragraph', text: "The solution? Daily feedback. When a member knows exactly what to do every day, they stay." },
+            { type: 'header', text: "Automating Daily Contact" },
+            { type: 'paragraph', text: "You can't text 500 members manually. But AI can. DailyFit AI sends workouts and checks in on WhatsApp every morning." }
         ]
     },
     {
-        slug: "ai-for-personal-trainers-manage-20-clients-without-burnout",
-        title: "AI for Personal Trainers: How to Manage 20+ Clients Without Burnout",
-        excerpt: "Most trainers hit a ceiling at 15 clients. Learn how AI tools like DailyFit allow you to scale to 50+ clients while actually improving service quality.",
+        slug: "ai-for-personal-trainers-scale-without-burnout",
+        title: "AI for Personal Trainers: Manage 50+ Clients Without Burnout",
+        excerpt: "Hit the ceiling at 15 clients? See how AI automation handles the busywork so you can focus on coaching and double your income.",
         date: "October 28, 2025",
         readTime: "8 min read",
         author: "Akhilesh Reddy",
         category: "Trainer Productivity",
         heroImage: "bg-gradient-to-br from-green-900 via-black to-black",
         seo: {
-            keywords: ["AI for personal trainers", "personal trainer automation", "trainer productivity", "DailyFit AI", "WhatsApp coaching"],
-            metaDescription: "Discover how AI helps personal trainers break the 15-client ceiling, automate daily follow-ups, and scale their fitness business without burnout."
+            keywords: ["personal trainer scaling", "online coaching business", "AI fitness tools"],
+            metaDescription: "Scale your personal training business to 50+ clients without burnout using DailyFit AI automation."
         },
         content: [
-            {
-                type: 'header',
-                text: "The Personal Trainer Growth Ceiling"
-            },
-            {
-                type: 'paragraph',
-                text: "Most personal trainers face a hidden ceiling. At around 12–15 clients, problems begin: Long working hours, missed follow-ups, reduced quality, and eventually, burnout. This is not due to lack of skill — it is due to manual workload."
-            },
-            {
-                type: 'header',
-                text: "Why Trainers Get Stuck at 10–15 Clients"
-            },
-            {
-                type: 'paragraph',
-                text: "Trainers do far more than coaching. They have to plan workouts, adjust diets, follow up daily, track progress, and handle endless messages. Each additional client adds exponential communication overhead."
-            },
-            {
-                type: 'visual',
-                visualType: 'workload-chart',
-                caption: "Comparison of weekly workload: Manual vs AI-Assisted."
-            },
-            {
-                type: 'paragraph',
-                text: "Eventually, quality drops — or trainers stop accepting new clients. The real problem is repetitive tasks. Most trainer time is spent on routine updates, answering basic questions, and tracking compliance. These tasks are important — but not uniquely human."
-            },
-            {
-                type: 'header',
-                text: "What AI Handles for Personal Trainers"
-            },
-            {
-                type: 'paragraph',
-                text: "DailyFit AI takes over the heavy lifting: Daily workout delivery, diet plan reminders, meal photo calorie estimation, progress summaries, and attendance nudges. This frees trainers to focus on personal attention, technique correction, and motivation."
-            },
-            {
-                type: 'visual',
-                visualType: 'whatsapp-automation',
-                caption: "How DailyFit AI automates the daily coaching loop on WhatsApp."
-            },
-            {
-                type: 'header',
-                text: "Managing 20+ Clients Without Quality Loss"
-            },
-            {
-                type: 'paragraph',
-                text: "With AI handling routine tasks, trainers only need to respond to exceptions. Communication becomes structured, and plans remain consistent. This allows trainers to comfortably manage 20–30+ clients without burnout."
-            },
-            {
-                type: 'header',
-                text: "Trainer Control & Customization"
-            },
-            {
-                type: 'paragraph',
-                text: "A critical feature is trainer override control. Trainers can edit AI-generated plans, customize diets, adjust workouts, and add notes. AI learns from these edits and improves over time."
-            },
-            {
-                type: 'header',
-                text: "Conclusion: Scale Without Burnout"
-            },
-            {
-                type: 'paragraph',
-                text: "Managing more clients should not mean sacrificing health or quality. DailyFit AI allows trainers to scale responsibly, maintain coaching quality, and build long-term income. AI is not competition. It is leverage."
-            }
+            { type: 'header', text: "The 15-Client Trap" },
+            { type: 'paragraph', text: "Most trainers burn out at 15 clients. The admin work—checking logs, sending plans—takes over." },
+            { type: 'visual', visualType: 'workload-chart', caption: "Manual vs AI Workload" },
+            { type: 'paragraph', text: "DailyFit AI handles the delivery and tracking. You just handle the coaching and high-level strategy." }
+        ]
+    },
+    {
+        slug: "what-is-ai-fitness-automation",
+        title: "What Is AI Fitness Automation for Gyms?",
+        excerpt: "It's not about robot trainers. It's about automating the repetitive 'nudge' that keeps members active. Learn how it works.",
+        date: "November 2, 2025",
+        readTime: "5 min read",
+        author: "DailyFit Team",
+        category: "AI Technology",
+        heroImage: "bg-gradient-to-br from-blue-900 via-black to-black",
+        seo: {
+            keywords: ["AI fitness automation", "gym automation", "fitness tech trends"],
+            metaDescription: "AI fitness automation handles daily member check-ins, workout delivery, and habit tracking automatically."
+        },
+        content: [
+            { type: 'header', text: "Automation vs. Replacement" },
+            { type: 'paragraph', text: "AI doesn't replace the human connection. It enhances it by removing the data-entry work. Imagine if every member got a 'Good job!' text when they hit a PR, instantly." },
+            { type: 'visual', visualType: 'loop-cycle', caption: "The Daily Automation Loop" },
+            { type: 'header', text: "How It Works" },
+            { type: 'paragraph', text: "The system connects to WhatsApp. It sends the day's plan at 6 AM. It asks for a log at 8 PM. If they miss it, it nudges them. The trainer sees a dashboard of who is active and who is slipping." }
+        ]
+    },
+    {
+        slug: "why-whatsapp-beats-fitness-apps",
+        title: "Why WhatsApp Beats Custom Fitness Apps",
+        excerpt: "Nobody wants to download another app. Discover why WhatsApp automation has 10x higher engagement rates than dedicated gym apps.",
+        date: "November 5, 2025",
+        readTime: "4 min read",
+        author: "DailyFit Team",
+        category: "Marketing",
+        heroImage: "bg-gradient-to-br from-purple-900 via-black to-black",
+        seo: {
+            keywords: ["fitness apps vs whatsapp", "gym marketing", "member engagement rates"],
+            metaDescription: "Why building a custom gym app is a waste of money compared to using WhatsApp automation."
+        },
+        content: [
+            { type: 'header', text: "The 'App Fatigue' Problem" },
+            { type: 'paragraph', text: "The average gym app has a 12% open rate. WhatsApp has a 98% open rate. If you want members to see your workouts, go where they already are." },
+            { type: 'visual', visualType: 'comparison-table', caption: "App vs WhatsApp Engagement" },
+            { type: 'header', text: "Friction Kills Consistency" },
+            { type: 'paragraph', text: "Logging into an app, remembering the password, navigating menus... it's friction. WhatsApp is instant. Low friction means high compliance." }
         ]
     }
 ];

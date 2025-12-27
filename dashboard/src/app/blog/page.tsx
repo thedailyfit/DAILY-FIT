@@ -15,17 +15,18 @@ const getPostIcon = (category: string) => {
     if (category.includes("Productivity")) src = "/blog-thumbs/ai.png";
     if (category.includes("AI")) src = "/blog-thumbs/ai.png";
     if (category.includes("WhatsApp")) src = "/blog-thumbs/whatsapp.png";
+    if (category.includes("Marketing")) src = "/blog-thumbs/whatsapp.png";
+    if (category.includes("Operations")) src = "/blog-thumbs/retention.png";
+    if (category.includes("Software")) src = "/blog-thumbs/ai.png";
 
     return (
-        <div className="w-full h-full relative">
+        <div className="w-full h-full relative p-1">
             <Image
                 src={src}
                 alt={category}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-transform duration-500 group-hover:scale-110"
             />
-            {/* Overlay gradient to ensure text readability if needed */}
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
         </div>
     );
 };

@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { LandingHeader } from "@/components/landing-header";
 import { BookDemoModal } from "@/components/book-demo-modal";
+import { ReviewMarquee } from "@/components/review-marquee";
+import { FAQSection } from "@/components/faq-section";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, MessageSquare, LineChart, Utensils, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";
@@ -198,36 +200,182 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA SECTION */}
+      {/* FEATURE HIGHLIGHTS (THE ULTIMATE TOOLKIT STYLE) */}
       <section className="py-24 container mx-auto px-4 md:px-6">
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-900 px-6 py-16 md:px-16 md:py-24 text-center">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-          <div className="relative z-10 max-w-3xl mx-auto space-y-8">
-            <h2 className="text-3xl md:text-5xl font-bold text-white">Ready to Upgrade Your Gym?</h2>
-            <p className="text-blue-200 text-lg">Join 500+ Gym Owners automating their success with DailyFit.</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/pricing">
-                <Button className="h-14 px-10 rounded-full bg-white text-blue-900 hover:bg-gray-100 font-bold text-lg">
-                  Start 7-Day Free Trial
-                </Button>
-              </Link>
-              <div className="text-white/80 flex items-center justify-center gap-2">
-                <span>or Call us:</span>
-                <a href="tel:+918919205848" className="font-bold hover:underline">+91 89192 05848</a>
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-6xl font-bold mb-6">The Ultimate Toolkit for <br />Gym Owners</h2>
+          <p className="text-gray-400 text-xl max-w-2xl mx-auto">Have your Cake!! Eat it toooooo. We'll answer your leads.</p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Feature 1: WhatsApp Graph */}
+          <div className="col-span-1 rounded-3xl border border-white/10 bg-card/30 p-8 flex flex-col justify-between hover:border-blue-500/30 transition-colors group">
+            <div className="mb-8 relative h-64 w-full rounded-2xl bg-black/50 border border-white/5 overflow-hidden flex items-center justify-center">
+              {/* Mockup CSS UI since GenAI failed */}
+              <div className="w-3/4 bg-gray-900 rounded-lg p-3 border border-gray-800 shadow-2xl">
+                <div className="flex gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">AI</div>
+                  <div className="bg-gray-800 rounded-r-lg rounded-bl-lg p-2 text-xs text-blue-200">
+                    Progress Report 📈
+                    <div className="h-16 w-full mt-2 bg-gradient-to-t from-blue-500/20 to-transparent relative">
+                      <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
+                        <path d="M0,50 L20,40 L40,45 L60,20 L80,30 L100,10" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-400" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-2">WhatsApp Graph Agent</h3>
+              <p className="text-gray-400">Automatically send visualized progress reports directly to client chats.</p>
+            </div>
+          </div>
+
+          {/* Feature 2: Fee Reminder */}
+          <div className="col-span-1 rounded-3xl border border-white/10 bg-card/30 p-8 flex flex-col justify-between hover:border-red-500/30 transition-colors group">
+            <div className="mb-8 relative h-64 w-full rounded-2xl bg-black/50 border border-white/5 overflow-hidden flex items-center justify-center">
+              {/* Mockup CSS UI */}
+              <div className="w-3/4 bg-gray-900 rounded-xl p-4 border border-gray-800 shadow-2xl">
+                <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
+                  <div className="text-xs font-bold text-white">Notifications</div>
+                  <div className="text-[10px] text-gray-500">Just now</div>
+                </div>
+                <div className="flex gap-3 items-center">
+                  <div className="w-8 h-8 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center">₹</div>
+                  <div>
+                    <div className="text-xs text-white font-medium">Fees Collected</div>
+                    <div className="text-[10px] text-gray-400">Rahul paid ₹1500 via UPI</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-2">Smart Fee Reminders</h3>
+              <p className="text-gray-400">Dashboard alerts & WhatsApp nudges ensure you get paid on time, every time.</p>
+            </div>
+          </div>
+
+          {/* Feature 3: Growth */}
+          <div className="col-span-1 rounded-3xl border border-white/10 bg-card/30 p-8 flex flex-col justify-between hover:border-green-500/30 transition-colors group">
+            <div className="mb-8 relative h-64 w-full rounded-2xl bg-black/50 border border-white/5 overflow-hidden flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-6xl font-bold text-white mb-2">11X</div>
+                <div className="text-sm text-gray-500">Engagement Growth</div>
+                <div className="mt-4 h-2 w-32 bg-gray-800 rounded-full overflow-hidden mx-auto">
+                  <motion.div
+                    className="h-full bg-blue-500"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: "80%" }}
+                    transition={{ duration: 1.5 }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-2">11X Engagement</h3>
+              <p className="text-gray-400">Boost client retention with automated birthday wishes & workout streaks.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/10 py-12 bg-black/40">
-        <div className="container mx-auto px-4 text-center text-gray-500">
-          <p className="mb-4 text-lg font-bold text-white">DailyFit AI Solutions</p>
-          <p>© 2025 DailyFit Inc. All rights reserved.</p>
+      {/* CLIENT REVIEWS MARQUEE */}
+      <ReviewMarquee />
+
+      {/* PRICING SECTION (SHORT) */}
+      <section className="py-24 container mx-auto px-4 md:px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">Flexible Pricing Plans</h2>
+          <p className="text-gray-400 text-lg">Choose a plan that grows with you.</p>
         </div>
-      </footer>
+
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {/* Free/Basic */}
+          <div className="p-8 rounded-2xl border border-white/10 bg-card/20 hover:bg-card/40 transition-all">
+            <h3 className="text-xl font-bold mb-2 text-white">Starter</h3>
+            <div className="mb-4">
+              <span className="text-4xl font-bold text-white">$29</span>
+              <span className="text-gray-500">/mo</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-6">For Independent Trainers</p>
+            <Link href="/pricing">
+              <Button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl mb-6">Get Started</Button>
+            </Link>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-white" /> 10 Clients</li>
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-white" /> Basic Dashboard</li>
+            </ul>
+          </div>
+
+          {/* Pro - Highlighted */}
+          <div className="p-8 rounded-2xl border border-blue-500 bg-blue-900/10 relative transform md:-translate-y-4">
+            <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs px-3 py-1 rounded-bl-xl font-bold uppercase">Popular</div>
+            <h3 className="text-xl font-bold mb-2 text-white">Pro Gym</h3>
+            <div className="mb-4">
+              <span className="text-4xl font-bold text-white">$59</span>
+              <span className="text-gray-500">/mo</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-6">For Growing Centers</p>
+            <Link href="/pricing">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl mb-6 shadow-lg shadow-blue-500/25">Get Started</Button>
+            </Link>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> 20 Clients</li>
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Detailed Reports</li>
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Fee Reminders</li>
+            </ul>
+          </div>
+
+          {/* Elite */}
+          <div className="p-8 rounded-2xl border border-white/10 bg-card/20 hover:bg-card/40 transition-all">
+            <h3 className="text-xl font-bold mb-2 text-white">Elite</h3>
+            <div className="mb-4">
+              <span className="text-4xl font-bold text-white">Custom</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-6">For Multi-Location</p>
+            <Link href="/pricing">
+              <Button className="w-full bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl mb-6">Contact Sales</Button>
+            </Link>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-white" /> Unlimited Clients</li>
+              <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-white" /> Custom API</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <FAQSection />
+
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-900 px-6 py-16 md:px-16 md:py-24 text-center">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+        <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+          <h2 className="text-3xl md:text-5xl font-bold text-white">Ready to Upgrade Your Gym?</h2>
+          <p className="text-blue-200 text-lg">Join 500+ Gym Owners automating their success with DailyFit.</p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/pricing">
+              <Button className="h-14 px-10 rounded-full bg-white text-blue-900 hover:bg-gray-100 font-bold text-lg">
+                Start 7-Day Free Trial
+              </Button>
+            </Link>
+            <div className="text-white/80 flex items-center justify-center gap-2">
+              <span>or Call us:</span>
+              <a href="tel:+918919205848" className="font-bold hover:underline">+91 89192 05848</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      {/* FOOTER */ }
+  <footer className="border-t border-white/10 py-12 bg-black/40">
+    <div className="container mx-auto px-4 text-center text-gray-500">
+      <p className="mb-4 text-lg font-bold text-white">DailyFit AI Solutions</p>
+      <p>© 2025 DailyFit Inc. All rights reserved.</p>
     </div>
+  </footer>
+    </div >
   );
 }
 

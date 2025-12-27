@@ -102,43 +102,80 @@ export default function LandingPage() {
       {/* 2. NEW FEATURE SHOWCASE (The "Toolkit" replacement) */}
       <FeatureShowcase />
 
-      {/* 3. GALLERY SECTION */}
-      <section className="py-24 container mx-auto px-4 md:px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">DailyFit In Action</h2>
-          <p className="text-gray-300 text-lg">Real results in real gyms.</p>
+      {/* 3. GALLERY SECTION - DAILYFIT IN ACTION */}
+      <section className="py-32 container mx-auto px-4 md:px-6 relative">
+        {/* Background Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[500px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="text-center mb-20 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs font-medium uppercase tracking-wider mb-4">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            Live in Gyms
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">DailyFit <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">In Action</span></h2>
+          <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+            See how high-performance gyms use AI to automate the mundane and focus on the meaningful.
+          </p>
         </div>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="relative rounded-2xl overflow-hidden border border-white/10 group">
+
+        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto relative z-10">
+          {/* Card 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="group relative h-[500px] rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#0A0A0A]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
             <Image
               src="/gym-action.png"
               alt="Personal Training Session"
-              width={600}
-              height={400}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              width={800}
+              height={600}
+              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-100"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-8 flex items-end">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Focus on Training</h3>
-                <p className="text-gray-300 text-sm">Let AI handle the admin while you handle the weights.</p>
+            <div className="absolute bottom-0 left-0 right-0 p-10 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600/20 backdrop-blur-md flex items-center justify-center mb-6 border border-blue-500/30">
+                <Zap className="w-6 h-6 text-blue-400" />
+              </div>
+              <h3 className="text-3xl font-bold text-white mb-3">Focus on Coaching</h3>
+              <p className="text-gray-400 text-lg leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                Stop tracking sheets manually. Let AI handle the logs, reminders, and progress tracking so you can focus on form and motivation.
+              </p>
+              <div className="flex items-center gap-2 text-blue-400 font-bold uppercase tracking-wider text-sm">
+                Trainer Efficiency <div className="h-px w-8 bg-blue-500" />
               </div>
             </div>
-          </div>
-          <div className="relative rounded-2xl overflow-hidden border border-white/10 group">
+          </motion.div>
+
+          {/* Card 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="group relative h-[500px] rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#0A0A0A]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
             <Image
               src="/gym-consult.png"
               alt="Client Consultation"
-              width={600}
-              height={400}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              width={800}
+              height={600}
+              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-100"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-8 flex items-end">
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Personalized Plans</h3>
-                <p className="text-gray-300 text-sm">Deliver AI-generated diet & workout plans in seconds.</p>
+            <div className="absolute bottom-0 left-0 right-0 p-10 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <div className="w-12 h-12 rounded-2xl bg-purple-600/20 backdrop-blur-md flex items-center justify-center mb-6 border border-purple-500/30">
+                <Users className="w-6 h-6 text-purple-400" />
+              </div>
+              <h3 className="text-3xl font-bold text-white mb-3">Instant Personalization</h3>
+              <p className="text-gray-400 text-lg leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                Deliver AI-generated diet & workout plans in seconds, customized to each member's goals, injuries, and food preferences.
+              </p>
+              <div className="flex items-center gap-2 text-purple-400 font-bold uppercase tracking-wider text-sm">
+                Member Experience <div className="h-px w-8 bg-purple-500" />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

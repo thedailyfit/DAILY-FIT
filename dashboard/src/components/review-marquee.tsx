@@ -212,7 +212,7 @@ export function ReviewMarquee() {
     return (
         <div className="relative flex flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl py-24">
             <div className="text-center mb-12 z-10">
-                <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-400 mb-4">Loved by 2,000+ Gym Owners</h2>
+                <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-400 mb-4">Loved by 500+ Gym Owners</h2>
                 <p className="text-gray-400 text-lg">From London to Mumbai, the world runs on DailyFit.</p>
             </div>
 

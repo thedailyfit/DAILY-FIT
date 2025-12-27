@@ -38,10 +38,6 @@ export default function LandingPage() {
               Automate Your Gym with <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400">Intelligent AI</span>
             </h1>
 
-            import {HeroLiveNotifications} from "@/components/hero-live-notifications";
-
-            // ... (other imports remain same, just ensuring this line is considered or I add it at top)
-
             {/* Scrolling Text Effect */}
             <div className="h-12 md:h-16 mb-6 overflow-hidden flex flex-col justify-center">
               <div className="text-2xl md:text-4xl font-bold text-white flex items-center justify-center lg:justify-start gap-3">

@@ -37,11 +37,15 @@ export default function LandingPage() {
               Automate Your Gym with <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400">Intelligent AI</span>
             </h1>
 
+            import {HeroLiveNotifications} from "@/components/hero-live-notifications";
+
+            // ... (other imports remain same, just ensuring this line is considered or I add it at top)
+
             {/* Scrolling Text Effect */}
             <div className="h-12 md:h-16 mb-6 overflow-hidden flex flex-col justify-center">
               <div className="text-2xl md:text-4xl font-bold text-white flex items-center justify-center lg:justify-start gap-3">
                 <span className="text-gray-400">Automate</span>
-                <div className="relative h-12 md:h-16 w-64 overflow-hidden border-b-2 border-green-500/50">
+                <div className="relative h-12 md:h-16 w-64 overflow-hidden">
                   <div className="animate-scroll-text absolute top-0 left-0 w-full text-green-400">
                     <div className="h-12 md:h-16 flex items-center">workouts.</div>
                     <div className="h-12 md:h-16 flex items-center">nutrition.</div>
@@ -55,6 +59,7 @@ export default function LandingPage() {
             </div>
 
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+              See DailyFit AI automate workouts, engagement, and renewals — in real time. <br className="hidden md:block" />
               Replace manual sales, diet planning, and check-ins with DailyFit AI a WhatsApp-first fitness automation system built for gyms and trainers.
             </p>
 
@@ -91,6 +96,9 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="flex-1 relative w-full max-w-[600px] lg:max-w-none"
           >
+            {/* Live Notifications Layer */}
+            <HeroLiveNotifications />
+
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-[2rem] blur-2xl opacity-30 animate-pulse" />
             <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/50 backdrop-blur-xl">
               <Image
@@ -101,15 +109,7 @@ export default function LandingPage() {
                 className="w-full h-auto object-cover"
                 priority
               />
-              <div className="absolute bottom-6 left-6 right-6 bg-black/80 backdrop-blur-md border border-white/10 p-4 rounded-xl flex items-center gap-4 animate-in slide-in-from-bottom-6 duration-700 delay-500">
-                <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">New Lead Captured via WhatsApp</p>
-                  <p className="text-xs text-gray-400">Rahul S. • Muscle Gain • Just now</p>
-                </div>
-              </div>
+              {/* Removed static overlay */}
             </div>
           </motion.div>
         </div>

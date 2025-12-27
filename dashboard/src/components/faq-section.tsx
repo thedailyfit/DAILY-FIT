@@ -6,28 +6,28 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
     {
-        question: "Do I need to be 'tech-savvy' to use DailyFit?",
-        answer: "Not at all! We built DailyFit specifically for gym owners, not software engineers. If you can use WhatsApp, you can use our system. Setup takes less than 10 minutes."
+        question: "Will this replace my reception staff?",
+        answer: "It won't replace them, but it will give them superpowers. Your staff can focus on building relationships in the gym floor, while DailyFit handles the repetitive WhatsApp replies, payments, and scheduling in the background."
     },
     {
-        question: "Does the AI Agent really work on my personal WhatsApp?",
-        answer: "Yes! Connecting your WhatsApp takes 30 seconds (just scan a QR code). The AI will then reply to leads, book appointments, and send reminders from YOUR number, automatically."
+        question: "I have 200+ members. Is migration hard?",
+        answer: "No. We have a 'White-Glove' import feature. You send us your Excel sheet or current software export, and we set everything up for you. You can be live in under 24 hours."
     },
     {
-        question: "Can I import my existing members from Excel?",
-        answer: "Absolutely. We have a 'Bulk Import' feature. Just upload your Excel sheet, and all your members will be added instantly with their renewal dates and details."
+        question: "Does it work with my personal WhatsApp Number?",
+        answer: "Yes, you can connect any WhatsApp number (Personal or Business). The AI acts as a 'Virtual Assistant' on that number. You can take over the chat manually at any time."
     },
     {
-        question: "What happens if the AI gives a wrong answer?",
-        answer: "Our AI is 'Guardrailed' for fitness. It only answers questions based on the gym data you provide. If it gets stuck, it politely hands over the conversation to you."
+        question: "Can I create custom diet plans, or is it only AI?",
+        answer: "You have full control. You can use our AI to generate a baseline plan in seconds, and then tweak it perfectly to your style. It saves you 90% of the typing time."
     },
     {
-        question: "Are the diet plans Indian-friendly?",
-        answer: "100%. We include 15+ templates specifically for Indian diets (North Indian, South Indian, Vegetarian, Jain, Non-Veg) with local food items."
+        question: "Do you take a commission on payments?",
+        answer: "Zero. We are a software provider, not a bank. You keep 100% of your membership fees. We just help you collect them faster with automated reminders."
     },
     {
-        question: "Is my member data safe?",
-        answer: "Your data is encrypted and stored securely. We do not share your member data with anyone. You own your data completely."
+        question: "What if I get stuck?",
+        answer: "We are available on WhatsApp 24/7. Since we are built for Indian gym owners, we understand your specific needs and respond instantly."
     }
 ];
 
@@ -38,7 +38,7 @@ export function FAQSection() {
         <section className="py-24 container mx-auto px-4 md:px-6 max-w-4xl">
             <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-5xl font-bold mb-6">Frequently Asked Questions</h2>
-                <p className="text-gray-400 text-lg">Everything you need to know about automating your gym.</p>
+                <p className="text-gray-400 text-lg">Real questions from gym owners like you.</p>
             </div>
 
             <div className="space-y-4">

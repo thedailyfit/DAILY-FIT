@@ -7,8 +7,9 @@ import { BookDemoModal } from "@/components/book-demo-modal";
 import { ReviewMarquee } from "@/components/review-marquee";
 import { FAQSection } from "@/components/faq-section";
 import { BeforeAfter } from "@/components/before-after";
+import { FeatureShowcase } from "@/components/feature-showcase";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, MessageSquare, LineChart, Utensils, Zap, Users } from "lucide-react";
+import { CheckCircle2, MessageSquare, LineChart, Utensils, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LandingPage() {
@@ -16,10 +17,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-blue-500/30">
       <LandingHeader />
 
-      {/* HERO SECTION */}
+      {/* 1. HERO SECTION */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 container mx-auto px-4 md:px-6">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -47,7 +47,6 @@ export default function LandingPage() {
                   Start 7-Day Free Trial
                 </Button>
               </Link>
-
               <BookDemoModal>
                 <Button variant="outline" className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-gray-300 hover:text-white text-lg backdrop-blur-sm">
                   Book Free Live Demo
@@ -66,6 +65,7 @@ export default function LandingPage() {
                 <p className="text-sm text-gray-500">AI Support</p>
               </div>
             </div>
+
           </motion.div>
 
           {/* Right Visual */}
@@ -85,8 +85,6 @@ export default function LandingPage() {
                 className="w-full h-auto object-cover"
                 priority
               />
-
-              {/* Floating Badge */}
               <div className="absolute bottom-6 left-6 right-6 bg-black/80 backdrop-blur-md border border-white/10 p-4 rounded-xl flex items-center gap-4 animate-in slide-in-from-bottom-6 duration-700 delay-500">
                 <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center">
                   <MessageSquare className="w-5 h-5" />
@@ -101,13 +99,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* GALLERY SECTION */}
+      {/* 2. NEW FEATURE SHOWCASE (The "Toolkit" replacement) */}
+      <FeatureShowcase />
+
+      {/* 3. GALLERY SECTION */}
       <section className="py-24 container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">DailyFit In Action</h2>
           <p className="text-gray-300 text-lg">Real results in real gyms.</p>
         </div>
-
         <div className="grid md:grid-cols-2 gap-8">
           <div className="relative rounded-2xl overflow-hidden border border-white/10 group">
             <Image
@@ -124,7 +124,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-
           <div className="relative rounded-2xl overflow-hidden border border-white/10 group">
             <Image
               src="/gym-consult.png"
@@ -143,14 +142,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURES GRID */}
+      {/* 4. FEATURES GRID */}
       <section className="py-24 bg-card/30 relative">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">Built for <span className="text-blue-500">Growth</span></h2>
             <p className="text-gray-400 text-lg">Everything you need to run a 7-figure fitness business without the burnout.</p>
           </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
               icon={<MessageSquare className="w-6 h-6 text-green-400" />}
@@ -201,122 +199,34 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURE HIGHLIGHTS (THE ULTIMATE TOOLKIT STYLE) */}
-      <section className="py-24 container mx-auto px-4 md:px-6">
-        <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-6xl font-bold mb-6">The Ultimate Toolkit for <br />Gym Owners</h2>
-          <p className="text-gray-400 text-xl max-w-2xl mx-auto">Have your Cake!! Eat it toooooo. We'll answer your leads.</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Feature 1: Automated Progress Tracking */}
-          <div className="col-span-1 rounded-3xl border border-white/10 bg-card/30 p-8 flex flex-col justify-between hover:border-blue-500/30 transition-colors group hover:-translate-y-2 duration-300">
-            <div className="mb-8 relative h-64 w-full rounded-2xl bg-black/50 border border-white/5 overflow-hidden flex items-center justify-center">
-              {/* Mockup CSS UI */}
-              <div className="w-3/4 bg-gray-900 rounded-lg p-4 border border-gray-800 shadow-2xl">
-                <div className="flex justify-between items-center mb-3">
-                  <div className="text-xs font-bold text-white">Strength Progress</div>
-                  <div className="text-[10px] text-green-400">+15% vs Last Month</div>
-                </div>
-                <div className="h-24 w-full flex items-end justify-between gap-1">
-                  {[40, 60, 45, 70, 65, 85, 80].map((h, i) => (
-                    <div key={i} className="w-full bg-blue-600/30 rounded-t-sm relative group-hover:bg-blue-500 transition-colors">
-                      <div style={{ height: `${h}%` }} className="absolute bottom-0 w-full bg-blue-500 rounded-t-sm" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold mb-2">Visual Progress Tracking</h3>
-              <p className="text-gray-400">Members see their strength & weight gains in clear graphs, keeping them motivated.</p>
-            </div>
-          </div>
-
-          {/* Feature 2: Smart Fee Recovery */}
-          <div className="col-span-1 rounded-3xl border border-white/10 bg-card/30 p-8 flex flex-col justify-between hover:border-red-500/30 transition-colors group hover:-translate-y-2 duration-300">
-            <div className="mb-8 relative h-64 w-full rounded-2xl bg-black/50 border border-white/5 overflow-hidden flex items-center justify-center">
-              {/* Mockup CSS UI */}
-              <div className="w-3/4 bg-gray-900 rounded-xl p-4 border border-gray-800 shadow-2xl relative">
-                <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <div className="flex gap-3 items-center mb-4">
-                  <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-white font-bold">Payment Received</div>
-                    <div className="text-xs text-gray-400">₹2500 - Monthly Plan</div>
-                  </div>
-                </div>
-                <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 w-3/4" />
-                </div>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold mb-2">Smart Fee Recovery</h3>
-              <p className="text-gray-400">Automated WhatsApp reminders ensure you get paid on time, every single time.</p>
-            </div>
-          </div>
-
-          {/* Feature 3: Engagement Engine */}
-          <div className="col-span-1 rounded-3xl border border-white/10 bg-card/30 p-8 flex flex-col justify-between hover:border-green-500/30 transition-colors group hover:-translate-y-2 duration-300">
-            <div className="mb-8 relative h-64 w-full rounded-2xl bg-black/50 border border-white/5 overflow-hidden flex items-center justify-center">
-              <div className="w-3/4 bg-gray-900 p-4 rounded-xl border border-gray-800">
-                <div className="flex gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center text-xs">🤖</div>
-                  <div className="bg-gray-800 rounded-r-lg rounded-bl-lg p-2 text-xs text-gray-200">
-                    Happy Birthday Rahul! 🎂 Here is a 10% off coupon for protein.
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold mb-2">Engagement Engine</h3>
-              <p className="text-gray-400">Boost retention with automated birthday wishes, streak alerts, and check-in nudges.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CLIENT REVIEWS MARQUEE */}
+      {/* 5. CLIENT REVIEWS MARQUEE (New Global Version) */}
       <ReviewMarquee />
 
-      {/* NEW CTA SECTION (ABOVE PRICING) */}
+      {/* 6. SHORT CTA SECTION */}
       <section className="py-20 container mx-auto px-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          className="relative rounded-3xl p-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"
-        >
-          <div className="bg-black rounded-[20px] py-16 px-6 md:px-16 overflow-hidden relative">
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">Ready to transform your gym?</h2>
-              <p className="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">Join the top 1% of gym owners who use AI to run their business.</p>
-              <Link href="/pricing">
-                <Button className="h-14 px-12 rounded-full bg-white text-black hover:bg-gray-200 font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
-                  Start Free Trial
-                </Button>
-              </Link>
-            </div>
-
-            {/* Decorative BG elements */}
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid.svg')] opacity-10" />
+        <div className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 rounded-[30px] border border-white/10 p-12 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to transform?</h2>
+            <Link href="/pricing">
+              <Button className="h-16 px-12 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all w-full md:w-auto">
+                Start Free Trial
+              </Button>
+            </Link>
+            <p className="mt-4 text-sm text-blue-200">No credit card required • Cancel anytime</p>
           </div>
-        </motion.div>
+        </div>
       </section>
 
-
-      {/* PRICING SECTION (SHORT) */}
+      {/* 7. PRICING SECTION */}
       <section className="py-24 container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">Flexible Pricing Plans</h2>
           <p className="text-gray-400 text-lg">Choose a plan that grows with you.</p>
         </div>
-
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Free/Basic */}
-          <div className="p-8 rounded-2xl border border-white/10 bg-card/20 hover:bg-card/40 transition-all hover:scale-105 duration-300">
+          <div className="p-8 rounded-2xl border border-white/10 bg-card/20 hover:bg-card/40 transition-all">
             <h3 className="text-xl font-bold mb-2 text-white">Starter</h3>
             <div className="mb-4">
               <span className="text-4xl font-bold text-white">$29</span>
@@ -331,9 +241,8 @@ export default function LandingPage() {
               <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-white" /> Basic Dashboard</li>
             </ul>
           </div>
-
           {/* Pro - Highlighted */}
-          <div className="p-8 rounded-2xl border border-blue-500 bg-blue-900/10 relative transform md:-translate-y-4 hover:scale-105 duration-300 hover:shadow-2xl hover:shadow-blue-900/50">
+          <div className="p-8 rounded-2xl border border-blue-500 bg-blue-900/10 relative transform md:-translate-y-4">
             <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs px-3 py-1 rounded-bl-xl font-bold uppercase">Popular</div>
             <h3 className="text-xl font-bold mb-2 text-white">Pro Gym</h3>
             <div className="mb-4">
@@ -350,9 +259,8 @@ export default function LandingPage() {
               <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Fee Reminders</li>
             </ul>
           </div>
-
           {/* Elite */}
-          <div className="p-8 rounded-2xl border border-white/10 bg-card/20 hover:bg-card/40 transition-all hover:scale-105 duration-300">
+          <div className="p-8 rounded-2xl border border-white/10 bg-card/20 hover:bg-card/40 transition-all">
             <h3 className="text-xl font-bold mb-2 text-white">Elite</h3>
             <div className="mb-4">
               <span className="text-4xl font-bold text-white">Custom</span>
@@ -369,13 +277,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* BEFORE & AFTER SECTION */}
+      {/* 8. BEFORE & AFTER */}
       <BeforeAfter />
 
-      {/* FAQ SECTION */}
+      {/* 9. FAQ */}
       <FAQSection />
 
-      {/* FINAL CTA FOOTER */}
+      {/* FOOTER */}
       <footer className="border-t border-white/10 py-12 bg-black/40">
         <div className="container mx-auto px-4 text-center text-gray-500">
           <p className="mb-4 text-lg font-bold text-white">DailyFit AI Solutions</p>

@@ -8,45 +8,64 @@ import { motion } from "framer-motion";
 
 const reviews = [
     {
-        name: "Rajesh Kumar",
-        username: "@rajesh_peakfitness",
-        body: "DailyFit changed how I run my gym. The AI answers locally in Hinglish, my clients love it!",
-        img: "https://randomuser.me/api/portraits/men/32.jpg",
+        name: "Alex Thompson",
+        username: "@alex_strength_lab",
+        body: "The automation here is insane. My retention went up 20% in the first month.",
+        img: "https://randomuser.me/api/portraits/men/45.jpg",
     },
     {
         name: "Sarah Jenkins",
-        username: "@sarah_fit",
-        body: "I used to spend 3 hours on diet plans. Now the AI does it in seconds 🤯",
+        username: "@sarah_fit_studio",
+        body: "Finally software that understands fitness. The AI diet plans are actually good.",
         img: "https://randomuser.me/api/portraits/women/44.jpg",
     },
     {
-        name: "Amit Patel",
-        username: "@iron_pump_gym",
-        body: "The automated fee reminders saved me ₹50k in lost revenue last month alone.",
-        img: "https://randomuser.me/api/portraits/men/86.jpg",
+        name: "David Chen",
+        username: "@chen_gyms_asia",
+        body: "Managing 3 locations was a nightmare. DailyFit centralized everything on WhatsApp.",
+        img: "https://randomuser.me/api/portraits/men/22.jpg",
     },
     {
-        name: "Priya Sharma",
-        username: "@priya_yoga",
-        body: "My leads are followed up instantly. I wake up to booked demos every morning.",
+        name: "Elena Rodriguez",
+        username: "@elena_pilates",
+        body: "My clients love the instant responses. It feels premium and professional.",
         img: "https://randomuser.me/api/portraits/women/68.jpg",
     },
     {
-        name: "Mike Tyson (Owner)",
-        username: "@mike_gym_delhi",
-        body: "Best investment for my gym. The dashboard is sleek and the support is 10/10.",
+        name: "Marcus Johnson",
+        username: "@mj_performance",
+        body: "Revenue tracking is crystal clear now. I know exactly who owes fees instantly.",
         img: "https://randomuser.me/api/portraits/men/11.jpg",
     },
     {
-        name: "Sneha Reddy",
-        username: "@sneha_crossfit",
-        body: "Upselling supplements has never been easier. The AI just knows what to suggest.",
+        name: "Priya Sharma",
+        username: "@priya_yoga_mumbai",
+        body: "Best support team ever. They actually listen to feature requests.",
         img: "https://randomuser.me/api/portraits/women/33.jpg",
+    },
+    {
+        name: "James Wilson",
+        username: "@jw_crossfit",
+        body: "The onboarding flow for new members is so smooth. No more paperwork.",
+        img: "https://randomuser.me/api/portraits/men/67.jpg",
+    },
+    {
+        name: "Sophie Anderson",
+        username: "@sophie_lifts",
+        body: "I've tried 5 different gym apps. This is the only one that stuck.",
+        img: "https://randomuser.me/api/portraits/women/12.jpg",
+    },
+    {
+        name: "Omar Farooq",
+        username: "@omar_iron_gym",
+        body: "The WhatsApp integration is a game changer for the Middle East market.",
+        img: "https://randomuser.me/api/portraits/men/54.jpg",
     },
 ];
 
-const firstRow = reviews.slice(0, reviews.length / 2);
-const secondRow = reviews.slice(reviews.length / 2);
+const firstRow = reviews.slice(0, 3);
+const secondRow = reviews.slice(3, 6);
+const thirdRow = reviews.slice(6, 9);
 
 const ReviewCard = ({
     img,
@@ -85,35 +104,47 @@ const ReviewCard = ({
 
 export function ReviewMarquee() {
     return (
-        <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl">
+        <div className="relative flex h-[600px] w-full flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl py-12">
             <div className="text-center mb-10 z-10">
-                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-400">Trusted by 500+ Gym Owners</h2>
-                <p className="text-gray-400 mt-2">Don't just take our word for it.</p>
+                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-400">Loved by Gym Owners Worldwide</h2>
+                <p className="text-gray-400 mt-2">From Mumbai to Miami, fitness businesses run on DailyFit.</p>
             </div>
 
-            {/* Marquee Row 1 (Left) */}
+            {/* Marquee Row 1 */}
             <div className="flex w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
                 <motion.div
                     className="flex gap-4 pr-4"
                     animate={{ x: "-50%" }}
-                    transition={{ duration: 20, ease: "linear", repeat: Infinity }}
+                    transition={{ duration: 30, ease: "linear", repeat: Infinity }}
                 >
-                    {[...firstRow, ...firstRow, ...firstRow].map((review, idx) => (
+                    {[...firstRow, ...firstRow, ...firstRow, ...firstRow].map((review, idx) => (
                         <ReviewCard key={idx} {...review} />
                     ))}
                 </motion.div>
             </div>
 
-            {/* Marquee Row 2 (Right) */}
+            {/* Marquee Row 2 */}
             <div className="flex w-full overflow-hidden mt-6 [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
                 <motion.div
                     className="flex gap-4 pr-4"
-                    aria-hidden="true"
                     initial={{ x: "-50%" }}
                     animate={{ x: "0%" }}
-                    transition={{ duration: 20, ease: "linear", repeat: Infinity }}
+                    transition={{ duration: 30, ease: "linear", repeat: Infinity }}
                 >
-                    {[...secondRow, ...secondRow, ...secondRow].map((review, idx) => (
+                    {[...secondRow, ...secondRow, ...secondRow, ...secondRow].map((review, idx) => (
+                        <ReviewCard key={idx} {...review} />
+                    ))}
+                </motion.div>
+            </div>
+
+            {/* Marquee Row 3 */}
+            <div className="flex w-full overflow-hidden mt-6 [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
+                <motion.div
+                    className="flex gap-4 pr-4"
+                    animate={{ x: "-50%" }}
+                    transition={{ duration: 35, ease: "linear", repeat: Infinity }}
+                >
+                    {[...thirdRow, ...thirdRow, ...thirdRow, ...thirdRow].map((review, idx) => (
                         <ReviewCard key={idx} {...review} />
                     ))}
                 </motion.div>

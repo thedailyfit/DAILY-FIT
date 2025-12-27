@@ -7,11 +7,27 @@ import { BLOG_POSTS } from "@/data/blog-posts";
 import { ArrowRight, Calendar, Clock, User, TrendingUp, Zap, BrainCircuit, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
+import Image from "next/image";
+
 const getPostIcon = (category: string) => {
-    if (category.includes("Retention")) return <TrendingUp className="w-12 h-12 text-white/80" />;
-    if (category.includes("Productivity")) return <Zap className="w-12 h-12 text-white/80" />;
-    if (category.includes("AI")) return <BrainCircuit className="w-12 h-12 text-white/80" />;
-    return <MessageCircle className="w-12 h-12 text-white/80" />;
+    let src = "/blog-thumbs/growth.png"; // Default
+    if (category.includes("Retention")) src = "/blog-thumbs/retention.png";
+    if (category.includes("Productivity")) src = "/blog-thumbs/ai.png";
+    if (category.includes("AI")) src = "/blog-thumbs/ai.png";
+    if (category.includes("WhatsApp")) src = "/blog-thumbs/whatsapp.png";
+
+    return (
+        <div className="w-full h-full relative">
+            <Image
+                src={src}
+                alt={category}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            {/* Overlay gradient to ensure text readability if needed */}
+            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
+        </div>
+    );
 };
 
 export default function BlogIndexPage() {
@@ -32,7 +48,7 @@ export default function BlogIndexPage() {
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
                         Strategies for the <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">Future of Fitness.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">Future of Fitness</span>
                     </h1>
                     <p className="text-xl text-gray-400">
                         Deep dives into gym retention, AI automation, and building habit-forming fitness businesses.

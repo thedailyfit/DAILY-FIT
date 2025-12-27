@@ -113,8 +113,7 @@ export default function LandingPage() {
             Live in Gyms
           </div>
           <h2 className="text-4xl md:text-6xl font-bold mb-6">DailyFit <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">In Action</span></h2>
-          <p className="text-gray-400 text-xl max-w-2xl mx-auto">
-            See how high-performance gyms use AI to automate the mundane and focus on the meaningful.
+            See how Modern gyms use AI to Automate Daily Operations and Focus on Results that matter
           </p>
         </div>
 
@@ -177,99 +176,99 @@ export default function LandingPage() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section >
 
-      {/* 4. FEATURES GRID */}
-      <section className="py-24 bg-card/30 relative">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Built for <span className="text-blue-500">Growth</span></h2>
-            <p className="text-gray-400 text-lg">Everything you need to run a 7-figure fitness business without the burnout.</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={<MessageSquare className="w-6 h-6 text-green-400" />}
-              title="WhatsApp Multi-System Agent"
-              desc="Conversational AI that captures leads, answers queries, and manages members 24/7."
-            />
-            <FeatureCard
-              icon={<LineChart className="w-6 h-6 text-blue-400" />}
-              title="Advanced Owner Dashboard"
-              desc="Deep analytics on revenue, retention, and trainer performance with weekly reports."
-            />
-            <FeatureCard
-              icon={<Utensils className="w-6 h-6 text-orange-400" />}
-              title="Custom Diet & Workout Plans"
-              desc="Create your own or use AI to generate personalized plans with regional Indian foods."
-            />
-            <FeatureCard
-              icon={<Users className="w-6 h-6 text-violet-400" />}
-              title="Meal Photo Calorie Tracking"
-              desc="Members snap a photo of their food, and AI tracks calories and macros instantly."
-            />
-            <FeatureCard
-              icon={<Zap className="w-6 h-6 text-yellow-400" />}
-              title="Automated Daily Nudges"
-              desc="Motivation, workout reminders, and habit tracking sent automatically to members."
-            />
-            <FeatureCard
-              icon={<CheckCircle2 className="w-6 h-6 text-red-400" />}
-              title="Smart Fee Renewals"
-              desc="Automated reminders for membership fees and trainer package renewals."
-            />
-            <FeatureCard
-              icon={<Zap className="w-6 h-6 text-pink-400" />}
-              title="Upselling Engine"
-              desc="AI suggests add-ons like Whey Protein, Supplements, and Advanced Plans to members."
-            />
-            <FeatureCard
-              icon={<Users className="w-6 h-6 text-indigo-400" />}
-              title="Lead Enquiry Follow-up"
-              desc="Never lose a lead. AI follows up with prospects until they are ready to join."
-            />
-            <FeatureCard
-              icon={<CheckCircle2 className="w-6 h-6 text-cyan-400" />}
-              title="Daily Member Tracking"
-              desc="Weekly weight check-ins, step challenges, and cheat meal control notifications."
-            />
+    {/* 4. FEATURES GRID */ }
+    < section className = "py-24 bg-card/30 relative" >
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">Built for <span className="text-blue-500">Growth</span></h2>
+          <p className="text-gray-400 text-lg">Everything you need to run a 7-figure fitness business without the burnout.</p>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <FeatureCard
+            icon={<MessageSquare className="w-6 h-6 text-green-400" />}
+            title="WhatsApp Multi-System Agent"
+            desc="Conversational AI that captures leads, answers queries, and manages members 24/7."
+          />
+          <FeatureCard
+            icon={<LineChart className="w-6 h-6 text-blue-400" />}
+            title="Advanced Owner Dashboard"
+            desc="Deep analytics on revenue, retention, and trainer performance with weekly reports."
+          />
+          <FeatureCard
+            icon={<Utensils className="w-6 h-6 text-orange-400" />}
+            title="Custom Diet & Workout Plans"
+            desc="Create your own or use AI to generate personalized plans with regional Indian foods."
+          />
+          <FeatureCard
+            icon={<Users className="w-6 h-6 text-violet-400" />}
+            title="Meal Photo Calorie Tracking"
+            desc="Members snap a photo of their food, and AI tracks calories and macros instantly."
+          />
+          <FeatureCard
+            icon={<Zap className="w-6 h-6 text-yellow-400" />}
+            title="Automated Daily Nudges"
+            desc="Motivation, workout reminders, and habit tracking sent automatically to members."
+          />
+          <FeatureCard
+            icon={<CheckCircle2 className="w-6 h-6 text-red-400" />}
+            title="Smart Fee Renewals"
+            desc="Automated reminders for membership fees and trainer package renewals."
+          />
+          <FeatureCard
+            icon={<Zap className="w-6 h-6 text-pink-400" />}
+            title="Upselling Engine"
+            desc="AI suggests add-ons like Whey Protein, Supplements, and Advanced Plans to members."
+          />
+          <FeatureCard
+            icon={<Users className="w-6 h-6 text-indigo-400" />}
+            title="Lead Enquiry Follow-up"
+            desc="Never lose a lead. AI follows up with prospects until they are ready to join."
+          />
+          <FeatureCard
+            icon={<CheckCircle2 className="w-6 h-6 text-cyan-400" />}
+            title="Daily Member Tracking"
+            desc="Weekly weight check-ins, step challenges, and cheat meal control notifications."
+          />
+        </div>
+      </div>
+      </section >
+
+    {/* 5. CLIENT REVIEWS MARQUEE (New Global Version) */ }
+    < ReviewMarquee />
+
+    {/* 6. SHORT CTA SECTION */ }
+    < section className = "py-24 container mx-auto px-4 text-center" >
+      <div className="relative rounded-[3rem] p-1 bg-gradient-to-b from-blue-500/20 to-purple-500/20 max-w-5xl mx-auto">
+        <div className="bg-black/80 backdrop-blur-xl rounded-[2.9rem] py-20 px-6 md:px-20 overflow-hidden relative border border-white/10">
+
+          {/* Background Glows */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+
+          <div className="relative z-10 flex flex-col items-center">
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight">
+              Ready to <span className="text-blue-500">Transform</span>?
+            </h2>
+            <p className="text-gray-400 text-xl mb-10 max-w-2xl">
+              Join the elite circle of gym owners who have automated their growth.
+            </p>
+
+            <Link href="/pricing" className="group">
+              <Button className="h-16 px-16 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl shadow-2xl shadow-blue-900/50 hover:shadow-blue-600/50 hover:scale-105 transition-all w-full md:w-auto flex items-center gap-3">
+                Start Free Trial <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Button>
+            </Link>
+            <p className="mt-6 text-sm text-gray-500 font-medium">No credit card required • 14-day free trial</p>
           </div>
         </div>
-      </section>
+      </div>
+      </section >
 
-      {/* 5. CLIENT REVIEWS MARQUEE (New Global Version) */}
-      <ReviewMarquee />
-
-      {/* 6. SHORT CTA SECTION */}
-      <section className="py-24 container mx-auto px-4 text-center">
-        <div className="relative rounded-[3rem] p-1 bg-gradient-to-b from-blue-500/20 to-purple-500/20 max-w-5xl mx-auto">
-          <div className="bg-black/80 backdrop-blur-xl rounded-[2.9rem] py-20 px-6 md:px-20 overflow-hidden relative border border-white/10">
-
-            {/* Background Glows */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 blur-[100px] rounded-full pointer-events-none" />
-            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-
-            <div className="relative z-10 flex flex-col items-center">
-              <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight">
-                Ready to <span className="text-blue-500">Transform</span>?
-              </h2>
-              <p className="text-gray-400 text-xl mb-10 max-w-2xl">
-                Join the elite circle of gym owners who have automated their growth.
-              </p>
-
-              <Link href="/pricing" className="group">
-                <Button className="h-16 px-16 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl shadow-2xl shadow-blue-900/50 hover:shadow-blue-600/50 hover:scale-105 transition-all w-full md:w-auto flex items-center gap-3">
-                  Start Free Trial <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </Button>
-              </Link>
-              <p className="mt-6 text-sm text-gray-500 font-medium">No credit card required • 14-day free trial</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. PRICING SECTION */}
-      <section className="py-24 container mx-auto px-4 md:px-6">
+    {/* 7. PRICING SECTION */ }
+    < section className = "py-24 container mx-auto px-4 md:px-6" >
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">Flexible Pricing Plans</h2>
           <p className="text-gray-400 text-lg">Choose a plan that grows with you.</p>
@@ -325,16 +324,16 @@ export default function LandingPage() {
             </ul>
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* 8. BEFORE & AFTER */}
-      <BeforeAfter />
+    {/* 8. BEFORE & AFTER */ }
+    < BeforeAfter />
 
-      {/* 9. FAQ */}
-      <FAQSection />
+    {/* 9. FAQ */ }
+    < FAQSection />
 
-      {/* NEW FOOTER */}
-      <SiteFooter />
+    {/* NEW FOOTER */ }
+    < SiteFooter />
     </div >
   );
 }

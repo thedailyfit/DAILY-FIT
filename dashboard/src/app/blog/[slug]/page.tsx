@@ -82,6 +82,166 @@ const LoopCycle = () => (
     </div>
 );
 
+// 3. Workload Comparison Chart (Bar Chart)
+const WorkloadChart = () => (
+    <div className="my-12 p-8 bg-[#0F0F0F] rounded-3xl border border-white/10">
+        <h4 className="text-center text-xl font-bold text-white mb-8">Weekly Trainer Workload</h4>
+        <div className="space-y-6 max-w-2xl mx-auto">
+            {/* Manual Workload */}
+            <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-400">
+                    <span>Manual Management (15 Clients)</span>
+                    <span className="text-red-400 font-bold">25 Hours/Week</span>
+                </div>
+                <div className="h-4 bg-gray-800 rounded-full overflow-hidden relative">
+                    <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: "80%" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-red-500 to-orange-500"
+                    />
+                </div>
+                <p className="text-xs text-gray-500">Mostly admin, copy-pasting, and tracking.</p>
+            </div>
+
+            {/* AI Workload */}
+            <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-400">
+                    <span>With DailyFit AI (50 Clients)</span>
+                    <span className="text-green-400 font-bold">5 Hours/Week</span>
+                </div>
+                <div className="h-4 bg-gray-800 rounded-full overflow-hidden relative">
+                    <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: "20%" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: 0.4 }}
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-400 to-emerald-500"
+                    />
+                </div>
+                <p className="text-xs text-gray-500">Only coaching, relationships, and motivation.</p>
+            </div>
+        </div>
+    </div>
+);
+
+// 4. WhatsApp Automation Flow
+const WhatsappAutomation = () => (
+    <div className="my-12 p-8 bg-[#0F0F0F] rounded-3xl border border-white/10 text-center">
+        <h4 className="text-xl font-bold text-white mb-10">How DailyFit AI Automates Coaching</h4>
+        <div className="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
+
+            {/* Step 1 */}
+            <div className="flex flex-col items-center gap-4 relative z-10">
+                <div className="w-16 h-16 bg-blue-900/30 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400">
+                    <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                    <div className="font-bold text-white">1. Plan Generation</div>
+                    <div className="text-xs text-gray-500">AI builds workout</div>
+                </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="hidden md:block flex-1 h-0.5 bg-gradient-to-r from-blue-900 to-purple-900 relative">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col items-center gap-4 relative z-10">
+                <div className="w-16 h-16 bg-purple-900/30 border border-purple-500/30 rounded-2xl flex items-center justify-center text-purple-400">
+                    <Share2 className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                    <div className="font-bold text-white">2. WhatsApp Delivery</div>
+                    <div className="text-xs text-gray-500">Sent at 6:00 AM</div>
+                </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="hidden md:block flex-1 h-0.5 bg-gradient-to-r from-purple-900 to-green-900 relative">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-green-500"></div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col items-center gap-4 relative z-10">
+                <div className="w-16 h-16 bg-green-900/30 border border-green-500/30 rounded-2xl flex items-center justify-center text-green-400">
+                    <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                    <div className="font-bold text-white">3. Client Logs</div>
+                    <div className="text-xs text-gray-500">Photo or Text Reply</div>
+                </div>
+            </div>
+            {/* Arrow */}
+            <div className="hidden md:block flex-1 h-0.5 bg-gradient-to-r from-green-900 to-orange-900 relative">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-orange-500"></div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="flex flex-col items-center gap-4 relative z-10">
+                <div className="w-16 h-16 bg-orange-900/30 border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-400">
+                    <Facebook className="w-8 h-8" /> {/* Placeholder for 'Dashboard' icon */}
+                </div>
+                <div className="space-y-1">
+                    <div className="font-bold text-white">4. Trainer Dashboard</div>
+                    <div className="text-xs text-gray-500">See progress stats</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+);
+
+// 5. Comparison Table (Traditional vs AI)
+const ComparisonTable = () => (
+    <div className="my-12 p-6 md:p-8 bg-[#0F0F0F] rounded-3xl border border-white/10 overflow-hidden">
+        <h4 className="text-center text-xl font-bold text-white mb-8">Traditional Gym vs. DailyFit AI Automation</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Traditional */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 text-red-400 font-bold uppercase tracking-wider text-sm border-b border-white/5 pb-2">
+                    <div className="w-2 h-2 rounded-full bg-red-500"></div> Traditional Gym
+                </div>
+                <ul className="space-y-3">
+                    {[
+                        "Follow-up depends on trainer mood",
+                        "Workouts explained once",
+                        "Diet advice is generic PDF",
+                        "Members confused by Week 3",
+                        "High dropout rate (30-45 days)"
+                    ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2 text-gray-500 text-sm">
+                            <span className="text-red-900 mt-0.5">✕</span> {item}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* AI Automation */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 text-green-400 font-bold uppercase tracking-wider text-sm border-b border-white/5 pb-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div> AI Automation
+                </div>
+                <ul className="space-y-3">
+                    {[
+                        "Daily automated WhatsApp nudges",
+                        "Workouts delivered every morning",
+                        "Personalized diet adjustments",
+                        "Consistency tracked daily",
+                        "Higher retention & engagement"
+                    ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2 text-gray-300 text-sm">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> {item}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    </div>
+);
+
 
 export default function BlogPostPage() {
     const params = useParams();

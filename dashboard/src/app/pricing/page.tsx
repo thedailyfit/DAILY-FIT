@@ -1,3 +1,5 @@
+"use client";
+
 import { LandingHeader } from "@/components/landing-header";
 import { Button } from "@/components/ui/button";
 import { Check, X, ChevronDown, CheckCircle2, HelpCircle } from "lucide-react";

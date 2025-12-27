@@ -12,12 +12,12 @@ import Image from "next/image";
 const getPostIcon = (category: string) => {
     let src = "/blog-thumbs/real-growth.png"; // Default
     if (category.includes("Retention")) src = "/blog-thumbs/real-retention.png";
-    if (category.includes("Productivity")) src = "/blog-thumbs/real-ai.png";
-    if (category.includes("AI")) src = "/blog-thumbs/real-ai.png";
+    if (category.includes("Productivity")) src = "/blog-thumbs/real-ai.png"; // Trainer Image
+    if (category.includes("AI")) src = "/blog-thumbs/real-tech.png"; // New Tech Image
     if (category.includes("WhatsApp")) src = "/blog-thumbs/real-whatsapp.png";
     if (category.includes("Marketing")) src = "/blog-thumbs/real-whatsapp.png";
-    if (category.includes("Operations")) src = "/blog-thumbs/real-retention.png";
-    if (category.includes("Software")) src = "/blog-thumbs/real-ai.png";
+    if (category.includes("Operations")) src = "/blog-thumbs/real-consult.png"; // New Consult/Sales Image
+    if (category.includes("Software")) src = "/blog-thumbs/real-tech.png"; // Reuse Tech for Software
 
     return (
         <Image

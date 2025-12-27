@@ -10,8 +10,9 @@ import { BeforeAfter } from "@/components/before-after";
 import { FeatureShowcase } from "@/components/feature-showcase";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, MessageSquare, LineChart, Utensils, Zap, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2, MessageSquare, LineChart, Utensils, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import { HeroLiveNotifications } from "@/components/hero-live-notifications";
 
 export default function LandingPage() {
   return (

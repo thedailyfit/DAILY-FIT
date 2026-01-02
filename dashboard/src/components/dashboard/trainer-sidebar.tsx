@@ -11,7 +11,9 @@ import {
     Settings,
     Layers,
     FilePlus2,
-    LogOut
+    LogOut,
+    Utensils,
+    CreditCard
 } from "lucide-react";
 
 export function TrainerSidebar() {
@@ -21,9 +23,11 @@ export function TrainerSidebar() {
     const navItems = [
         { name: "Overview", icon: LayoutDashboard, href: "/dashboard" },
         { name: "Clients", icon: Users, href: "/dashboard/clients" },
-        { name: "Program Builder", icon: Layers, href: "/dashboard/programs/builder" },
-        { name: "Plans Library", icon: FilePlus2, href: "/dashboard/plans" },
         { name: "Messages", icon: MessageSquare, href: "/dashboard/chat" },
+        { name: "Program Builder", icon: Layers, href: "/dashboard/programs/builder" },
+        { name: "Diet Plans", icon: Utensils, href: "/dashboard/plans/diets" },
+        { name: "Workout Plans", icon: Dumbbell, href: "/dashboard/plans/workouts" },
+        { name: "Subscription", icon: CreditCard, href: "/dashboard/subscription" },
         { name: "Settings", icon: Settings, href: "/dashboard/settings" },
     ];
 

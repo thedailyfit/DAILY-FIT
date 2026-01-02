@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Dumbbell, Utensils, Pill, Minus } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createClient } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Dumbbell, Utensils, Pill, Minus } from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createClient } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function ProgramBuilderPage() {
     const supabase = createClient();
@@ -81,23 +81,12 @@ export default function ProgramBuilderPage() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Unauthorized");
 
-            // Construct Protocol Objects
-            // If custom, we might need to create them first or store as JSON. 
-            // For Launch MVP, we will store them as JSON in the 'programs' table or similar.
-            // Assuming a 'master_programs' table exists or similar structure. 
-            // If not, we map to what we have. 
-
-            // For now, let's assume we insert into 'plan_programs' (the table we saw in ClientsPage logic)
-            // Or 'programs' table if it exists. 
-            // In the absence of a confirmed 'master_programs' schema, I will save to 'plan_programs'
-
             const payload = {
                 trainer_id: user.id,
                 name: programName,
                 description: programDesc,
                 diet_plan_id: dietMode === "library" ? (selectedDiet || null) : null,
                 workout_plan_id: workoutMode === "library" ? (selectedWorkout || null) : null,
-                // Store custom stuff in JSONB columns if they exist, or just description
                 custom_diet: dietMode === "custom" ? customDiet : null,
                 custom_workout: workoutMode === "custom" ? customWorkout : null,
                 supplements: supplements,
@@ -110,7 +99,7 @@ export default function ProgramBuilderPage() {
             if (error) throw error;
 
             alert("Master Program Saved Successfully!");
-            router.push("/dashboard/plans"); // Redirect to library
+            router.push("/dashboard/plans");
 
         } catch (error: any) {
             console.error("Save Error:", error);
@@ -120,19 +109,19 @@ export default function ProgramBuilderPage() {
         }
     };
 
-    if (fetching) return <div className="min-h-screen p-8 flex items-center justify-center text-zinc-500">Loading Builder Resources...</div>;
+    if (fetching) return <div className="min-h-screen p-8 flex items-center justify-center text-zinc-500 bg-[#0a0a0a]">Loading Builder Resources...</div>;
 
     return (
-        <div className="p-8 max-w-6xl mx-auto min-h-screen bg-[#e6e6e6] text-black">
+        <div className="p-8 max-w-6xl mx-auto min-h-screen bg-[#0a0a0a] text-white">
             <div className="mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-4xl font-black text-[#212121] uppercase tracking-tight mb-2">Master Program Builder</h1>
+                    <h1 className="text-4xl font-black text-white uppercase tracking-tight mb-2">Master Program Builder</h1>
                     <p className="text-zinc-500 font-medium">Create comprehensive protocols for your clients.</p>
                 </div>
                 <Button
                     onClick={handleSave}
                     disabled={loading}
-                    className="bg-[#212121] hover:bg-black text-white font-bold h-12 px-8 shadow-xl hover:shadow-2xl transition-all rounded-xl"
+                    className="bg-[#cbfe00] hover:bg-[#b0dc00] text-black font-bold h-12 px-8 shadow-[0_0_20px_rgba(203,254,0,0.2)] hover:shadow-[0_0_30px_rgba(203,254,0,0.4)] transition-all rounded-xl"
                 >
                     {loading ? "Saving..." : "Save Master Program"}
                 </Button>
@@ -143,7 +132,7 @@ export default function ProgramBuilderPage() {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Step 1: Program Identity */}
-                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-2xl">
+                    <div className="bg-[#141414] p-8 rounded-[2rem] shadow-2xl border border-zinc-800">
                         <h2 className="font-bold text-white text-xl mb-6 flex items-center gap-3">
                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#cbfe00] text-black text-sm font-bold">01</span>
                             Program Identity
@@ -155,7 +144,7 @@ export default function ProgramBuilderPage() {
                                     value={programName}
                                     onChange={(e) => setProgramName(e.target.value)}
                                     placeholder="e.g. 12 Week Shred Transformation"
-                                    className="bg-black/40 border-white/10 text-white placeholder:text-zinc-600 h-14 rounded-xl focus:ring-1 focus:ring-[#cbfe00] focus:border-[#cbfe00]"
+                                    className="bg-[#0a0a0a] border-zinc-700 text-white placeholder:text-zinc-600 h-14 rounded-xl focus:ring-1 focus:ring-[#cbfe00] focus:border-[#cbfe00]"
                                 />
                             </div>
                             <div>
@@ -164,27 +153,27 @@ export default function ProgramBuilderPage() {
                                     value={programDesc}
                                     onChange={(e) => setProgramDesc(e.target.value)}
                                     placeholder="Brief overview of this phase..."
-                                    className="bg-black/40 border-white/10 text-white placeholder:text-zinc-600 min-h-[80px] rounded-xl focus:ring-1 focus:ring-[#cbfe00] focus:border-[#cbfe00]"
+                                    className="bg-[#0a0a0a] border-zinc-700 text-white placeholder:text-zinc-600 min-h-[80px] rounded-xl focus:ring-1 focus:ring-[#cbfe00] focus:border-[#cbfe00]"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Step 2: Core Protocols */}
-                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-2xl">
+                    <div className="bg-[#141414] p-8 rounded-[2rem] shadow-2xl border border-zinc-800">
                         <h2 className="font-bold text-white text-xl mb-6 flex items-center gap-3">
                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#cbfe00] text-black text-sm font-bold">02</span>
                             Core Protocols
                         </h2>
 
                         {/* Diet Section */}
-                        <div className="mb-8 p-6 rounded-2xl bg-white/5 border border-white/5">
+                        <div className="mb-8 p-6 rounded-2xl bg-[#0a0a0a]/50 border border-zinc-800">
                             <div className="flex items-center justify-between mb-4">
                                 <label className="text-sm font-bold text-[#cbfe00] uppercase tracking-wider flex items-center gap-2">
                                     <Utensils className="h-4 w-4" /> Nutrition Protocol
                                 </label>
                                 <Tabs value={dietMode} onValueChange={(v) => setDietMode(v as any)} className="w-[200px]">
-                                    <TabsList className="grid w-full grid-cols-2 bg-black/50">
+                                    <TabsList className="grid w-full grid-cols-2 bg-black border border-zinc-800">
                                         <TabsTrigger value="library" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Library</TabsTrigger>
                                         <TabsTrigger value="custom" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Custom</TabsTrigger>
                                     </TabsList>
@@ -193,10 +182,10 @@ export default function ProgramBuilderPage() {
 
                             {dietMode === "library" ? (
                                 <Select onValueChange={setSelectedDiet} value={selectedDiet}>
-                                    <SelectTrigger className="bg-black/40 border-white/10 text-white h-12">
+                                    <SelectTrigger className="bg-[#222] border-zinc-700 text-white h-12">
                                         <SelectValue placeholder="Select from Diet Library..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#212121] border-zinc-700 text-white">
+                                    <SelectContent className="bg-[#1a1a1a] border-zinc-700 text-white">
                                         {dietPlans.length > 0 ? dietPlans.map(p => (
                                             <SelectItem key={p.id} value={p.id} className="focus:bg-[#cbfe00] focus:text-black">{p.name}</SelectItem>
                                         )) : <div className="p-2 text-xs text-zinc-500">No plans found</div>}
@@ -206,13 +195,13 @@ export default function ProgramBuilderPage() {
                                 <div className="space-y-3">
                                     <Input
                                         placeholder="Custom Diet Name"
-                                        className="bg-black/40 border-white/10 text-white h-12"
+                                        className="bg-[#222] border-zinc-700 text-white h-12"
                                         value={customDiet.name}
                                         onChange={(e) => setCustomDiet({ ...customDiet, name: e.target.value })}
                                     />
                                     <Textarea
                                         placeholder="Enter macros, meal timing, or specific instructions..."
-                                        className="bg-black/40 border-white/10 text-white min-h-[100px]"
+                                        className="bg-[#222] border-zinc-700 text-white min-h-[100px]"
                                         value={customDiet.details}
                                         onChange={(e) => setCustomDiet({ ...customDiet, details: e.target.value })}
                                     />
@@ -221,13 +210,13 @@ export default function ProgramBuilderPage() {
                         </div>
 
                         {/* Workout Section */}
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                        <div className="p-6 rounded-2xl bg-[#0a0a0a]/50 border border-zinc-800">
                             <div className="flex items-center justify-between mb-4">
                                 <label className="text-sm font-bold text-[#cbfe00] uppercase tracking-wider flex items-center gap-2">
                                     <Dumbbell className="h-4 w-4" /> Training Protocol
                                 </label>
                                 <Tabs value={workoutMode} onValueChange={(v) => setWorkoutMode(v as any)} className="w-[200px]">
-                                    <TabsList className="grid w-full grid-cols-2 bg-black/50">
+                                    <TabsList className="grid w-full grid-cols-2 bg-black border border-zinc-800">
                                         <TabsTrigger value="library" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Library</TabsTrigger>
                                         <TabsTrigger value="custom" className="data-[state=active]:bg-[#cbfe00] data-[state=active]:text-black text-xs">Custom</TabsTrigger>
                                     </TabsList>
@@ -236,10 +225,10 @@ export default function ProgramBuilderPage() {
 
                             {workoutMode === "library" ? (
                                 <Select onValueChange={setSelectedWorkout} value={selectedWorkout}>
-                                    <SelectTrigger className="bg-black/40 border-white/10 text-white h-12">
+                                    <SelectTrigger className="bg-[#222] border-zinc-700 text-white h-12">
                                         <SelectValue placeholder="Select from Workout Library..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#212121] border-zinc-700 text-white">
+                                    <SelectContent className="bg-[#1a1a1a] border-zinc-700 text-white">
                                         {workoutPlans.length > 0 ? workoutPlans.map(p => (
                                             <SelectItem key={p.id} value={p.id} className="focus:bg-[#cbfe00] focus:text-black">{p.name}</SelectItem>
                                         )) : <div className="p-2 text-xs text-zinc-500">No plans found</div>}
@@ -249,13 +238,13 @@ export default function ProgramBuilderPage() {
                                 <div className="space-y-3">
                                     <Input
                                         placeholder="Custom Workout Name"
-                                        className="bg-black/40 border-white/10 text-white h-12"
+                                        className="bg-[#222] border-zinc-700 text-white h-12"
                                         value={customWorkout.name}
                                         onChange={(e) => setCustomWorkout({ ...customWorkout, name: e.target.value })}
                                     />
                                     <Textarea
                                         placeholder="Enter splits, exercises, sets/reps..."
-                                        className="bg-black/40 border-white/10 text-white min-h-[100px]"
+                                        className="bg-[#222] border-zinc-700 text-white min-h-[100px]"
                                         value={customWorkout.details}
                                         onChange={(e) => setCustomWorkout({ ...customWorkout, details: e.target.value })}
                                     />
@@ -265,7 +254,7 @@ export default function ProgramBuilderPage() {
                     </div>
 
                     {/* Step 3: Sleep & Recovery */}
-                    <div className="bg-[#212121] p-8 rounded-[2rem] shadow-2xl">
+                    <div className="bg-[#141414] p-8 rounded-[2rem] shadow-2xl border border-zinc-800">
                         <h2 className="font-bold text-white text-xl mb-6 flex items-center gap-3">
                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#cbfe00] text-black text-sm font-bold">03</span>
                             Recovery & Lifestyle
@@ -278,14 +267,14 @@ export default function ProgramBuilderPage() {
                                     value={waterIntake}
                                     onChange={(e) => setWaterIntake(e.target.value)}
                                     placeholder="e.g. 4 Liters"
-                                    className="bg-black/40 border-white/10 text-white focus:ring-[#cbfe00]"
+                                    className="bg-[#0a0a0a] border-zinc-700 text-white focus:ring-[#cbfe00]"
                                 />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Sleep Target</label>
                                 <Input
                                     placeholder="e.g. 8 Hours"
-                                    className="bg-black/40 border-white/10 text-white focus:ring-[#cbfe00]"
+                                    className="bg-[#0a0a0a] border-zinc-700 text-white focus:ring-[#cbfe00]"
                                 />
                             </div>
                             <div className="md:col-span-2">
@@ -294,7 +283,7 @@ export default function ProgramBuilderPage() {
                                     value={sleepProtocol}
                                     onChange={(e) => setSleepProtocol(e.target.value)}
                                     placeholder="Specific recovery instructions..."
-                                    className="bg-black/40 border-white/10 text-white min-h-[100px] focus:ring-[#cbfe00]"
+                                    className="bg-[#0a0a0a] border-zinc-700 text-white min-h-[100px] focus:ring-[#cbfe00]"
                                 />
                             </div>
                         </div>
@@ -303,7 +292,7 @@ export default function ProgramBuilderPage() {
 
                 {/* Right Column (Supplements) */}
                 <div className="space-y-8">
-                    <Card className="bg-[#212121] text-white border-none shadow-2xl rounded-[2rem] overflow-hidden sticky top-8">
+                    <Card className="bg-[#141414] text-white border-zinc-800 shadow-2xl rounded-[2rem] overflow-hidden sticky top-8">
                         <div className="h-2 w-full bg-[#cbfe00]"></div>
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-3 text-lg">
@@ -314,7 +303,7 @@ export default function ProgramBuilderPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <div className="bg-[#0a0a0a] p-4 rounded-xl border border-zinc-800">
                                 <Input
                                     placeholder="Name (e.g. Whey Protein)"
                                     className="mb-2 bg-transparent border-b border-zinc-700 rounded-none px-0 text-white placeholder:text-zinc-600 focus:border-[#cbfe00] focus:ring-0"
@@ -342,9 +331,9 @@ export default function ProgramBuilderPage() {
                                 </Button>
                             </div>
 
-                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                 {supplements.map((s, index) => (
-                                    <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-transparent hover:border-[#cbfe00]/30 transition-all group">
+                                    <div key={index} className="flex justify-between items-center p-3 bg-[#0a0a0a] rounded-xl border border-zinc-800 hover:border-[#cbfe00]/30 transition-all group">
                                         <div>
                                             {s.name ? (
                                                 <p className="font-bold text-white text-sm">{s.name}</p>

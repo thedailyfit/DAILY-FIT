@@ -29,84 +29,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
-
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
-}
-
-.dark {
-  /* Premium Dark / Midnight Blue Theme */
-  --background: oklch(0.10 0.03 260);
-  /* Deep Midnight Blue */
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.14 0.04 260);
-  /* Slightly lighter midnight */
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.14 0.04 260);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.48 0.25 260);
-  /* Vibrant Electric Blue/Indigo */
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.25 0.05 260);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.25 0.05 260);
-  --muted-foreground: oklch(0.70 0.02 260);
-  --accent: oklch(0.25 0.05 260);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.20 0.05 260);
-  --input: oklch(0.20 0.05 260);
-  --ring: oklch(0.40 0.15 260);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-}
-
-@theme inline {
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -115,6 +37,169 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  :root {
+    /* DEFAULT THEME: CYBER BUNKER (Dark/Neon) */
+    --background: #0a0a0a;
+    --foreground: #ffffff;
+    --card: #141414;
+    --card-foreground: #ffffff;
+    --popover: #141414;
+    --popover-foreground: #ffffff;
+    --primary: #cbfe00;
+    --primary-foreground: #000000;
+    --secondary: #212121;
+    --secondary-foreground: #ffffff;
+    --muted: #212121;
+    --muted-foreground: #a1a1aa;
+    --accent: #212121;
+    --accent-foreground: #ffffff;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #ffffff;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #cbfe00;
+    --chart-1: #cbfe00;
+    --chart-2: #ffffff;
+    --chart-3: #212121;
+    --chart-4: #4b5563;
+    --chart-5: #9ca3af;
+    --radius: 0.75rem;
+
+    /* Sidebar Specifics */
+    --sidebar: #0a0a0a;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #cbfe00;
+    --sidebar-primary-foreground: #000000;
+    --sidebar-accent: #212121;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #27272a;
+    --sidebar-ring: #cbfe00;
+  }
+
+  [data-theme='minimalist'] {
+    /* MINIMALIST (Light/Clean) */
+    --background: #ffffff;
+    --foreground: #09090b;
+    --card: #f4f4f5;
+    /* zinc-100 */
+    --card-foreground: #09090b;
+    --popover: #ffffff;
+    --popover-foreground: #09090b;
+    --primary: #18181b;
+    /* zinc-900 */
+    --primary-foreground: #ffffff;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #18181b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #f4f4f5;
+    --accent-foreground: #18181b;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --ring: #18181b;
+    --chart-1: #18181b;
+    --chart-2: #71717a;
+    --chart-3: #e4e4e7;
+    --chart-4: #f4f4f5;
+    --chart-5: #ffffff;
+
+    /* Sidebar - Minimalist */
+    --sidebar: #f4f4f5;
+    --sidebar-foreground: #18181b;
+    --sidebar-primary: #18181b;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #e4e4e7;
+    --sidebar-accent-foreground: #18181b;
+    --sidebar-border: #e4e4e7;
+    --sidebar-ring: #18181b;
+  }
+
+  [data-theme='royal-blue'] {
+    /* ROYAL BLUE (Deep Slate & Sky) */
+    --background: #020617;
+    /* slate-950 */
+    --foreground: #f8fafc;
+    /* slate-50 */
+    --card: #0f172a;
+    /* slate-900 */
+    --card-foreground: #f8fafc;
+    --popover: #0f172a;
+    --popover-foreground: #f8fafc;
+    --primary: #38bdf8;
+    /* sky-400 */
+    --primary-foreground: #020617;
+    --secondary: #1e293b;
+    /* slate-800 */
+    --secondary-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --accent: #1e293b;
+    --accent-foreground: #38bdf8;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f8fafc;
+    --border: #1e293b;
+    --input: #1e293b;
+    --ring: #38bdf8;
+    --chart-1: #38bdf8;
+    --chart-2: #0ea5e9;
+    --chart-3: #0284c7;
+    --chart-4: #0369a1;
+    --chart-5: #075985;
+
+    /* Sidebar - Royal */
+    --sidebar: #020617;
+    --sidebar-foreground: #f8fafc;
+    --sidebar-primary: #38bdf8;
+    --sidebar-primary-foreground: #020617;
+    --sidebar-accent: #1e293b;
+    --sidebar-accent-foreground: #38bdf8;
+    --sidebar-border: #1e293b;
+    --sidebar-ring: #38bdf8;
+  }
+
+  [data-theme='tokyo'] {
+    /* TOKYO (Night City / Cyberpunk) */
+    --background: #050505;
+    --foreground: #e4e4e7;
+    --card: #18181b;
+    --card-foreground: #e4e4e7;
+    --popover: #18181b;
+    --popover-foreground: #e4e4e7;
+    --primary: #d946ef;
+    /* fuchsia-500 */
+    --primary-foreground: #ffffff;
+    --secondary: #27272a;
+    --secondary-foreground: #ffffff;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #d946ef;
+    --destructive: #9f1239;
+    --destructive-foreground: #ffffff;
+    --border: #3f3f46;
+    --input: #3f3f46;
+    --ring: #d946ef;
+    --chart-1: #d946ef;
+    --chart-2: #a855f7;
+    --chart-3: #8b5cf6;
+    --chart-4: #6366f1;
+    --chart-5: #3b82f6;
+
+    /* Sidebar - Tokyo */
+    --sidebar: #000000;
+    --sidebar-foreground: #e4e4e7;
+    --sidebar-primary: #d946ef;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #27272a;
+    --sidebar-accent-foreground: #d946ef;
+    --sidebar-border: #3f3f46;
+    --sidebar-ring: #d946ef;
+  }
 }
 
 @layer base {
@@ -132,7 +217,6 @@
     transform: translateY(0%);
   }
 
-  /* workouts */
   15% {
     transform: translateY(0%);
   }
@@ -141,7 +225,6 @@
     transform: translateY(-16.66%);
   }
 
-  /* nutrition */
   31.66% {
     transform: translateY(-16.66%);
   }
@@ -150,7 +233,6 @@
     transform: translateY(-33.33%);
   }
 
-  /* engagement */
   48.33% {
     transform: translateY(-33.33%);
   }
@@ -159,7 +241,6 @@
     transform: translateY(-50%);
   }
 
-  /* renewals */
   65% {
     transform: translateY(-50%);
   }
@@ -168,7 +249,6 @@
     transform: translateY(-66.66%);
   }
 
-  /* follow-ups */
   81.66% {
     transform: translateY(-66.66%);
   }
@@ -177,7 +257,6 @@
     transform: translateY(-83.33%);
   }
 
-  /* workouts (loop point) */
   98.33% {
     transform: translateY(-83.33%);
   }
@@ -185,8 +264,6 @@
   100% {
     transform: translateY(-83.33%);
   }
-
-  /* Stay on duplicate, then snap to 0 */
 }
 
 .animate-scroll-text {

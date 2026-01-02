@@ -10,7 +10,6 @@ import { Loader2, Save, User, MapPin, Phone, Mail } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from "@/components/ui/use-toast"
 
 const profileSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -25,8 +24,8 @@ type ProfileFormValues = z.infer<typeof profileSchema>
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+    const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null)
     const supabase = createClient()
-    const { toast } = useToast()
 
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
@@ -77,6 +76,7 @@ export default function SettingsPage() {
 
     async function onSubmit(data: ProfileFormValues) {
         setSaving(true)
+        setFeedback(null)
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error('No user found')
@@ -95,16 +95,10 @@ export default function SettingsPage() {
 
             if (error) throw error
 
-            toast({
-                title: "Profile updated",
-                description: "Your settings have been saved successfully.",
-            })
+            setFeedback({ type: 'success', message: 'Profile updated successfully.' })
+            setTimeout(() => setFeedback(null), 3000)
         } catch (error) {
-            toast({
-                title: "Error",
-                description: "Failed to update profile. Please try again.",
-                variant: "destructive",
-            })
+            setFeedback({ type: 'error', message: 'Failed to update profile. Please try again.' })
         } finally {
             setSaving(false)
         }
@@ -135,9 +129,13 @@ export default function SettingsPage() {
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Visual Identity Card suggestion could go here */}
+            {feedback && (
+                <div className={`p-4 rounded-xl border ${feedback.type === 'success' ? 'bg-green-900/20 border-green-900 text-green-400' : 'bg-red-900/20 border-red-900 text-red-400'}`}>
+                    {feedback.message}
+                </div>
+            )}
 
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Main Form */}
                 <Card className="col-span-2 bg-[#141414] border-zinc-800 shadow-xl rounded-[2rem] overflow-hidden">
                     <CardHeader className="p-8 pb-4 border-b border-zinc-800">

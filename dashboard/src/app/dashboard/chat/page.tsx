@@ -84,48 +84,48 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="flex h-[calc(100vh-2rem)] gap-6 p-4 md:p-6 bg-[#0a0a0a] text-white overflow-hidden">
+        <div className="flex h-[calc(100vh-2rem)] gap-6 p-4 md:p-6 bg-background text-foreground overflow-hidden">
 
             {/* LEFT SIDEBAR: CLIENT LIST */}
-            <Card className="w-80 flex flex-col border-zinc-800 shadow-2xl bg-[#141414] text-white overflow-hidden rounded-[2rem]">
-                <div className="p-5 border-b border-zinc-800 bg-[#1a1a1a]">
+            <Card className="w-80 flex flex-col border-border shadow-2xl bg-card text-card-foreground overflow-hidden rounded-[2rem]">
+                <div className="p-5 border-b border-border bg-muted/30">
                     <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-                        <Smartphone className="h-5 w-5 text-[#cbfe00]" />
+                        <Smartphone className="h-5 w-5 text-primary" />
                         Inbox
                     </h2>
                     <div className="relative">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search clients..."
-                            className="pl-10 bg-[#222] border-none text-white placeholder:text-zinc-500 h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-[#cbfe00]"
+                            className="pl-10 bg-background/50 border-input text-foreground placeholder:text-muted-foreground h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-primary"
                         />
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
                     {loading ? (
-                        <div className="flex justify-center p-8"><Loader2 className="animate-spin text-[#cbfe00]" /></div>
+                        <div className="flex justify-center p-8"><Loader2 className="animate-spin text-primary" /></div>
                     ) : clients.length === 0 ? (
-                        <div className="text-center p-8 text-zinc-500 text-sm">No clients found.</div>
+                        <div className="text-center p-8 text-muted-foreground text-sm">No clients found.</div>
                     ) : (
                         clients.map((client) => (
                             <div
                                 key={client.id}
                                 onClick={() => setSelectedClient(client)}
-                                className={`p-3 rounded-xl flex gap-3 cursor-pointer transition-all border border-transparent ${selectedClient?.id === client.id ? 'bg-[#222] border-zinc-700 shadow-lg' : 'hover:bg-[#1f1f1f]'}`}
+                                className={`p-3 rounded-xl flex gap-3 cursor-pointer transition-all border border-transparent ${selectedClient?.id === client.id ? 'bg-muted border-border shadow-sm' : 'hover:bg-muted/50'}`}
                             >
-                                <Avatar className="h-10 w-10 border border-zinc-800">
+                                <Avatar className="h-10 w-10 border border-border">
                                     <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${client.first_name}`} />
-                                    <AvatarFallback className="bg-[#cbfe00] text-black font-bold">{client.first_name[0]}</AvatarFallback>
+                                    <AvatarFallback className="bg-primary text-primary-foreground font-bold">{client.first_name[0]}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-center mb-1">
-                                        <h4 className={`font-bold text-sm truncate ${selectedClient?.id === client.id ? 'text-white' : 'text-zinc-300'}`}>
+                                        <h4 className={`font-bold text-sm truncate ${selectedClient?.id === client.id ? 'text-foreground' : 'text-muted-foreground'}`}>
                                             {client.first_name} {client.last_name}
                                         </h4>
-                                        {selectedClient?.id === client.id && <span className="w-2 h-2 bg-[#cbfe00] rounded-full animate-pulse"></span>}
+                                        {selectedClient?.id === client.id && <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>}
                                     </div>
-                                    <p className="text-xs text-zinc-500 truncate flex items-center gap-1">
+                                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
                                         <Bot className="h-3 w-3" /> Agent active
                                     </p>
                                 </div>
@@ -136,38 +136,38 @@ export default function ChatPage() {
             </Card>
 
             {/* RIGHT SIDE: AGENT INTERFACE */}
-            <Card className="flex-1 flex flex-col border-zinc-800 shadow-2xl bg-[#141414] text-white overflow-hidden rounded-[2rem]">
+            <Card className="flex-1 flex flex-col border-border shadow-2xl bg-card text-card-foreground overflow-hidden rounded-[2rem]">
                 {selectedClient ? (
                     <>
                         {/* Header */}
-                        <div className="p-4 border-b border-zinc-800 flex justify-between items-center bg-[#1a1a1a]">
+                        <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
                             <div className="flex items-center gap-4">
                                 <div className="relative">
-                                    <div className="h-10 w-10 rounded-xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                                        <Bot className="h-6 w-6 text-[#cbfe00]" />
+                                    <div className="h-10 w-10 rounded-xl bg-background flex items-center justify-center border border-border">
+                                        <Bot className="h-6 w-6 text-primary" />
                                     </div>
-                                    <div className="absolute -bottom-1 -right-1 bg-[#141414] rounded-full p-0.5">
-                                        <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-[#141414]"></div>
+                                    <div className="absolute -bottom-1 -right-1 bg-card rounded-full p-0.5">
+                                        <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-card"></div>
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-white text-lg">DailyFit Agent</h3>
-                                    <p className="text-xs text-zinc-400 flex items-center gap-1">
-                                        Mediating for: <span className="text-[#cbfe00] font-bold">{selectedClient.first_name} {selectedClient.last_name}</span>
+                                    <h3 className="font-bold text-foreground text-lg">DailyFit Agent</h3>
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                        Mediating for: <span className="text-primary font-bold">{selectedClient.first_name} {selectedClient.last_name}</span>
                                     </p>
                                 </div>
                             </div>
-                            <Button variant="ghost" size="icon" className="hover:bg-[#222] text-zinc-400"><MoreVertical className="h-5 w-5" /></Button>
+                            <Button variant="ghost" size="icon" className="hover:bg-muted text-muted-foreground"><MoreVertical className="h-5 w-5" /></Button>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 p-6 space-y-6 overflow-y-auto bg-[#0a0a0a] custom-scrollbar">
+                        <div className="flex-1 p-6 space-y-6 overflow-y-auto bg-background/50 custom-scrollbar">
                             {messages.map((msg) => (
                                 <div key={msg.id} className={`flex gap-3 ${msg.sender === 'trainer' ? 'justify-end' : ''}`}>
                                     {/* Avatar Logic */}
                                     {msg.sender === 'agent' && (
-                                        <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
-                                            <Bot className="h-5 w-5 text-[#cbfe00]" />
+                                        <div className="w-8 h-8 rounded-lg bg-card border border-border flex items-center justify-center shrink-0">
+                                            <Bot className="h-5 w-5 text-primary" />
                                         </div>
                                     )}
                                     {msg.sender === 'client_whatsapp' && (
@@ -178,10 +178,10 @@ export default function ChatPage() {
 
                                     {/* Bubble Logic */}
                                     <div className={`max-w-[70%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.sender === 'trainer'
-                                            ? 'bg-[#cbfe00] text-black rounded-tr-none font-medium'
-                                            : msg.sender === 'client_whatsapp'
-                                                ? 'bg-[#1a1a1a] border border-green-900/50 text-green-200'
-                                                : 'bg-[#1a1a1a] border border-zinc-800 text-zinc-300 rounded-tl-none'
+                                        ? 'bg-primary text-primary-foreground rounded-tr-none font-medium'
+                                        : msg.sender === 'client_whatsapp'
+                                            ? 'bg-card border border-green-900/50 text-green-500' // Adjusted text color for readability in light mode too
+                                            : 'bg-card border border-border text-foreground rounded-tl-none'
                                         }`}>
                                         {msg.sender === 'client_whatsapp' && (
                                             <p className="text-[10px] font-bold text-green-500 uppercase tracking-wider mb-1 flex items-center gap-1">
@@ -189,13 +189,13 @@ export default function ChatPage() {
                                             </p>
                                         )}
                                         {msg.content}
-                                        <p className={`text-[10px] mt-2 opacity-50 ${msg.sender === 'trainer' ? 'text-black' : 'text-zinc-500'}`}>{msg.timestamp}</p>
+                                        <p className={`text-[10px] mt-2 opacity-50 ${msg.sender === 'trainer' ? 'text-primary-foreground' : 'text-muted-foreground'}`}>{msg.timestamp}</p>
                                     </div>
 
                                     {/* Trainer Avatar */}
                                     {msg.sender === 'trainer' && (
-                                        <div className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center shrink-0">
-                                            <User className="h-5 w-5 text-black" />
+                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 border border-border">
+                                            <User className="h-5 w-5 text-foreground" />
                                         </div>
                                     )}
                                 </div>
@@ -203,32 +203,32 @@ export default function ChatPage() {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 bg-[#1a1a1a] border-t border-zinc-800">
-                            <div className="flex gap-3 items-end bg-[#222] p-2 rounded-2xl border border-zinc-700 focus-within:border-[#cbfe00] transition-colors">
+                        <div className="p-4 bg-muted/30 border-t border-border">
+                            <div className="flex gap-3 items-end bg-background p-2 rounded-2xl border border-border focus-within:border-primary transition-colors focus-within:ring-1 focus-within:ring-primary/20">
                                 <Input
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                    className="border-none bg-transparent focus-visible:ring-0 text-white placeholder:text-zinc-500 h-10 py-2"
+                                    className="border-none bg-transparent focus-visible:ring-0 text-foreground placeholder:text-muted-foreground h-10 py-2"
                                     placeholder={`Message Agent about ${selectedClient.first_name}...`}
                                 />
                                 <Button
                                     onClick={handleSend}
                                     size="icon"
-                                    className="bg-[#cbfe00] hover:bg-[#b0dc00] text-black rounded-xl shadow-[0_0_15px_rgba(203,254,0,0.2)] h-10 w-10 shrink-0"
+                                    className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-sm h-10 w-10 shrink-0"
                                 >
                                     <Send className="h-4 w-4" />
                                 </Button>
                             </div>
-                            <p className="text-center text-[10px] text-zinc-600 mt-2">
+                            <p className="text-center text-[10px] text-muted-foreground mt-2">
                                 Your messages are processed by DailyFit AI before reaching the client via WhatsApp.
                             </p>
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-zinc-500">
+                    <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
                         <Bot className="h-16 w-16 mb-4 opacity-20" />
-                        <h3 className="text-lg font-bold text-white mb-2">Select a Client</h3>
+                        <h3 className="text-lg font-bold text-foreground mb-2">Select a Client</h3>
                         <p className="text-sm max-w-xs text-center">Open a conversation to manage WhatsApp interactions via the AI Agent.</p>
                     </div>
                 )}

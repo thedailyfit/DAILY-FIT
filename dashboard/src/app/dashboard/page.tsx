@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -15,12 +16,77 @@ import {
     Clock,
     ChevronRight,
     ClipboardCheck,
-    Send
+    Plus,
+    UserPlus
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function TrainerDashboard() {
+    const [loading, setLoading] = useState(true);
+    const [trainerName, setTrainerName] = useState("");
+    const [stats, setStats] = useState({
+        clientCount: 0,
+        workoutsDone: 0,
+        revenue: 0,
+        activeClients: 0
+    });
+    const [recentClients, setRecentClients] = useState<any[]>([]);
+
+    const router = useRouter();
+    const supabase = createClient();
+
+    useEffect(() => {
+        async function loadDashboardData() {
+            try {
+                // 1. Get User
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    router.push("/login");
+                    return;
+                }
+
+                // 2. Get Trainer Profile
+                const { data: trainer } = await supabase
+                    .from('trainers')
+                    .select('full_name, name')
+                    .eq('id', user.id)
+                    .single();
+
+                if (trainer) {
+                    setTrainerName(trainer.full_name || trainer.name || "Coach");
+                }
+
+                // 3. Get Clients Count (Mocking real counts for now since tables might differ, but logic is ready)
+                // In a real launch, we would query the 'clients' table linked to this trainer.
+                // Assuming 'clients' table exists:
+                const { count: clientCount } = await supabase
+                    .from('clients')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('trainer_id', user.id); // Adjust column name if needed
+
+                setStats(prev => ({ ...prev, clientCount: clientCount || 0 }));
+
+                // Stop loading
+                setLoading(false);
+
+            } catch (error) {
+                console.error("Dashboard load error:", error);
+                setLoading(false);
+            }
+        }
+
+        loadDashboardData();
+    }, [router, supabase]);
+
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center bg-[#f0f0f0]"><div className="animate-pulse flex flex-col items-center"><Dumbbell className="h-10 w-10 text-zinc-400 animate-spin mb-4" /><p className="text-zinc-500 font-medium">Loading Dashboard...</p></div></div>;
+    }
+
+    const hasClients = stats.clientCount > 0;
+
     return (
         <main className="min-h-screen p-6 font-sans max-w-[1600px] mx-auto space-y-6">
 
@@ -39,17 +105,18 @@ export default function TrainerDashboard() {
                 <div className="flex items-center gap-3 pr-2">
                     <Button size="icon" variant="ghost" className="text-zinc-400 hover:text-black rounded-full hover:bg-black/5 relative">
                         <Bell className="h-5 w-5" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-[#cbfe00] rounded-full animate-pulse border border-white"></span>
+                        {/* Notification Dot - Only show if real notifications exist (hidden for launch clean state) */}
+                        {/* <span className="absolute top-2 right-2 w-2 h-2 bg-[#cbfe00] rounded-full animate-pulse border border-white"></span> */}
                     </Button>
                     <div className="h-8 w-[1px] bg-zinc-200 mx-1"></div>
                     <div className="flex items-center gap-3 pl-2 cursor-pointer hover:opacity-80 transition-opacity">
                         <div className="text-right hidden sm:block">
-                            <p className="text-xs font-bold text-black">Coach Mike</p>
-                            <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Pro Trainer</p>
+                            <p className="text-xs font-bold text-black">{trainerName}</p>
+                            <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Trainer</p>
                         </div>
                         <Avatar className="h-9 w-9 border-2 border-white shadow-sm">
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>CM</AvatarFallback>
+                            <AvatarImage src={`https://ui-avatars.com/api/?name=${trainerName}&background=0D8ABC&color=fff`} />
+                            <AvatarFallback>{trainerName.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </div>
                 </div>
@@ -66,15 +133,27 @@ export default function TrainerDashboard() {
                         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                             <div>
                                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[0.9] mb-4">
-                                    READY TO <br />
-                                    <span className="text-[#cbfe00]">DOMINATE?</span>
+                                    {hasClients ? "READY TO" : "WELCOME"} <br />
+                                    <span className="text-[#cbfe00]">{hasClients ? "DOMINATE?" : "ABOARD!"}</span>
                                 </h1>
                                 <p className="text-zinc-400 font-medium text-lg flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-[#cbfe00] animate-pulse"></span>
-                                    5 active clients waiting for check-in.
+                                    {hasClients ? (
+                                        <>
+                                            <span className="w-2 h-2 rounded-full bg-[#cbfe00] animate-pulse"></span>
+                                            {stats.activeClients} active clients waiting for check-in.
+                                        </>
+                                    ) : (
+                                        "Let's set up your digital fitness business."
+                                    )}
                                 </p>
                             </div>
-                            {/* Removed 'Review it' button as per user request */}
+                            {!hasClients && (
+                                <Link href="/dashboard/clients">
+                                    <Button className="bg-[#cbfe00] text-black hover:bg-white font-bold rounded-xl">
+                                        <UserPlus className="mr-2 h-4 w-4" /> Add First Client
+                                    </Button>
+                                </Link>
+                            )}
                         </div>
                         {/* Background Decoration */}
                         <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-[#cbfe00]/5 to-transparent pointer-events-none"></div>
@@ -89,15 +168,17 @@ export default function TrainerDashboard() {
                                     <div className="bg-[#cbfe00]/10 w-fit p-2 rounded-lg mb-4">
                                         <Dumbbell className="h-5 w-5 text-[#cbfe00]" />
                                     </div>
-                                    <h3 className="text-5xl font-black tracking-tighter mb-1 text-[#cbfe00]">142</h3>
+                                    <h3 className="text-5xl font-black tracking-tighter mb-1 text-[#cbfe00]">{stats.workoutsDone}</h3>
                                     <p className="font-bold text-zinc-400 text-sm tracking-wide uppercase">Workouts Done</p>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-bold text-lg flex items-center gap-1 justify-end text-[#cbfe00]">
-                                        <Activity className="h-4 w-4" /> +12%
-                                    </p>
-                                    <p className="text-sm opacity-70">vs last week</p>
-                                </div>
+                                {hasClients && (
+                                    <div className="text-right">
+                                        <p className="font-bold text-lg flex items-center gap-1 justify-end text-[#cbfe00]">
+                                            <Activity className="h-4 w-4" /> --
+                                        </p>
+                                        <p className="text-sm opacity-70">Analytics pending</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -107,7 +188,7 @@ export default function TrainerDashboard() {
                                 <Trophy className="h-6 w-6 text-zinc-600 group-hover:text-[#cbfe00] transition-colors" />
                                 <span className="text-[10px] font-bold text-zinc-500 bg-white/5 px-2 py-1 rounded">MRR</span>
                             </div>
-                            <h3 className="text-3xl font-bold">₹1.2L</h3>
+                            <h3 className="text-3xl font-bold">₹{stats.revenue}</h3>
                             <p className="text-zinc-500 text-xs mt-1">Total Revenue</p>
                         </div>
                     </div>
@@ -118,26 +199,37 @@ export default function TrainerDashboard() {
                             <h3 className="font-bold text-white text-lg flex items-center gap-2">
                                 <Users className="h-5 w-5 text-[#cbfe00]" /> Client Performance
                             </h3>
-                            <Button variant="link" className="text-zinc-400 hover:text-white text-xs font-bold">VIEW ALL</Button>
+                            {hasClients && <Button variant="link" className="text-zinc-400 hover:text-white text-xs font-bold">VIEW ALL</Button>}
                         </div>
-                        <div className="space-y-3">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#cbfe00]/30 transition-all group cursor-pointer">
-                                    <span className="font-mono text-zinc-600 font-bold group-hover:text-[#cbfe00]">0{i}</span>
-                                    <Avatar className="h-10 w-10">
-                                        <AvatarImage src={`https://i.pravatar.cc/150?u=${i + 50}`} />
-                                        <AvatarFallback>C{i}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1">
-                                        <h4 className="font-bold text-sm text-white group-hover:text-[#cbfe00] transition-colors">Client Name</h4>
-                                        <p className="text-xs text-zinc-500">Last workout: Leg Day</p>
+
+                        {stats.clientCount > 0 ? (
+                            <div className="space-y-3">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#cbfe00]/30 transition-all group cursor-pointer">
+                                        <span className="font-mono text-zinc-600 font-bold group-hover:text-[#cbfe00]">0{i}</span>
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={`https://i.pravatar.cc/150?u=${i + 50}`} />
+                                            <AvatarFallback>C{i}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-sm text-white group-hover:text-[#cbfe00] transition-colors">Client Name</h4>
+                                            <p className="text-xs text-zinc-500">Last workout: Leg Day</p>
+                                        </div>
+                                        <div className="w-24 h-1.5 bg-black rounded-full overflow-hidden border border-white/10">
+                                            <div className="h-full bg-[#cbfe00] w-[80%] shadow-[0_0_10px_#cbfe00]"></div>
+                                        </div>
                                     </div>
-                                    <div className="w-24 h-1.5 bg-black rounded-full overflow-hidden border border-white/10">
-                                        <div className="h-full bg-[#cbfe00] w-[80%] shadow-[0_0_10px_#cbfe00]"></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-zinc-500">
+                                <Users className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                                <p className="text-sm">No clients active yet.</p>
+                                <Link href="/dashboard/clients" className="text-[#cbfe00] text-xs hover:underline mt-2 inline-block">
+                                    + Invite your first client
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
                 </div>
@@ -186,34 +278,31 @@ export default function TrainerDashboard() {
                     </div>
 
                     {/* PRIORITY FEED */}
-                    <div className="p-6 rounded-[2rem] bg-[#212121] text-white border border-zinc-800 h-fit">
+                    <div className="p-6 rounded-[2rem] bg-[#212121] text-white border border-zinc-800 h-fit min-h-[300px]">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-bold text-white text-lg">Priority Feed</h3>
-                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                            {hasClients && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                         </div>
-                        <div className="space-y-4">
-                            {/* Alert Item */}
-                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer">
-                                <div className="flex items-start gap-3">
-                                    <Clock className="h-5 w-5 text-red-500 mt-0.5" />
-                                    <div>
-                                        <p className="text-sm font-bold text-red-400 mb-1">Plan Expiring</p>
-                                        <p className="text-xs text-zinc-300">Mike's "Hypertrophy A" ends in 24h.</p>
-                                    </div>
-                                </div>
-                            </div>
 
-                            {/* Check-in Item */}
-                            <div className="p-4 rounded-xl bg-[#cbfe00]/5 border border-[#cbfe00]/20 hover:border-[#cbfe00]/50 transition-colors cursor-pointer">
-                                <div className="flex items-start gap-3">
-                                    <ClipboardCheck className="h-5 w-5 text-[#cbfe00] mt-0.5" />
-                                    <div>
-                                        <p className="text-sm font-bold text-[#cbfe00] mb-1">New Check-in</p>
-                                        <p className="text-xs text-zinc-300">Sarah updated progress photos.</p>
+                        {hasClients ? (
+                            <div className="space-y-4">
+                                {/* Example Dynamic Item would go here */}
+                                <div className="p-4 rounded-xl bg-[#cbfe00]/5 border border-[#cbfe00]/20 hover:border-[#cbfe00]/50 transition-colors cursor-pointer">
+                                    <div className="flex items-start gap-3">
+                                        <ClipboardCheck className="h-5 w-5 text-[#cbfe00] mt-0.5" />
+                                        <div>
+                                            <p className="text-sm font-bold text-[#cbfe00] mb-1">New Check-in</p>
+                                            <p className="text-xs text-zinc-300">Client details unavailable in preview.</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-48 text-zinc-600">
+                                <Bell className="h-8 w-8 mb-2 opacity-20" />
+                                <p className="text-sm">No notifications yet.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

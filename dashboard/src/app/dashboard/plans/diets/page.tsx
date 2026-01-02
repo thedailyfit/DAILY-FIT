@@ -44,30 +44,28 @@ export default async function DietPlansPage() {
     const plans = await getDietPlans();
 
     return (
-        <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-slate-900">
-            <div className="flex items-end justify-between">
+        <div className="p-4 md:p-8 space-y-8 bg-[#0a0a0a] min-h-screen text-white">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">
                         Diet Plans
                     </h1>
-                    <p className="text-slate-500 mt-2">
+                    <p className="text-zinc-400 mt-2 font-medium">
                         Create, manage, and reuse structured nutrition plans.
                     </p>
                 </div>
-                <div className="flex gap-2">
-                    <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm rounded-lg" asChild>
-                        <Link href="/dashboard/plans/diets/new">
-                            + New Diet Plan
-                        </Link>
-                    </Button>
-                </div>
+                <Button size="lg" className="bg-[#cbfe00] hover:bg-[#b0dc00] text-black font-bold shadow-[0_0_20px_rgba(203,254,0,0.2)] rounded-xl" asChild>
+                    <Link href="/dashboard/plans/diets/new">
+                        + New Diet Plan
+                    </Link>
+                </Button>
             </div>
 
-            <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-                <CardHeader className="bg-white border-b border-slate-100 p-6">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
+            <Card className="border-zinc-800 shadow-xl bg-[#141414] overflow-hidden rounded-[1.5rem]">
+                <CardHeader className="bg-[#1a1a1a] border-b border-zinc-800 p-6">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-white">
                         Diet Plan Library
-                        <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        <span className="flex h-2 w-2 rounded-full bg-[#cbfe00] animate-pulse shadow-[0_0_10px_#cbfe00]"></span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">

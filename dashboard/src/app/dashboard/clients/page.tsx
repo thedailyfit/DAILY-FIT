@@ -68,24 +68,24 @@ export default async function ClientsPage() {
     const { dPlans, wPlans } = await getPlans();
 
     return (
-        <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-slate-900">
+        <div className="p-8 space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
             <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">
                         Clients
                     </h1>
-                    <p className="text-slate-500 mt-2">
+                    <p className="text-muted-foreground mt-2">
                         Manage your roster and track progress.
                     </p>
                 </div>
                 <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} />
             </div>
 
-            <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-                <CardHeader className="bg-white border-b border-slate-100 p-6">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
+            <Card className="border-border shadow-sm bg-card overflow-hidden">
+                <CardHeader className="bg-card border-b border-border p-6">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-card-foreground">
                         Client Directory
-                        <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">

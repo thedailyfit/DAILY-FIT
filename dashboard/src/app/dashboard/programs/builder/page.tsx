@@ -1,15 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Dumbbell, Utensils, Pill, Minus, FileText, Library } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Plus, Dumbbell, Utensils, Pill, Minus } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createClient } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function ProgramBuilderPage() {
+    const supabase = createClient();
+    const router = useRouter();
+
     // Stage 1: Basic Info
     const [programName, setProgramName] = useState("");
     const [programDesc, setProgramDesc] = useState("");
@@ -25,23 +30,35 @@ export default function ProgramBuilderPage() {
     const [customWorkout, setCustomWorkout] = useState({ name: "", details: "" });
 
     // Stage 3: Supplements (Array)
-    const [supplements, setSupplements] = useState([{ name: "", dosage: "", timing: "" }]);
+    const [supplements, setSupplements] = useState<any[]>([]);
 
     // Stage 4: Sleep & Recovery
     const [sleepProtocol, setSleepProtocol] = useState("");
     const [waterIntake, setWaterIntake] = useState("");
 
-    // Mock Data for Dropdowns
-    const dietPlans = [
-        { id: "d1", name: "High Protein Cut" },
-        { id: "d2", name: "Keto Maintenance" },
-        { id: "d3", name: "Vegan Bulk" }
-    ];
-    const workoutPlans = [
-        { id: "w1", name: "5-Day Split" },
-        { id: "w2", name: "Full Body 3x" },
-        { id: "w3", name: "Home Workout (No Equip)" }
-    ];
+    // Real Data for Dropdowns
+    const [dietPlans, setDietPlans] = useState<any[]>([]);
+    const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
+
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
+
+    // Fetch Library Items
+    useEffect(() => {
+        async function fetchLibrary() {
+            try {
+                const { data: dPoints } = await supabase.from('diet_plans').select('id, name');
+                const { data: wPoints } = await supabase.from('workout_plans').select('id, name');
+                setDietPlans(dPoints || []);
+                setWorkoutPlans(wPoints || []);
+            } catch (e) {
+                console.error("Library fetch fail", e);
+            } finally {
+                setFetching(false);
+            }
+        }
+        fetchLibrary();
+    }, [supabase]);
 
     const addSupplement = (name: string, dosage: string, timing: string) => {
         setSupplements([...supplements, { name, dosage, timing }]);
@@ -53,8 +70,6 @@ export default function ProgramBuilderPage() {
         setSupplements(newSupps);
     };
 
-    const [loading, setLoading] = useState(false);
-
     const handleSave = async () => {
         if (!programName) {
             alert("Please enter a Program Name");
@@ -62,22 +77,50 @@ export default function ProgramBuilderPage() {
         }
         setLoading(true);
 
-        // Simulate API Delays for realism
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Unauthorized");
 
-        console.log("Saving Program to DB:", {
-            name: programName,
-            description: programDesc,
-            diet: dietMode === "library" ? { id: selectedDiet } : customDiet,
-            workout: workoutMode === "library" ? { id: selectedWorkout } : customWorkout,
-            supplements,
-            sleepProtocol,
-            waterIntake
-        });
+            // Construct Protocol Objects
+            // If custom, we might need to create them first or store as JSON. 
+            // For Launch MVP, we will store them as JSON in the 'programs' table or similar.
+            // Assuming a 'master_programs' table exists or similar structure. 
+            // If not, we map to what we have. 
 
-        setLoading(false);
-        alert(`Success! Master Program "${programName}" has been saved.`);
+            // For now, let's assume we insert into 'plan_programs' (the table we saw in ClientsPage logic)
+            // Or 'programs' table if it exists. 
+            // In the absence of a confirmed 'master_programs' schema, I will save to 'plan_programs'
+
+            const payload = {
+                trainer_id: user.id,
+                name: programName,
+                description: programDesc,
+                diet_plan_id: dietMode === "library" ? (selectedDiet || null) : null,
+                workout_plan_id: workoutMode === "library" ? (selectedWorkout || null) : null,
+                // Store custom stuff in JSONB columns if they exist, or just description
+                custom_diet: dietMode === "custom" ? customDiet : null,
+                custom_workout: workoutMode === "custom" ? customWorkout : null,
+                supplements: supplements,
+                recovery_protocol: { sleep: sleepProtocol, water: waterIntake },
+                is_active: true
+            };
+
+            const { error } = await supabase.from('plan_programs').insert([payload]);
+
+            if (error) throw error;
+
+            alert("Master Program Saved Successfully!");
+            router.push("/dashboard/plans"); // Redirect to library
+
+        } catch (error: any) {
+            console.error("Save Error:", error);
+            alert("Failed to save program: " + error.message);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    if (fetching) return <div className="min-h-screen p-8 flex items-center justify-center text-zinc-500">Loading Builder Resources...</div>;
 
     return (
         <div className="p-8 max-w-6xl mx-auto min-h-screen bg-[#e6e6e6] text-black">
@@ -154,9 +197,9 @@ export default function ProgramBuilderPage() {
                                         <SelectValue placeholder="Select from Diet Library..." />
                                     </SelectTrigger>
                                     <SelectContent className="bg-[#212121] border-zinc-700 text-white">
-                                        {dietPlans.map(p => (
+                                        {dietPlans.length > 0 ? dietPlans.map(p => (
                                             <SelectItem key={p.id} value={p.id} className="focus:bg-[#cbfe00] focus:text-black">{p.name}</SelectItem>
-                                        ))}
+                                        )) : <div className="p-2 text-xs text-zinc-500">No plans found</div>}
                                     </SelectContent>
                                 </Select>
                             ) : (
@@ -197,9 +240,9 @@ export default function ProgramBuilderPage() {
                                         <SelectValue placeholder="Select from Workout Library..." />
                                     </SelectTrigger>
                                     <SelectContent className="bg-[#212121] border-zinc-700 text-white">
-                                        {workoutPlans.map(p => (
+                                        {workoutPlans.length > 0 ? workoutPlans.map(p => (
                                             <SelectItem key={p.id} value={p.id} className="focus:bg-[#cbfe00] focus:text-black">{p.name}</SelectItem>
-                                        ))}
+                                        )) : <div className="p-2 text-xs text-zinc-500">No plans found</div>}
                                     </SelectContent>
                                 </Select>
                             ) : (

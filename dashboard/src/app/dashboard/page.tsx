@@ -199,27 +199,18 @@ export default function TrainerDashboard() {
                             <h3 className="font-bold text-white text-lg flex items-center gap-2">
                                 <Users className="h-5 w-5 text-[#cbfe00]" /> Client Performance
                             </h3>
-                            {hasClients && <Button variant="link" className="text-zinc-400 hover:text-white text-xs font-bold">VIEW ALL</Button>}
+                            {hasClients && <Link href="/dashboard/clients"><Button variant="link" className="text-zinc-400 hover:text-white text-xs font-bold">VIEW DIRECTORY</Button></Link>}
                         </div>
 
                         {stats.clientCount > 0 ? (
-                            <div className="space-y-3">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#cbfe00]/30 transition-all group cursor-pointer">
-                                        <span className="font-mono text-zinc-600 font-bold group-hover:text-[#cbfe00]">0{i}</span>
-                                        <Avatar className="h-10 w-10">
-                                            <AvatarImage src={`https://i.pravatar.cc/150?u=${i + 50}`} />
-                                            <AvatarFallback>C{i}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-sm text-white group-hover:text-[#cbfe00] transition-colors">Client Name</h4>
-                                            <p className="text-xs text-zinc-500">Last workout: Leg Day</p>
-                                        </div>
-                                        <div className="w-24 h-1.5 bg-black rounded-full overflow-hidden border border-white/10">
-                                            <div className="h-full bg-[#cbfe00] w-[80%] shadow-[0_0_10px_#cbfe00]"></div>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="flex flex-col items-center justify-center py-8 text-zinc-500">
+                                <div className="bg-zinc-800/50 p-4 rounded-full mb-3">
+                                    <Activity className="h-6 w-6 text-[#cbfe00]" />
+                                </div>
+                                <p className="text-sm font-medium text-white">Analytics Active</p>
+                                <p className="text-xs text-zinc-500 max-w-[200px] text-center mt-1">
+                                    Performance usage data will appear here as your clients complete workouts.
+                                </p>
                             </div>
                         ) : (
                             <div className="text-center py-8 text-zinc-500">
@@ -238,25 +229,25 @@ export default function TrainerDashboard() {
                 <div className="lg:col-span-4 space-y-6">
 
                     {/* QUICK ACTIONS STACK */}
-                    <div className="p-6 rounded-[2rem] bg-white border border-white shadow-sm">
-                        <h3 className="font-black text-[#212121] text-lg mb-4 uppercase tracking-tight">Quick Actions</h3>
+                    <div className="p-6 rounded-[2rem] bg-[#212121] border border-zinc-800 shadow-sm">
+                        <h3 className="font-black text-white text-lg mb-4 uppercase tracking-tight">Quick Actions</h3>
                         <div className="space-y-3">
                             <Link href="/dashboard/programs/builder" className="block w-full">
-                                <Button className="w-full h-14 rounded-xl bg-[#212121] hover:bg-black text-white font-bold text-base justify-between px-6 group shadow-lg hover:shadow-xl transition-all">
-                                    <span className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-[#cbfe00] flex items-center justify-center text-[#212121]">
-                                            <Zap className="h-4 w-4" />
+                                <Button className="w-full h-16 rounded-xl bg-[#cbfe00] hover:bg-[#b0dc00] text-black font-black text-base justify-between px-6 group shadow-[0_0_20px_rgba(203,254,0,0.2)] hover:shadow-[0_0_30px_rgba(203,254,0,0.4)] transition-all border-none">
+                                    <span className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-lg bg-black/10 flex items-center justify-center text-black">
+                                            <Zap className="h-5 w-5" />
                                         </div>
-                                        Create Program
+                                        <span className="tracking-tight">CREATE PROGRAM</span>
                                     </span>
-                                    <ChevronRight className="h-4 w-4 text-zinc-500 group-hover:text-[#cbfe00]" />
+                                    <ChevronRight className="h-5 w-5 text-black/50 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
 
                             <Link href="/dashboard/clients" className="block w-full">
-                                <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-200 hover:border-[#212121] hover:bg-zinc-50 text-[#212121] font-bold text-base justify-between px-6 group transition-all">
-                                    <span className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#212121]">
+                                <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-700 bg-[#2a2a2a] hover:bg-[#333] hover:border-zinc-500 text-white font-bold text-base justify-between px-6 group transition-all">
+                                    <span className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-lg bg-black/30 flex items-center justify-center text-zinc-400 group-hover:text-white">
                                             <Calendar className="h-4 w-4" />
                                         </div>
                                         Schedule Session
@@ -265,9 +256,9 @@ export default function TrainerDashboard() {
                             </Link>
 
                             <Link href="/dashboard/chat" className="block w-full">
-                                <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-200 hover:border-[#212121] hover:bg-zinc-50 text-[#212121] font-bold text-base justify-between px-6 group transition-all">
-                                    <span className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 group-hover:text-[#212121]">
+                                <Button variant="outline" className="w-full h-14 rounded-xl border-zinc-700 bg-[#2a2a2a] hover:bg-[#333] hover:border-zinc-500 text-white font-bold text-base justify-between px-6 group transition-all">
+                                    <span className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-lg bg-black/30 flex items-center justify-center text-zinc-400 group-hover:text-white">
                                             <MessageSquare className="h-4 w-4" />
                                         </div>
                                         Broadcast Message
@@ -286,15 +277,12 @@ export default function TrainerDashboard() {
 
                         {hasClients ? (
                             <div className="space-y-4">
-                                {/* Example Dynamic Item would go here */}
-                                <div className="p-4 rounded-xl bg-[#cbfe00]/5 border border-[#cbfe00]/20 hover:border-[#cbfe00]/50 transition-colors cursor-pointer">
-                                    <div className="flex items-start gap-3">
-                                        <ClipboardCheck className="h-5 w-5 text-[#cbfe00] mt-0.5" />
-                                        <div>
-                                            <p className="text-sm font-bold text-[#cbfe00] mb-1">New Check-in</p>
-                                            <p className="text-xs text-zinc-300">Client details unavailable in preview.</p>
-                                        </div>
+                                {/* Only show if we actually have feed items. For now, empty state is safer for launch. */}
+                                <div className="flex flex-col items-center justify-center h-48 text-zinc-600">
+                                    <div className="w-12 h-12 rounded-full bg-zinc-800/50 flex items-center justify-center mb-3">
+                                        <ClipboardCheck className="h-6 w-6 opacity-30" />
                                     </div>
+                                    <p className="text-sm">All caught up!</p>
                                 </div>
                             </div>
                         ) : (

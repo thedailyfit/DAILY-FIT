@@ -105,24 +105,24 @@ export default function SettingsPage() {
     }
 
     if (loading) {
-        return <div className="flex justify-center p-8 bg-[#0a0a0a] min-h-screen"><Loader2 className="h-8 w-8 animate-spin text-[#cbfe00]" /></div>
+        return <div className="flex justify-center p-8 bg-background min-h-screen"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
     }
 
     return (
-        <div className="p-4 md:p-8 space-y-8 bg-[#0a0a0a] min-h-screen text-white">
+        <div className="p-4 md:p-8 space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
             <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">
+                    <h1 className="text-3xl font-black text-foreground tracking-tight uppercase">
                         Settings
                     </h1>
-                    <p className="text-zinc-400 mt-2 font-medium">
+                    <p className="text-muted-foreground mt-2 font-medium">
                         Manage your profile and account preferences.
                     </p>
                 </div>
                 <Button
                     onClick={form.handleSubmit(onSubmit)}
                     disabled={saving}
-                    className="bg-[#cbfe00] hover:bg-[#b0dc00] text-black font-bold h-12 px-6 rounded-xl shadow-[0_0_20px_rgba(203,254,0,0.2)]"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 px-6 rounded-xl shadow-lg transition-all"
                 >
                     {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Save Changes
@@ -137,13 +137,13 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Main Form */}
-                <Card className="col-span-2 bg-[#141414] border-zinc-800 shadow-xl rounded-[2rem] overflow-hidden">
-                    <CardHeader className="p-8 pb-4 border-b border-zinc-800">
-                        <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
-                            <User className="h-5 w-5 text-[#cbfe00]" />
+                <Card className="col-span-2 bg-card border-border shadow-md rounded-[2rem] overflow-hidden">
+                    <CardHeader className="p-8 pb-4 border-b border-border bg-muted/30">
+                        <CardTitle className="text-xl font-bold text-card-foreground flex items-center gap-2">
+                            <User className="h-5 w-5 text-primary" />
                             Profile Information
                         </CardTitle>
-                        <CardDescription className="text-zinc-500">
+                        <CardDescription className="text-muted-foreground">
                             Updates here will be reflected across your trainer dashboard.
                         </CardDescription>
                     </CardHeader>
@@ -151,53 +151,53 @@ export default function SettingsPage() {
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Full Name</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Full Name</Label>
                                     <Input
                                         {...form.register('name')}
-                                        className="bg-[#222] border-zinc-700 text-white h-12 focus:border-[#cbfe00]"
+                                        className="bg-background border-input text-foreground h-12 focus:border-primary focus:ring-1 focus:ring-primary"
                                     />
                                     {form.formState.errors.name && <p className="text-xs text-red-400">{form.formState.errors.name.message}</p>}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Email Address</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Email Address</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                                        <Mail className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
                                         <Input
                                             {...form.register('email')}
-                                            className="pl-10 bg-[#222] border-zinc-700 text-white h-12 focus:border-[#cbfe00]"
+                                            className="pl-10 bg-muted border-input text-muted-foreground h-12"
                                             disabled
                                         />
                                     </div>
-                                    <p className="text-[10px] text-zinc-600">Email cannot be changed.</p>
+                                    <p className="text-[10px] text-muted-foreground">Email cannot be changed.</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Phone Number</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Phone Number</Label>
                                     <div className="relative">
-                                        <Phone className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                                        <Phone className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
                                         <Input
                                             {...form.register('phone_number')}
                                             placeholder="+1 234 567 890"
-                                            className="pl-10 bg-[#222] border-zinc-700 text-white h-12 focus:border-[#cbfe00]"
+                                            className="pl-10 bg-background border-input text-foreground h-12 focus:border-primary focus:ring-1 focus:ring-primary"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">City / Location</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">City / Location</Label>
                                     <div className="relative">
-                                        <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                                        <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
                                         <Input
                                             {...form.register('city')}
                                             placeholder="New York, NY"
-                                            className="pl-10 bg-[#222] border-zinc-700 text-white h-12 focus:border-[#cbfe00]"
+                                            className="pl-10 bg-background border-input text-foreground h-12 focus:border-primary focus:ring-1 focus:ring-primary"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Age</Label>
+                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Age</Label>
                                     <Input
                                         type="number"
                                         {...form.register('age')}
-                                        className="bg-[#222] border-zinc-700 text-white h-12 focus:border-[#cbfe00]"
+                                        className="bg-background border-input text-foreground h-12 focus:border-primary focus:ring-1 focus:ring-primary"
                                     />
                                 </div>
                             </div>

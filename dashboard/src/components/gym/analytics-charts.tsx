@@ -10,7 +10,10 @@ import {
     ResponsiveContainer,
     BarChart,
     Bar,
-    Legend
+    Legend,
+    PieChart,
+    Pie,
+    Cell
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -34,10 +37,20 @@ const growthData = [
     { name: "Apr", members: 120, trainers: 5 },
 ];
 
+const expenseData = [
+    { name: "Rent", value: 2500 },
+    { name: "Salaries", value: 4500 },
+    { name: "Equipment", value: 1200 },
+    { name: "Utilities", value: 800 },
+    { name: "Marketing", value: 600 },
+];
+
+const COLORS = ["#212121", "#cbfe00", "#7f7f7f", "#e5e5e5", "#000000"];
+
 export function AnalyticsCharts() {
     return (
-        <div className="grid gap-4 md:grid-cols-2">
-            <Card className="col-span-1 shadow-sm border-zinc-200">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="col-span-1 md:col-span-2 shadow-sm border-zinc-200">
                 <CardHeader>
                     <CardTitle>Revenue Overview</CardTitle>
                     <CardDescription>Monthly income vs expenses (Past 6 Months)</CardDescription>
@@ -64,11 +77,40 @@ export function AnalyticsCharts() {
 
             <Card className="col-span-1 shadow-sm border-zinc-200">
                 <CardHeader>
+                    <CardTitle>Expense Split</CardTitle>
+                    <CardDescription>Breakdown by category</CardDescription>
+                </CardHeader>
+                <CardContent className="pl-2">
+                    <ResponsiveContainer width="100%" height={350}>
+                        <PieChart>
+                            <Pie
+                                data={expenseData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                paddingAngle={5}
+                                dataKey="value"
+                            >
+                                {expenseData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+
+            <Card className="col-span-1 md:col-span-3 shadow-sm border-zinc-200">
+                <CardHeader>
                     <CardTitle>Growth Metrics</CardTitle>
                     <CardDescription>Member acquisition rate</CardDescription>
                 </CardHeader>
                 <CardContent className="pl-2">
-                    <ResponsiveContainer width="100%" height={350}>
+                    <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={growthData}>
                             <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                             <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />

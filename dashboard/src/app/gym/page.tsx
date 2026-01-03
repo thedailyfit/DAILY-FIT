@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard } from "lucide-react";
+import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function GymOwnerDashboard() {
@@ -40,7 +40,7 @@ export default function GymOwnerDashboard() {
             </div>
 
             {/* Stats Overview - High Contrast Cards */}
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-5">
                 <Card className="bg-[#212121] border-none shadow-xl text-white">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Revenue</CardTitle>
@@ -48,9 +48,18 @@ export default function GymOwnerDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-black text-white">$12,450</div>
-                        <p className="text-xs text-[#cbfe00] flex items-center mt-1 font-bold">
-                            <ArrowUpRight className="w-3 h-3 mr-1" /> +12.5% vs last month
-                        </p>
+                        <p className="text-[10px] text-zinc-500 font-bold mt-1 text-[#cbfe00]">+12.5% vs last month</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-[#212121] border-none shadow-xl text-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Due</CardTitle>
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-black text-white">$1,800</div>
+                        <p className="text-[10px] text-red-400 font-bold mt-1">15 Members Pending</p>
                     </CardContent>
                 </Card>
 
@@ -61,102 +70,99 @@ export default function GymOwnerDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-black text-white">128</div>
-                        <p className="text-xs text-zinc-500 mt-1">
-                            +8 new this week
-                        </p>
+                        <p className="text-[10px] text-zinc-500 font-bold mt-1">+8 new this week</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-[#212121] border-none shadow-xl text-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Cardio Only</CardTitle>
+                        <Activity className="h-4 w-4 text-blue-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-black text-white">45</div>
+                        <p className="text-[10px] text-blue-400 font-bold mt-1">Treadmill/Cycle Plan</p>
                     </CardContent>
                 </Card>
 
                 <Card className="bg-[#cbfe00] border-none shadow-xl text-black">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-black/60 uppercase tracking-wider">New Leads</CardTitle>
+                        <CardTitle className="text-sm font-bold text-black uppercase tracking-wider">New Leads</CardTitle>
                         <ShieldCheck className="h-4 w-4 text-black" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-black text-black">24</div>
-                        <p className="text-xs text-black/70 flex items-center mt-1 font-bold">
-                            12 unread enquiries
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-white border-none shadow-xl text-black">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-500 uppercase tracking-wider">Broadcast</CardTitle>
-                        <Activity className="h-4 w-4 text-black" />
-                    </CardHeader>
-                    <CardContent>
-                        <Button className="w-full bg-black text-white hover:bg-zinc-800 h-8 text-xs font-bold">
-                            Send Message
-                        </Button>
-                        <p className="text-[10px] text-zinc-400 mt-2">
-                            Reach all 128 active members.
-                        </p>
+                        <p className="text-[10px] text-black/70 font-bold mt-1">12 unread enquiries</p>
                     </CardContent>
                 </Card>
             </div>
+            <Card className="bg-white border-none shadow-xl">
+                <div className="flex items-center justify-between p-4">
+                    <div>
+                        <div className="text-sm font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-black" /> Broadcast
+                        </div>
+                        <p className="text-[10px] text-zinc-400 mt-1">Reach all 128 active members.</p>
+                    </div>
+                    <Button className="bg-black text-white hover:bg-zinc-800 h-8 text-xs font-bold px-6">
+                        Send Message
+                    </Button>
+                </div>
+            </Card>
 
             {/* Main Data Section */}
             <div className="grid gap-6 md:grid-cols-3">
-                {/* Trainers Table (Takes up 2 columns) */}
-                <Card className="md:col-span-2 shadow-sm border-none bg-white">
-                    <CardHeader className="border-b border-zinc-100">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <CardTitle className="text-xl font-bold text-black">Trainer Performance</CardTitle>
-                                <CardDescription>Real-time oversight of staff metrics.</CardDescription>
-                            </div>
-                            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-black">View All</Button>
+                {/* Trainer Performance Table */}
+                <Card className="md:col-span-2 border-none shadow-xl bg-white">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <div>
+                            <CardTitle className="text-lg font-bold text-[#212121]">Trainer Performance</CardTitle>
+                            <CardDescription>Real-time oversight of staff metrics.</CardDescription>
                         </div>
+                        <Link href="/gym/trainers" className="text-xs font-bold text-zinc-400 hover:text-black transition-colors">View All</Link>
                     </CardHeader>
-                    <CardContent className="p-0">
+                    <CardContent>
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-zinc-100 hover:bg-transparent">
-                                    <TableHead className="w-[200px] text-xs font-bold uppercase text-zinc-400">Trainer</TableHead>
-                                    <TableHead className="text-xs font-bold uppercase text-zinc-400">Status</TableHead>
-                                    <TableHead className="text-xs font-bold uppercase text-zinc-400">Clients</TableHead>
-                                    <TableHead className="text-xs font-bold uppercase text-zinc-400">Est. Revenue</TableHead>
-                                    <TableHead className="text-right text-xs font-bold uppercase text-zinc-400">Last Active</TableHead>
+                                <TableRow className="hover:bg-transparent border-zinc-100">
+                                    <TableHead className="w-[200px] text-[10px] uppercase font-bold text-zinc-400">Trainer</TableHead>
+                                    <TableHead className="text-[10px] uppercase font-bold text-zinc-400">Status</TableHead>
+                                    <TableHead className="text-[10px] uppercase font-bold text-zinc-400">Clients</TableHead>
+                                    <TableHead className="text-[10px] uppercase font-bold text-zinc-400">Est. Revenue</TableHead>
+                                    <TableHead className="text-right text-[10px] uppercase font-bold text-zinc-400">Last Active</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {trainers.map((t) => (
-                                    <TableRow key={t.id} className="border-zinc-100 hover:bg-zinc-50 transition-colors cursor-pointer group">
-                                        <TableCell className="font-medium">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm border-2 border-transparent group-hover:border-[#cbfe00] transition-all">
-                                                    {t.name[0]}
-                                                </div>
-                                                <div>
-                                                    <div className="font-bold text-black">{t.name}</div>
-                                                    <div className="text-xs text-zinc-500">Certified L3</div>
-                                                </div>
+                                {trainers.map((trainer) => (
+                                    <TableRow key={trainer.id} className="hover:bg-zinc-50 border-zinc-100 group cursor-pointer">
+                                        <TableCell className="font-bold flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-black">
+                                                {trainer.name[0]}
+                                            </div>
+                                            <div>
+                                                <span className="block text-sm">{trainer.name}</span>
+                                                <span className="text-[10px] text-zinc-400 font-normal">Certified L3</span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant="secondary" className={
-                                                t.status === "Active"
-                                                    ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200"
-                                                    : "bg-zinc-100 text-zinc-500 border-zinc-200"
+                                            <Badge variant="outline" className={
+                                                trainer.status === "Active"
+                                                    ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                                                    : "bg-zinc-100 text-zinc-400 border-zinc-200"
                                             }>
-                                                {t.status}
+                                                {trainer.status}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-black">{t.clients}</span>
-                                                <div className="h-1.5 w-16 bg-zinc-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-black rounded-full" style={{ width: `${(t.clients / 30) * 100}%` }}></div>
+                                                <span className="font-bold">{trainer.clients}</span>
+                                                <div className="h-1 flex-1 bg-zinc-100 rounded-full w-12 overflow-hidden">
+                                                    <div className="h-full bg-black" style={{ width: `${(trainer.clients / 30) * 100}%` }}></div>
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="font-mono text-zinc-600 font-medium">
-                                            {t.revenue}
-                                        </TableCell>
-                                        <TableCell className="text-right text-xs text-zinc-400">
-                                            {t.lastActive}
-                                        </TableCell>
+                                        <TableCell className="text-zinc-600 font-mono text-xs">{trainer.revenue}</TableCell>
+                                        <TableCell className="text-right text-zinc-400 text-xs">{trainer.lastActive}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -166,45 +172,45 @@ export default function GymOwnerDashboard() {
 
                 {/* Quick Actions / Notifications */}
                 <div className="space-y-6">
-                    <Card className="bg-[#212121] text-white border-none shadow-xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-[#cbfe00] rounded-full -mr-16 -mt-16 blur-3xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    <Card className="bg-gradient-to-br from-[#212121] to-black border-none shadow-xl text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <CreditCard className="w-24 h-24 text-[#cbfe00]" />
+                        </div>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <CreditCard className="h-5 w-5 text-[#cbfe00]" />
-                                Subscription
-                            </CardTitle>
-                            <CardDescription className="text-zinc-400">Gym SaaS Plan</CardDescription>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Activity className="w-4 h-4 text-[#cbfe00]" />
+                                <span className="text-xs font-bold text-[#cbfe00] uppercase tracking-wider">Subscription</span>
+                            </div>
+                            <CardTitle className="text-lg font-bold">Gym SaaS Plan</CardTitle>
+                            <div className="mt-4">
+                                <span className="text-4xl font-black">PRO</span> <span className="text-xl font-light text-zinc-400">Plan</span>
+                            </div>
+                            <p className="text-xs text-zinc-500 mt-1">Next billing: Dec 25, 2024</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="mb-6">
-                                <div className="text-3xl font-black text-white">PRO<span className="text-lg font-medium text-zinc-500 ml-2">Plan</span></div>
-                                <p className="text-sm text-zinc-500 mt-1">Next billing: Dec 25, 2024</p>
-                            </div>
-                            <Button className="w-full bg-white text-black hover:bg-[#cbfe00] hover:text-black font-bold h-12 transition-all">
-                                Manage Billing
-                            </Button>
+                            <Button className="w-full bg-white text-black hover:bg-zinc-200 font-bold">Manage Billing</Button>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-white border-none shadow-lg">
+                    <Card className="bg-white border-none shadow-xl h-fit">
                         <CardHeader>
-                            <CardTitle className="text-lg font-bold">Recent Alerts</CardTitle>
+                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Recent Alerts</h3>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="flex items-start gap-4 pb-4 border-b border-zinc-50 last:border-0 last:pb-0">
-                                    <div className="h-2 w-2 mt-2 rounded-full bg-[#cbfe00] shadow-[0_0_8px_#cbfe00]"></div>
+                            {[1, 2, 3].map((_, i) => (
+                                <div key={i} className="flex gap-3 items-start pb-4 border-b border-zinc-50 last:border-0 last:pb-0">
+                                    <div className="h-2 w-2 mt-1.5 rounded-full bg-[#cbfe00]" />
                                     <div>
-                                        <p className="text-sm font-bold text-black">New Trainer Application</p>
-                                        <p className="text-xs text-zinc-500">John Doe wants to join.</p>
+                                        <p className="text-sm font-bold text-black leading-tight">New Trainer Application</p>
+                                        <p className="text-xs text-zinc-500 mt-0.5">John Doe wants to join.</p>
                                         <p className="text-[10px] text-zinc-400 mt-1">2 hours ago</p>
                                     </div>
                                 </div>
                             ))}
                         </CardContent>
-                        <div className="p-4 pt-0">
-                            <Button variant="outline" className="w-full border-zinc-200 text-zinc-600 hover:text-black hover:border-black text-xs h-8">View All Alerts</Button>
-                        </div>
+                        <CardContent className="pt-0">
+                            <Button className="w-full bg-[#111] text-white h-8 text-xs">View All Alerts</Button>
+                        </CardContent>
                     </Card>
                 </div>
             </div>

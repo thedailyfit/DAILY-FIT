@@ -21,8 +21,8 @@ export function ThemeSwitcher() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
                     <div className={`h-4 w-4 rounded-full ${theme === 'cyber-bunker' ? 'bg-[#cbfe00]' :
-                            theme === 'royal-blue' ? 'bg-[#38bdf8]' :
-                                theme === 'tokyo' ? 'bg-[#d946ef]' : 'bg-black'
+                        theme === 'royal-blue' ? 'bg-[#38bdf8]' :
+                            theme === 'carbon' ? 'bg-white' : 'bg-black'
                         }`} />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
@@ -63,15 +63,15 @@ export function ThemeSwitcher() {
                     {theme === 'royal-blue' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => setTheme("tokyo")} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer focus:bg-accent">
-                    <div className="h-8 w-12 rounded bg-[#09090b] border border-zinc-800 relative overflow-hidden">
-                        <div className="absolute top-1 left-1 w-6 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+                <DropdownMenuItem onClick={() => setTheme("carbon")} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer focus:bg-accent">
+                    <div className="h-8 w-12 rounded bg-[#121212] border border-white/20 relative overflow-hidden">
+                        <div className="absolute top-1 left-1 w-6 h-1 bg-white rounded-full"></div>
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-bold text-sm">Tokyo</span>
-                        <span className="text-xs text-muted-foreground">Neon Night</span>
+                        <span className="font-bold text-sm">Carbon</span>
+                        <span className="text-xs text-muted-foreground">Monochrome Dark</span>
                     </div>
-                    {theme === 'tokyo' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
+                    {theme === 'carbon' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
                 </DropdownMenuItem>
 
             </DropdownMenuContent>

@@ -122,8 +122,8 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
-            <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))] pointer-events-none" />
+        <div className="flex items-center justify-center min-h-screen bg-slate-50 transition-colors duration-500" data-theme="minimalist">
+            <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] pointer-events-none" />
 
             <Card className="w-full max-w-md relative z-10 shadow-xl border-slate-200">
                 <CardHeader className="space-y-1 text-center">

@@ -106,7 +106,23 @@ export default function ChatPage() {
                     {loading ? (
                         <div className="flex justify-center p-8"><Loader2 className="animate-spin text-primary" /></div>
                     ) : clients.length === 0 ? (
-                        <div className="text-center p-8 text-muted-foreground text-sm">No clients found.</div>
+                        <div className="p-6 flex flex-col items-center justify-center text-center space-y-4">
+                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                                <Smartphone className="h-8 w-8 text-green-600" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-foreground">Connect WhatsApp</h3>
+                                <p className="text-xs text-muted-foreground mt-2 max-w-[200px]">
+                                    Link your Business API to start chatting.
+                                </p>
+                            </div>
+                            <Button className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold" onClick={() => window.open('https://developers.facebook.com/docs/whatsapp/cloud-api/get-started', '_blank')}>
+                                Get API Keys
+                            </Button>
+                            <p className="text-[10px] text-muted-foreground">
+                                Go to Settings &gt; WhatsApp to enter keys.
+                            </p>
+                        </div>
                     ) : (
                         clients.map((client) => (
                             <div
@@ -116,7 +132,7 @@ export default function ChatPage() {
                             >
                                 <Avatar className="h-10 w-10 border border-border">
                                     <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${client.first_name}`} />
-                                    <AvatarFallback className="bg-primary text-primary-foreground font-bold">{client.first_name[0]}</AvatarFallback>
+                                    <AvatarFallback className="bg-primary text-primary-foreground font-bold">{client.first_name?.[0] || '?'}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-center mb-1">

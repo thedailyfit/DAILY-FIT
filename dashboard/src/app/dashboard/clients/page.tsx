@@ -50,6 +50,11 @@ async function getClients(): Promise<Client[]> {
             planName: planName,
             nextPaymentDate: null,
             lastActive: row.created_at || null,
+            email: row.email,
+            monthly_fee: row.monthly_fee,
+            goal: row.goal,
+            weight_kg: row.weight_kg,
+            height_cm: row.height_cm,
         };
     });
 }
@@ -93,7 +98,7 @@ export default async function ClientsPage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <ClientsTable clients={clients} />
+                    <ClientsTable clients={clients} dietPlans={dPlans} workoutPlans={wPlans} />
                 </CardContent>
             </Card>
         </div>

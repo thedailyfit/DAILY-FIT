@@ -11,12 +11,12 @@ export default function ReferralPage() {
     const [copied, setCopied] = useState(false)
     const [referralLink, setReferralLink] = useState('')
 
-    // Mock Stats
+    // Mock Stats (Reset to 0 for production readiness)
     const stats = {
-        totalReferred: 12,
-        activeReferred: 8,
-        pendingCommission: 4500,
-        totalEarned: 18200,
+        totalReferred: 0,
+        activeReferred: 0,
+        pendingCommission: 0,
+        totalEarned: 0,
         commissionRate: '12%'
     }
 
@@ -51,7 +51,7 @@ export default function ReferralPage() {
         <div className="p-8 space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
             <div>
                 <h1 className="text-3xl font-black text-foreground tracking-tight uppercase">Refer & Earn</h1>
-                <p className="text-muted-foreground mt-2 font-medium">Earn {stats.commissionRate} recurring commission for every trainer you invite.</p>
+                <p className="text-muted-foreground mt-2 font-medium">Get upto {stats.commissionRate} of their subscription fee every month.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -64,7 +64,7 @@ export default function ReferralPage() {
                             <TrendingUp className="h-6 w-6 text-yellow-300" /> Recurring Income
                         </CardTitle>
                         <CardDescription className="text-violet-100/80 text-lg">
-                            Get paid every month for 1 year as long as your referral stays active.
+                            Get upto 12% of their subscription fee every month for 1 Year.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="relative z-10 space-y-6">

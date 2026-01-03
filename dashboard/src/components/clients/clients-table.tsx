@@ -31,21 +31,28 @@ import Link from "next/link";
 
 type PaymentFilter = "all" | "paid" | "due" | "overdue"; // placeholder for future use
 
+import { EditClientDialog } from "@/components/clients/edit-client-dialog";
+
 type ClientsTableProps = {
     clients: Client[];
+    dietPlans?: { id: string; name: string }[];
+    workoutPlans?: { id: string; name: string }[];
 };
 
-const statusColorMap: Record<ClientStatus, string> = {
+const statusColorMap: Record<string, string> = {
     Active: "bg-emerald-100 text-emerald-800 border-emerald-200",
     Paused: "bg-amber-100 text-amber-800 border-amber-200",
     Trial: "bg-sky-100 text-sky-800 border-sky-200",
     Inactive: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
-export function ClientsTable({ clients }: ClientsTableProps) {
+export function ClientsTable({ clients, dietPlans = [], workoutPlans = [] }: ClientsTableProps) {
     const [search, setSearch] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState<"all" | ClientStatus>("all");
     const [paymentFilter, setPaymentFilter] = React.useState<PaymentFilter>("all");
+
+    // Edit Dialog State
+    const [editingClient, setEditingClient] = React.useState<Client | null>(null);
 
     const filteredClients = React.useMemo(() => {
         return clients.filter((client) => {
@@ -227,6 +234,9 @@ export function ClientsTable({ clients }: ClientsTableProps) {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => setEditingClient(client)}>
+                                                    <strong>Edit Details</strong>
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/dashboard/clients/${client.id}`}>View Profile</Link>
                                                 </DropdownMenuItem>
@@ -256,6 +266,16 @@ export function ClientsTable({ clients }: ClientsTableProps) {
                     </TableBody>
                 </Table>
             </div>
+
+            {editingClient && (
+                <EditClientDialog
+                    client={editingClient}
+                    isOpen={!!editingClient}
+                    onClose={() => setEditingClient(null)}
+                    dietPlans={dietPlans}
+                    workoutPlans={workoutPlans}
+                />
+            )}
         </div>
     );
 }

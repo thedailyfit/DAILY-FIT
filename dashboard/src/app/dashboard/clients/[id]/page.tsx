@@ -145,7 +145,10 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                     weight_kg: member.weight_kg,
                                     monthly_fee: member.monthly_fee,
                                     goal: member.goal,
-                                    status: member.status || 'Active'
+                                    status: member.status || 'Active',
+                                    planName: "Loading...",
+                                    nextPaymentDate: null,
+                                    lastActive: null
                                 }}
                                 trigger={
                                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-zinc-500 hover:text-white">
@@ -207,7 +210,10 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                     weight_kg: member.weight_kg,
                                     monthly_fee: member.monthly_fee,
                                     goal: member.goal,
-                                    status: member.status || 'Active'
+                                    status: member.status || 'Active',
+                                    planName: "Loading...",
+                                    nextPaymentDate: null,
+                                    lastActive: null
                                 }}
                                 trigger={
                                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-zinc-400 hover:text-black">

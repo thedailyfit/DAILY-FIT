@@ -132,18 +132,11 @@ export default function TrainerDashboard() {
                         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                             <div>
                                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[0.9] mb-4">
-                                    {hasClients ? "READY TO" : "WELCOME"} <br />
-                                    <span className="text-primary">{hasClients ? "DOMINATE?" : "ABOARD!"}</span>
+                                    WELCOME COACH <br />
+                                    <span className="text-primary">READY TO DOMINATE?</span>
                                 </h1>
                                 <p className="text-muted-foreground font-medium text-lg flex items-center gap-2">
-                                    {hasClients ? (
-                                        <>
-                                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                                            {stats.activeClients} active clients waiting for check-in.
-                                        </>
-                                    ) : (
-                                        "Let's set up your digital fitness business."
-                                    )}
+                                    You have <strong className="text-foreground">{stats.activeClients} active clients</strong> waiting for updates today.
                                 </p>
                             </div>
                             {!hasClients && (

@@ -94,8 +94,12 @@ export default function LoginPage() {
                     throw new Error("Account created but profile failed: " + dbError.message)
                 }
 
-                setMessage("Registration successful! Check your email to confirm.")
-                setIsSignUp(false) // Return to login screen
+                setMessage("Registration successful! Redirecting to setup billing...")
+                // Redirect to Payment Mandate for new users
+                setTimeout(() => {
+                    router.push('/dashboard/billing/mandate')
+                }, 1500)
+                // setIsSignUp(false) // No need to return to login, go forward
 
             } else {
                 // --- LOGIN LOGIC ---

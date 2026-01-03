@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
 import { AddClientDialog } from "@/components/clients/add-client-dialog";
+import { ImportClientsDialog } from "@/components/clients/import-clients-dialog";
 import { Client, ClientStatus } from "@/types/client";
 
 export const metadata: Metadata = {
@@ -78,7 +79,10 @@ export default async function ClientsPage() {
                         Manage your roster and track progress.
                     </p>
                 </div>
-                <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} />
+                <div className="flex gap-2">
+                    <ImportClientsDialog />
+                    <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} />
+                </div>
             </div>
 
             <Card className="border-border shadow-sm bg-card overflow-hidden">

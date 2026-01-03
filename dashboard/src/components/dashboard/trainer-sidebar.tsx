@@ -3,18 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-    LayoutDashboard,
-    Users,
-    Dumbbell,
-    MessageSquare,
-    Settings,
-    Layers,
-    FilePlus2,
-    LogOut,
-    Utensils,
-    CreditCard
-} from "lucide-react";
+import { Home, Users, Settings, MessageSquare, Dumbbell, CreditCard, Apple, Activity, Gift, LayoutDashboard, Layers, FilePlus2, LogOut, Utensils } from "lucide-react";
 
 export function TrainerSidebar() {
     const pathname = usePathname();
@@ -24,11 +13,12 @@ export function TrainerSidebar() {
         { name: "Overview", icon: LayoutDashboard, href: "/dashboard" },
         { name: "Clients", icon: Users, href: "/dashboard/clients" },
         { name: "Messages", icon: MessageSquare, href: "/dashboard/chat" },
-        { name: "Program Builder", icon: Layers, href: "/dashboard/programs/builder" },
-        { name: "Diet Plans", icon: Utensils, href: "/dashboard/plans/diets" },
-        { name: "Workout Plans", icon: Dumbbell, href: "/dashboard/plans/workouts" },
-        { name: "Subscription", icon: CreditCard, href: "/dashboard/subscription" },
-        { name: "Settings", icon: Settings, href: "/dashboard/settings" },
+        { name: 'Programs Library', href: '/dashboard/programs/builder', icon: Dumbbell },
+        { name: 'Diet Plans', href: '/dashboard/plans/diets', icon: Apple },
+        { name: 'Workout Plans', href: '/dashboard/plans/workouts', icon: Activity },
+        { name: 'Subscription', href: '/dashboard/subscription', icon: CreditCard },
+        { name: 'Refer & Earn', href: '/dashboard/referrals', icon: Gift }, // New Link
+        { name: 'Settings', href: '/dashboard/settings', icon: Settings },
     ];
 
     return (

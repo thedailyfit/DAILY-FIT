@@ -4,7 +4,7 @@ import * as React from "react"
 
 const THEME_KEY = "dailyfit-theme"
 
-type Theme = "cyber-bunker" | "minimalist" | "royal-blue" | "tokyo"
+type Theme = "cyber-bunker" | "minimalist" | "royal-blue" | "carbon"
 
 type ThemeProviderState = {
     theme: Theme

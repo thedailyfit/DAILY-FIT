@@ -67,28 +67,30 @@ export default function GymOwnerDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-[#212121] border-none shadow-xl text-white">
+                <Card className="bg-[#cbfe00] border-none shadow-xl text-black">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Active Trainers</CardTitle>
-                        <ShieldCheck className="h-4 w-4 text-[#cbfe00]" />
+                        <CardTitle className="text-sm font-bold text-black/60 uppercase tracking-wider">New Leads</CardTitle>
+                        <ShieldCheck className="h-4 w-4 text-black" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-black text-white">4</div>
-                        <p className="text-xs text-[#cbfe00] flex items-center mt-1 font-bold">
-                            100% Operational
+                        <div className="text-3xl font-black text-black">24</div>
+                        <p className="text-xs text-black/70 flex items-center mt-1 font-bold">
+                            12 unread enquiries
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card className="bg-white border-none shadow-xl text-black">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-500 uppercase tracking-wider">Floor Traffic</CardTitle>
+                        <CardTitle className="text-sm font-bold text-zinc-500 uppercase tracking-wider">Broadcast</CardTitle>
                         <Activity className="h-4 w-4 text-black" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-black text-black">High</div>
-                        <p className="text-xs text-zinc-500 mt-1">
-                            Peak hours: 5PM - 8PM
+                        <Button className="w-full bg-black text-white hover:bg-zinc-800 h-8 text-xs font-bold">
+                            Send Message
+                        </Button>
+                        <p className="text-[10px] text-zinc-400 mt-2">
+                            Reach all 128 active members.
                         </p>
                     </CardContent>
                 </Card>

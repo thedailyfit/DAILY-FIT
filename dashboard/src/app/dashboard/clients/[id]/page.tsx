@@ -61,6 +61,10 @@ async function getClientProfile(id: string) {
             console.error("[ClientProfile] Error fetching programs:", programsError);
         }
 
+        // Fetch available plans for edit dialog
+        const { data: dietPlans } = await supabase.from('diet_plans').select('id, name').eq('is_active', true);
+        const { data: workoutPlans } = await supabase.from('workout_plans').select('id, name').eq('is_active', true);
+
         // Fetch chat history
         const { data: messages, error: messagesError } = await supabase
             .from("messages")
@@ -74,7 +78,9 @@ async function getClientProfile(id: string) {
         return {
             member,
             programs: programs || [],
-            messages: messages || []
+            messages: messages || [],
+            dietPlans: dietPlans || [],
+            workoutPlans: workoutPlans || []
         };
     } catch (error) {
         console.error("[ClientProfile] Unexpected error:", error);
@@ -92,7 +98,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
         notFound();
     }
 
-    const { member, programs, messages } = data;
+    const { member, programs, messages, dietPlans, workoutPlans } = data;
 
     // Identify active diet and workout plans
     // Identify active diet and workout plans (explicitly check is_current)
@@ -134,6 +140,8 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                 Personal Details
                             </CardTitle>
                             <EditClientDialog
+                                dietPlans={dietPlans}
+                                workoutPlans={workoutPlans}
                                 client={{
                                     id: member.member_id,
                                     name: member.name,
@@ -199,6 +207,8 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                 Billing & Fees
                             </CardTitle>
                             <EditClientDialog
+                                dietPlans={dietPlans}
+                                workoutPlans={workoutPlans}
                                 client={{
                                     id: member.member_id,
                                     name: member.name,

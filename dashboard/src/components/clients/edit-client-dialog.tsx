@@ -28,13 +28,25 @@ interface EditClientDialogProps {
     client: Client;
     dietPlans: { id: string; name: string }[];
     workoutPlans: { id: string; name: string }[];
-    isOpen: boolean;
-    onClose: () => void;
+    isOpen?: boolean;
+    onClose?: () => void;
+    trigger?: React.ReactNode;
 }
 
-export function EditClientDialog({ client, dietPlans, workoutPlans, isOpen, onClose }: EditClientDialogProps) {
+export function EditClientDialog({ client, dietPlans, workoutPlans, isOpen, onClose, trigger }: EditClientDialogProps) {
     const [loading, setLoading] = useState(false)
+    const [internalOpen, setInternalOpen] = useState(false)
     const router = useRouter()
+
+    const isControlled = isOpen !== undefined;
+    const isDialogOpen = isControlled ? isOpen : internalOpen;
+    const onDialogChange = (open: boolean) => {
+        if (isControlled && onClose) {
+            if (!open) onClose();
+        } else {
+            setInternalOpen(open);
+        }
+    }
 
     // Form State
     // We don't have fee/goal in Client type, so checking if we should add them or just fake it.
@@ -65,7 +77,7 @@ export function EditClientDialog({ client, dietPlans, workoutPlans, isOpen, onCl
             await new Promise(r => setTimeout(r, 1000)); // Sim delay
 
             // Close
-            onClose();
+            onDialogChange(false);
             router.refresh();
 
         } catch (error) {
@@ -76,7 +88,8 @@ export function EditClientDialog({ client, dietPlans, workoutPlans, isOpen, onCl
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isDialogOpen} onOpenChange={onDialogChange}>
+            {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
                 <DialogHeader>
                     <DialogTitle>Edit Client: {client.name}</DialogTitle>
@@ -137,7 +150,7 @@ export function EditClientDialog({ client, dietPlans, workoutPlans, isOpen, onCl
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button variant="outline" onClick={() => onDialogChange(false)}>Cancel</Button>
                     <Button onClick={handleSave} disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</Button>
                 </DialogFooter>
             </DialogContent>

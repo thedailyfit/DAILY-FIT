@@ -1,22 +1,26 @@
-import { GymProgramManager } from "@/components/gym/gym-program-manager";
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-    title: "Program Builder | DailyFit Gym Admin",
-    description: "Create standard workout plans.",
-};
+import { GymProgramManager } from "@/components/gym/gym-program-manager";
+import { AnimatedPage, SlideIn } from "@/components/animated-components";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function GymProgramsPage() {
     return (
-        <div className="flex-1 space-y-4 p-8 pt-6 bg-[#e6e6e6] min-h-screen text-black">
-            <div className="flex items-center justify-between space-y-2 mb-6">
-                <div>
-                    <h2 className="text-3xl font-black tracking-tight uppercase text-[#212121]">Program Builder</h2>
-                    <p className="text-zinc-500">Create standard workout templates for your trainers.</p>
+        <AnimatedPage>
+            <div className="flex-1 space-y-6 p-8 pt-6 bg-background min-h-screen text-foreground">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-3xl font-black tracking-tight uppercase text-foreground">Program Builder</h2>
+                        <p className="text-muted-foreground">Create standard workout templates for your trainers.</p>
+                    </div>
+                    <ThemeSwitcher variant="gym" />
                 </div>
-            </div>
 
-            <GymProgramManager />
-        </div>
+                <SlideIn direction="up" delay={0.1}>
+                    <GymProgramManager />
+                </SlideIn>
+            </div>
+        </AnimatedPage>
     );
 }

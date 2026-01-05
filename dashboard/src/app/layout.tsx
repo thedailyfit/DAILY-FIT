@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DailyFit Dashboard",
-  description: "Comprehensive fitness management platform",
+  title: "DailyFit AI - Fitness Management Platform",
+  description: "AI-powered fitness management for trainers and gym owners",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

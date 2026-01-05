@@ -40,8 +40,8 @@ export default async function GymMembersPage() {
         <div className="p-8 space-y-8 bg-background min-h-screen">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-[#212121] uppercase tracking-tighter">Gym Directory</h1>
-                    <p className="text-zinc-500 font-medium">Manage memberships and access.</p>
+                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Gym Directory</h1>
+                    <p className="text-muted-foreground font-medium">Manage memberships and access.</p>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                     <ImportClientsDialog />
@@ -49,11 +49,11 @@ export default async function GymMembersPage() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-zinc-100">
-                <Search className="h-4 w-4 text-zinc-400" />
+            <div className="flex items-center gap-4 bg-card p-4 rounded-xl shadow-sm border border-border">
+                <Search className="h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder="Search by name, phone or area..."
-                    className="border-none shadow-none focus-visible:ring-0 bg-transparent h-auto p-0 placeholder:text-zinc-400"
+                    className="border-none shadow-none focus-visible:ring-0 bg-transparent h-auto p-0 placeholder:text-muted-foreground"
                 />
             </div>
 

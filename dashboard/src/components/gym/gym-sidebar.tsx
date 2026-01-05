@@ -57,6 +57,12 @@ export function GymSidebar() {
                     </Button>
                 </Link>
 
+                <Link href="/gym/operations">
+                    <Button variant="ghost" className={navItemClass("/gym/operations")}>
+                        <Settings className="mr-3 h-4 w-4" /> Operations
+                    </Button>
+                </Link>
+
                 <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 mt-6">Management</p>
 
                 <Link href="/gym/members">

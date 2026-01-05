@@ -198,9 +198,9 @@ export default function GymAnalyticsPage() {
                                 <div className="flex justify-between items-center">
                                     <div>
                                         <CardTitle className="text-foreground flex items-center gap-2">
-                                            <Activity className="h-5 w-5 text-primary" /> Weekly Gym Visits
+                                            <Activity className="h-5 w-5 text-primary" /> Weekly Class Attendance
                                         </CardTitle>
-                                        <CardDescription className="text-muted-foreground">Member check-ins by day</CardDescription>
+                                        <CardDescription className="text-muted-foreground">Manual check-ins by day</CardDescription>
                                     </div>
                                     <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full">
                                         <Zap className="h-4 w-4 text-primary" />
@@ -294,7 +294,7 @@ export default function GymAnalyticsPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     {[
                                         { label: "Peak Hour", value: "6:00 PM", icon: Activity, color: "text-amber-400" },
-                                        { label: "Avg. Visit Duration", value: "74 min", icon: TrendingUp, color: "text-emerald-400" },
+                                        { label: "Avg. Class Duration", value: "60 min", icon: TrendingUp, color: "text-emerald-400" },
                                         { label: "Class Attendance", value: "89%", icon: Users, color: "text-blue-400" },
                                         { label: "Equipment Usage", value: "High", icon: Zap, color: "text-purple-400" },
                                     ].map((stat, i) => (

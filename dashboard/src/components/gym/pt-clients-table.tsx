@@ -20,7 +20,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import {
     Select,
@@ -31,10 +30,11 @@ import {
 } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
 
 interface PtClientsTableProps {
-    clients: GymMember[]; // Assuming GymMembers can be PT clients
-    trainers: any[]; // Need Trainer type
+    clients: GymMember[];
+    trainers: any[];
     dietPlans: any[];
     workoutPlans: any[];
 }
@@ -43,8 +43,6 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
     const [selectedClient, setSelectedClient] = useState<GymMember | null>(null);
     const [assignOpen, setAssignOpen] = useState(false);
     const [assignType, setAssignType] = useState<"trainer" | "plan">("trainer");
-
-    // Assignment State
     const [selectedTrainerId, setSelectedTrainerId] = useState("");
     const [selectedDietId, setSelectedDietId] = useState("");
     const [selectedWorkoutId, setSelectedWorkoutId] = useState("");
@@ -55,8 +53,6 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
         setSelectedClient(client);
         setAssignType(type);
         setAssignOpen(true);
-        // Reset selections
-        // In real app, pre-fill with existing values
     };
 
     const handleSaveAssignment = async () => {
@@ -64,22 +60,10 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
         const supabase = createClient();
         try {
             if (assignType === "trainer") {
-                // Update member's assigned trainer
-                // Assuming 'trainer_id' column or metadata
-                // For now, mocking success or using metadata update
                 console.log(`Assigning trainer ${selectedTrainerId} to client ${selectedClient?.id}`);
-                const { error } = await supabase
-                    .from('members')
-                    .update({
-                        // trainer_id: selectedTrainerId // If column exists
-                    })
-                    .eq('member_id', selectedClient?.id);
-                // Since column might not exist, we just simulate
                 alert(`Trainer assigned! (Simulated)`);
             } else {
-                // Assign Plan
                 console.log(`Assigning Diet ${selectedDietId} / Workout ${selectedWorkoutId}`);
-                // Logic to insert into client_programs would go here
                 alert(`Plans assigned! (Simulated)`);
             }
             setAssignOpen(false);
@@ -92,21 +76,21 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
     };
 
     return (
-        <div className="rounded-md border border-zinc-200 bg-white shadow-sm overflow-hidden">
+        <Card className="rounded-xl border border-border bg-card shadow-lg overflow-hidden">
             <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
-                <DialogContent>
+                <DialogContent className="bg-card border-border">
                     <DialogHeader>
-                        <DialogTitle>{assignType === 'trainer' ? 'Assign Trainer' : 'Assign Program'}</DialogTitle>
-                        <DialogDescription>
-                            manage PT details for {selectedClient?.name}
+                        <DialogTitle className="text-foreground">{assignType === 'trainer' ? 'Assign Trainer' : 'Assign Program'}</DialogTitle>
+                        <DialogDescription className="text-muted-foreground">
+                            Manage PT details for {selectedClient?.name}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
                         {assignType === 'trainer' ? (
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Select Trainer</label>
+                                <label className="text-sm font-medium text-foreground">Select Trainer</label>
                                 <Select onValueChange={setSelectedTrainerId}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="bg-secondary border-border text-foreground">
                                         <SelectValue placeholder="Choose a trainer" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -119,9 +103,9 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
                         ) : (
                             <>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Diet Plan</label>
+                                    <label className="text-sm font-medium text-foreground">Diet Plan</label>
                                     <Select onValueChange={setSelectedDietId}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="bg-secondary border-border text-foreground">
                                             <SelectValue placeholder="Choose diet" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -133,9 +117,9 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Workout Plan</label>
+                                    <label className="text-sm font-medium text-foreground">Workout Plan</label>
                                     <Select onValueChange={setSelectedWorkoutId}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="bg-secondary border-border text-foreground">
                                             <SelectValue placeholder="Choose workout" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -150,55 +134,54 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
                         )}
                     </div>
                     <DialogFooter>
-                        <Button onClick={handleSaveAssignment} disabled={loading}>{loading ? 'Saving...' : 'Save'}</Button>
+                        <Button onClick={handleSaveAssignment} disabled={loading} className="bg-primary text-primary-foreground">
+                            {loading ? 'Saving...' : 'Save'}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <Table>
-                <TableHeader className="bg-zinc-50">
-                    <TableRow>
-                        <TableHead className="font-bold text-zinc-500 uppercase text-xs">Client</TableHead>
-                        <TableHead className="font-bold text-zinc-500 uppercase text-xs">Assigned Trainer</TableHead>
-                        <TableHead className="font-bold text-zinc-500 uppercase text-xs">Status</TableHead>
-                        <TableHead className="font-bold text-zinc-500 uppercase text-xs">Current Program</TableHead>
-                        <TableHead className="font-bold text-zinc-500 uppercase text-xs text-right">Actions</TableHead>
+                <TableHeader>
+                    <TableRow className="border-border bg-secondary hover:bg-secondary">
+                        <TableHead className="font-bold text-muted-foreground uppercase text-xs">Client</TableHead>
+                        <TableHead className="font-bold text-muted-foreground uppercase text-xs">Assigned Trainer</TableHead>
+                        <TableHead className="font-bold text-muted-foreground uppercase text-xs">Status</TableHead>
+                        <TableHead className="font-bold text-muted-foreground uppercase text-xs">Current Program</TableHead>
+                        <TableHead className="font-bold text-muted-foreground uppercase text-xs text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {clients.map((client) => (
-                        <TableRow key={client.id} className="hover:bg-zinc-50">
+                        <TableRow key={client.id} className="hover:bg-accent border-border">
                             <TableCell>
-                                <div className="font-bold text-slate-900">{client.name}</div>
-                                <div className="text-xs text-zinc-500">{client.goal}</div>
+                                <div className="font-bold text-foreground">{client.name}</div>
+                                <div className="text-xs text-muted-foreground">{client.goal}</div>
                             </TableCell>
                             <TableCell>
-                                {/* Mock check for assigned trainer */}
-                                <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className="border-dashed border-zinc-300 text-zinc-400 font-normal">
-                                        No Trainer
-                                    </Badge>
-                                </div>
+                                <Badge variant="outline" className="border-dashed border-border text-muted-foreground font-normal">
+                                    No Trainer
+                                </Badge>
                             </TableCell>
                             <TableCell>
-                                <Badge variant="secondary" className="bg-purple-100 text-purple-700">PT Active</Badge>
+                                <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">PT Active</Badge>
                             </TableCell>
                             <TableCell>
                                 <div className="text-xs space-y-1">
-                                    <div className="flex items-center gap-1 text-zinc-600">
+                                    <div className="flex items-center gap-1 text-muted-foreground">
                                         <Utensils className="h-3 w-3" /> None
                                     </div>
-                                    <div className="flex items-center gap-1 text-zinc-600">
+                                    <div className="flex items-center gap-1 text-muted-foreground">
                                         <Dumbbell className="h-3 w-3" /> None
                                     </div>
                                 </div>
                             </TableCell>
                             <TableCell className="text-right">
                                 <div className="flex justify-end gap-2">
-                                    <Button size="sm" variant="outline" onClick={() => handleOpenAssign(client, 'trainer')}>
+                                    <Button size="sm" variant="outline" className="border-border text-foreground hover:bg-accent" onClick={() => handleOpenAssign(client, 'trainer')}>
                                         <UserPlus className="h-3 w-3 mr-1" /> Trainer
                                     </Button>
-                                    <Button size="sm" variant="outline" onClick={() => handleOpenAssign(client, 'plan')}>
+                                    <Button size="sm" variant="outline" className="border-border text-foreground hover:bg-accent" onClick={() => handleOpenAssign(client, 'plan')}>
                                         <Dumbbell className="h-3 w-3 mr-1" /> Program
                                     </Button>
                                 </div>
@@ -207,6 +190,6 @@ export function PtClientsTable({ clients, trainers, dietPlans, workoutPlans }: P
                     ))}
                 </TableBody>
             </Table>
-        </div>
+        </Card>
     );
 }

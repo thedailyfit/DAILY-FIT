@@ -99,7 +99,7 @@ export function GymSidebar() {
 
                 <Link href="/gym/products">
                     <Button variant="ghost" className={navItemClass("/gym/products")}>
-                        <Store className="mr-3 h-4 w-4" /> Pro Shop
+                        <Store className="mr-3 h-4 w-4" /> Upsell Products
                     </Button>
                 </Link>
 

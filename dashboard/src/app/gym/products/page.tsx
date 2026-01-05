@@ -26,7 +26,7 @@ export default function ProductsPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-3xl font-black tracking-tight uppercase text-foreground">Pro Shop</h2>
+                        <h2 className="text-3xl font-black tracking-tight uppercase text-foreground">Upsell Product Add-ons</h2>
                         <p className="text-muted-foreground">Inventory management & member upselling.</p>
                     </div>
                     <div className="flex items-center gap-3">

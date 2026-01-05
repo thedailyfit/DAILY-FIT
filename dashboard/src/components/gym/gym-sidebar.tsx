@@ -118,6 +118,12 @@ export function GymSidebar() {
             </nav>
 
             <div className="pt-6 border-t border-sidebar-border space-y-2">
+                <Link href="/gym/support">
+                    <Button variant="ghost" className={navItemClass("/gym/support")}>
+                        <MessageSquare className="mr-3 h-4 w-4" /> Support
+                    </Button>
+                </Link>
+
                 <Link href="/gym/subscription">
                     <Button variant="ghost" className={navItemClass("/gym/subscription")}>
                         <CreditCard className="mr-3 h-4 w-4" /> Subscription

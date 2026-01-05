@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Monitor, Moon, Sun, Laptop } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,71 +8,130 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Check } from "lucide-react"
+
+const themes = [
+    {
+        id: "cyber-bunker",
+        name: "Cyber Bunker",
+        description: "Neon Green Dark",
+        preview: { bg: "#0a0a0a", accent: "#cbfe00", border: "#27272a" }
+    },
+    {
+        id: "minimalist",
+        name: "Minimal",
+        description: "Clean Light",
+        preview: { bg: "#ffffff", accent: "#18181b", border: "#e4e4e7" }
+    },
+    {
+        id: "carbon",
+        name: "Carbon",
+        description: "Monochrome Dark",
+        preview: { bg: "#121212", accent: "#ffffff", border: "#333333" }
+    },
+    {
+        id: "royal-gold",
+        name: "Royal Gold",
+        description: "Luxury Amber",
+        preview: { bg: "#0c0a09", accent: "#f59e0b", border: "#44403c" }
+    },
+    {
+        id: "ember",
+        name: "Ember",
+        description: "Grey + Orange",
+        preview: { bg: "#171717", accent: "#f97316", border: "#52525b" }
+    },
+    {
+        id: "neon-purple",
+        name: "Neon Purple",
+        description: "Gradient Glow",
+        preview: { bg: "#0a0a0a", accent: "#a855f7", border: "#3f3f46", gradient: true }
+    }
+]
 
 export function ThemeSwitcher() {
     const { setTheme, theme } = useTheme()
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => setMounted(true), [])
+
+    if (!mounted) return null
+
+    const currentTheme = themes.find(t => t.id === theme) || themes[0]
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                    <div className={`h-4 w-4 rounded-full ${theme === 'cyber-bunker' ? 'bg-[#cbfe00]' :
-                        theme === 'royal-blue' ? 'bg-[#38bdf8]' :
-                            theme === 'carbon' ? 'bg-white' : 'bg-black'
-                        }`} />
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full border border-border bg-background hover:bg-accent"
+                >
+                    <div
+                        className="h-4 w-4 rounded-full"
+                        style={{
+                            background: currentTheme.preview.gradient
+                                ? `linear-gradient(135deg, ${currentTheme.preview.accent} 0%, #ec4899 100%)`
+                                : currentTheme.preview.accent,
+                            boxShadow: `0 0 8px ${currentTheme.preview.accent}40`
+                        }}
+                    />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 p-2 bg-popover border-border text-popover-foreground">
-                <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Select Theme</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-64 p-2">
+                <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
+                    Select Theme
+                </DropdownMenuLabel>
 
-                <DropdownMenuItem onClick={() => setTheme("cyber-bunker")} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer focus:bg-accent">
-                    <div className="h-8 w-12 rounded bg-[#0a0a0a] border border-zinc-800 relative overflow-hidden">
-                        <div className="absolute top-1 left-1 w-6 h-1 bg-[#cbfe00]/50 rounded-full"></div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-sm">Cyber Bunker</span>
-                        <span className="text-xs text-muted-foreground">Default Dark</span>
-                    </div>
-                    {theme === 'cyber-bunker' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
-                </DropdownMenuItem>
+                {themes.map((t) => (
+                    <DropdownMenuItem
+                        key={t.id}
+                        onClick={() => setTheme(t.id)}
+                        className="flex items-center gap-3 p-2 rounded-lg cursor-pointer"
+                    >
+                        {/* Theme Preview */}
+                        <div
+                            className="h-10 w-14 rounded-md relative overflow-hidden border"
+                            style={{
+                                backgroundColor: t.preview.bg,
+                                borderColor: t.preview.border
+                            }}
+                        >
+                            {/* Accent bar */}
+                            <div
+                                className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full"
+                                style={{
+                                    background: t.preview.gradient
+                                        ? `linear-gradient(90deg, ${t.preview.accent} 0%, #ec4899 100%)`
+                                        : t.preview.accent
+                                }}
+                            />
+                            {/* Mock content lines */}
+                            <div
+                                className="absolute top-1.5 left-1 w-4 h-1 rounded-full opacity-40"
+                                style={{ backgroundColor: t.preview.accent }}
+                            />
+                            <div
+                                className="absolute top-3.5 left-1 w-6 h-0.5 rounded-full opacity-20"
+                                style={{ backgroundColor: t.preview.accent }}
+                            />
+                        </div>
 
-                <DropdownMenuItem onClick={() => setTheme("minimalist")} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer focus:bg-accent">
-                    <div className="h-8 w-12 rounded bg-white border border-zinc-200 relative overflow-hidden">
-                        <div className="absolute top-1 left-1 w-6 h-1 bg-black/10 rounded-full"></div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-sm">Minimalist</span>
-                        <span className="text-xs text-muted-foreground">Clean Light</span>
-                    </div>
-                    {theme === 'minimalist' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
-                </DropdownMenuItem>
+                        {/* Theme Info */}
+                        <div className="flex flex-col flex-1">
+                            <span className="font-semibold text-sm">{t.name}</span>
+                            <span className="text-xs text-muted-foreground">{t.description}</span>
+                        </div>
 
-                <DropdownMenuItem onClick={() => setTheme("royal-blue")} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer focus:bg-accent">
-                    <div className="h-8 w-12 rounded bg-[#0f172a] border border-slate-700 relative overflow-hidden">
-                        <div className="absolute top-1 left-1 w-6 h-1 bg-[#38bdf8]/50 rounded-full"></div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-sm">Royal Blue</span>
-                        <span className="text-xs text-muted-foreground">Deep Navy</span>
-                    </div>
-                    {theme === 'royal-blue' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
-                </DropdownMenuItem>
-
-                <DropdownMenuItem onClick={() => setTheme("carbon")} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer focus:bg-accent">
-                    <div className="h-8 w-12 rounded bg-[#121212] border border-white/20 relative overflow-hidden">
-                        <div className="absolute top-1 left-1 w-6 h-1 bg-white rounded-full"></div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-sm">Carbon</span>
-                        <span className="text-xs text-muted-foreground">Monochrome Dark</span>
-                    </div>
-                    {theme === 'carbon' && <div className="ml-auto w-2 h-2 rounded-full bg-primary"></div>}
-                </DropdownMenuItem>
-
+                        {/* Selected indicator */}
+                        {theme === t.id && (
+                            <Check className="h-4 w-4 text-primary" />
+                        )}
+                    </DropdownMenuItem>
+                ))}
             </DropdownMenuContent>
         </DropdownMenu>
     )

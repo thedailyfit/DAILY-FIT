@@ -1,5 +1,6 @@
 import { GymSidebar } from "@/components/gym/gym-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { CursorTrail } from "@/components/cursor-trail";
 
 export default function GymLayout({
     children,
@@ -8,6 +9,7 @@ export default function GymLayout({
 }) {
     return (
         <ThemeProvider>
+            <CursorTrail />
             <div className="flex min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
                 <GymSidebar />
                 <div className="flex-1 flex flex-col h-screen overflow-auto relative">

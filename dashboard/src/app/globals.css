@@ -199,6 +199,123 @@
     --sidebar-border: #333333;
     --sidebar-ring: #ffffff;
   }
+
+  [data-theme='royal-gold'] {
+    /* ROYAL GOLD (Luxury Dark with Amber Accents) */
+    --background: #0c0a09;
+    --foreground: #fafaf9;
+    --card: #1c1917;
+    --card-foreground: #fafaf9;
+    --popover: #1c1917;
+    --popover-foreground: #fafaf9;
+    --primary: #f59e0b;
+    --primary-foreground: #0c0a09;
+    --secondary: #292524;
+    --secondary-foreground: #fafaf9;
+    --muted: #292524;
+    --muted-foreground: #a8a29e;
+    --accent: #292524;
+    --accent-foreground: #f59e0b;
+    --destructive: #dc2626;
+    --destructive-foreground: #fafaf9;
+    --border: #44403c;
+    --input: #44403c;
+    --ring: #f59e0b;
+    --chart-1: #f59e0b;
+    --chart-2: #fbbf24;
+    --chart-3: #d97706;
+    --chart-4: #b45309;
+    --chart-5: #92400e;
+
+    /* Sidebar - Royal Gold */
+    --sidebar: #0c0a09;
+    --sidebar-foreground: #fafaf9;
+    --sidebar-primary: #f59e0b;
+    --sidebar-primary-foreground: #0c0a09;
+    --sidebar-accent: #292524;
+    --sidebar-accent-foreground: #f59e0b;
+    --sidebar-border: #44403c;
+    --sidebar-ring: #f59e0b;
+  }
+
+  [data-theme='ember'] {
+    /* EMBER (Grey + Orange + Black Mix) */
+    --background: #171717;
+    --foreground: #fafafa;
+    --card: #262626;
+    --card-foreground: #fafafa;
+    --popover: #262626;
+    --popover-foreground: #fafafa;
+    --primary: #f97316;
+    --primary-foreground: #0a0a0a;
+    --secondary: #3f3f46;
+    --secondary-foreground: #fafafa;
+    --muted: #3f3f46;
+    --muted-foreground: #a1a1aa;
+    --accent: #3f3f46;
+    --accent-foreground: #f97316;
+    --destructive: #dc2626;
+    --destructive-foreground: #fafafa;
+    --border: #52525b;
+    --input: #52525b;
+    --ring: #f97316;
+    --chart-1: #f97316;
+    --chart-2: #fb923c;
+    --chart-3: #71717a;
+    --chart-4: #52525b;
+    --chart-5: #3f3f46;
+
+    /* Sidebar - Ember */
+    --sidebar: #171717;
+    --sidebar-foreground: #fafafa;
+    --sidebar-primary: #f97316;
+    --sidebar-primary-foreground: #0a0a0a;
+    --sidebar-accent: #3f3f46;
+    --sidebar-accent-foreground: #f97316;
+    --sidebar-border: #52525b;
+    --sidebar-ring: #f97316;
+  }
+
+  [data-theme='neon-purple'] {
+    /* NEON PURPLE (Gradient Purple-Pink) */
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+    --card: #18181b;
+    --card-foreground: #fafafa;
+    --popover: #18181b;
+    --popover-foreground: #fafafa;
+    --primary: #a855f7;
+    --primary-foreground: #0a0a0a;
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #a855f7;
+    --destructive: #f43f5e;
+    --destructive-foreground: #fafafa;
+    --border: #3f3f46;
+    --input: #3f3f46;
+    --ring: #a855f7;
+    --chart-1: #a855f7;
+    --chart-2: #c084fc;
+    --chart-3: #ec4899;
+    --chart-4: #f472b6;
+    --chart-5: #e879f9;
+
+    /* Gradient accent for special elements */
+    --gradient-accent: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+
+    /* Sidebar - Neon Purple */
+    --sidebar: #0a0a0a;
+    --sidebar-foreground: #fafafa;
+    --sidebar-primary: #a855f7;
+    --sidebar-primary-foreground: #0a0a0a;
+    --sidebar-accent: #27272a;
+    --sidebar-accent-foreground: #a855f7;
+    --sidebar-border: #3f3f46;
+    --sidebar-ring: #a855f7;
+  }
 }
 
 @layer base {

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AnimatedCard, AnimatedList } from "@/components/gym/animated-components";
 
 export default function GymOwnerDashboard() {
     // Mock Data - More Realistic
@@ -40,62 +41,62 @@ export default function GymOwnerDashboard() {
             </div>
 
             {/* Stats Overview - High Contrast Cards */}
-            <div className="grid gap-4 md:grid-cols-5">
-                <Card className="bg-[#212121] border-none shadow-xl text-white">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-[#cbfe00]" />
-                    </CardHeader>
-                    <CardContent>
+            <AnimatedList className="grid gap-4 md:grid-cols-5">
+                <AnimatedCard delay={0.1} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
+                        <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Revenue</span>
+                        <DollarSign className="h-4 w-4 text-[#cbfe00] group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div>
                         <div className="text-3xl font-black text-white">$12,450</div>
                         <p className="text-[10px] text-zinc-500 font-bold mt-1 text-[#cbfe00]">+12.5% vs last month</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                </AnimatedCard>
 
-                <Card className="bg-[#212121] border-none shadow-xl text-white">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Due</CardTitle>
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
+                <AnimatedCard delay={0.2} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
+                        <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Due</span>
+                        <AlertCircle className="h-4 w-4 text-red-500 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div>
                         <div className="text-3xl font-black text-white">$1,800</div>
                         <p className="text-[10px] text-red-400 font-bold mt-1">15 Members Pending</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                </AnimatedCard>
 
-                <Card className="bg-[#212121] border-none shadow-xl text-white">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Active Members</CardTitle>
-                        <Users className="h-4 w-4 text-[#cbfe00]" />
-                    </CardHeader>
-                    <CardContent>
+                <AnimatedCard delay={0.3} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
+                        <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Active Members</span>
+                        <Users className="h-4 w-4 text-[#cbfe00] group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div>
                         <div className="text-3xl font-black text-white">128</div>
                         <p className="text-[10px] text-zinc-500 font-bold mt-1">+8 new this week</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                </AnimatedCard>
 
-                <Card className="bg-[#212121] border-none shadow-xl text-white">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Cardio Only</CardTitle>
-                        <Activity className="h-4 w-4 text-blue-500" />
-                    </CardHeader>
-                    <CardContent>
+                <AnimatedCard delay={0.4} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
+                        <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Cardio Only</span>
+                        <Activity className="h-4 w-4 text-blue-500 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div>
                         <div className="text-3xl font-black text-white">45</div>
                         <p className="text-[10px] text-blue-400 font-bold mt-1">Treadmill/Cycle Plan</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                </AnimatedCard>
 
-                <Card className="bg-[#cbfe00] border-none shadow-xl text-black">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold text-black uppercase tracking-wider">New Leads</CardTitle>
-                        <ShieldCheck className="h-4 w-4 text-black" />
-                    </CardHeader>
-                    <CardContent>
+                <AnimatedCard delay={0.5} className="bg-[#cbfe00] text-black shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
+                        <span className="text-sm font-bold text-black uppercase tracking-wider">New Leads</span>
+                        <ShieldCheck className="h-4 w-4 text-black group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div>
                         <div className="text-3xl font-black text-black">24</div>
                         <p className="text-[10px] text-black/70 font-bold mt-1">12 unread enquiries</p>
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
+                </AnimatedCard>
+            </AnimatedList>
             <Card className="bg-white border-none shadow-xl">
                 <div className="flex items-center justify-between p-4">
                     <div>

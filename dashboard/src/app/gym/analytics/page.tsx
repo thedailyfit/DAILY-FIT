@@ -2,7 +2,7 @@
 import { AnalyticsCharts } from "@/components/gym/analytics-charts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, TrendingUp, Users, DollarSign, Dumbbell } from "lucide-react";
+import { Calendar, TrendingUp, Users, DollarSign, Dumbbell, CreditCard, Activity } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 export default async function GymAnalyticsPage() {
@@ -37,65 +37,45 @@ export default async function GymAnalyticsPage() {
             </div>
 
             {/* KPI Cards */}
-            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                <Card className="bg-[#cbfe00] border-none shadow-md">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold text-black uppercase">Total Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-black" />
+                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-black text-black">${totalRevenue.toLocaleString()}</div>
-                        <p className="text-[10px] text-black/70 font-bold mt-1">+20.1% from last month</p>
+                        <div className="text-2xl font-bold">$12,450</div>
+                        <p className="text-xs text-muted-foreground">+20.1% from last month</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-zinc-200 shadow-sm">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold text-zinc-500 uppercase">Total Due</CardTitle>
-                        <DollarSign className="h-4 w-4 text-red-500" />
+                        <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-black text-black">$1,200</div>
-                        <p className="text-[10px] text-zinc-400 mt-1">15 Members overdue</p>
+                        <div className="text-2xl font-bold text-emerald-500">$8,200</div>
+                        <p className="text-xs text-muted-foreground">65% Profit Margin</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-zinc-200 shadow-sm">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold text-zinc-500 uppercase">New Joinees</CardTitle>
-                        <Users className="h-4 w-4 text-zinc-500" />
+                        <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+                        <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-black text-black">+{newJoinees}</div>
-                        <p className="text-[10px] text-green-600 mt-1 font-bold">This month</p>
+                        <div className="text-2xl font-bold text-red-500">$4,250</div>
+                        <p className="text-xs text-muted-foreground">+4% from last month</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-zinc-200 shadow-sm">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold text-zinc-500 uppercase">PT Clients</CardTitle>
-                        <Dumbbell className="h-4 w-4 text-purple-500" />
+                        <CardTitle className="text-sm font-medium">New Joinees</CardTitle>
+                        <Activity className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-black text-black">{ptClients}</div>
-                        <p className="text-[10px] text-zinc-400 mt-1">Avg $300/client</p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-white border-zinc-200 shadow-sm">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold text-zinc-500 uppercase">Gym Members</CardTitle>
-                        <Users className="h-4 w-4 text-zinc-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-black">{totalMembers}</div>
-                        <p className="text-[10px] text-zinc-400 mt-1">Floor access only</p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-white border-zinc-200 shadow-sm">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold text-zinc-500 uppercase">Cardio Only</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-blue-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-black">{totalCardio}</div>
-                        <p className="text-[10px] text-zinc-400 mt-1">Treadmill/Cycle</p>
+                        <div className="text-2xl font-bold">+12</div>
+                        <p className="text-xs text-muted-foreground">+2 since yesterday</p>
                     </CardContent>
                 </Card>
             </div>

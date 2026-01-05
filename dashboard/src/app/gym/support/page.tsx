@@ -42,6 +42,7 @@ export default function GymSupportPage() {
                                 <TableHead>Subject</TableHead>
                                 <TableHead>Type</TableHead>
                                 <TableHead>Date Created</TableHead>
+                                <TableHead>Assigned To</TableHead>
                                 <TableHead className="text-right">Status</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -52,6 +53,12 @@ export default function GymSupportPage() {
                                     <TableCell>{t.subject}</TableCell>
                                     <TableCell>{t.type}</TableCell>
                                     <TableCell>{t.date}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span className="text-xs font-bold text-zinc-600">Super Admin</span>
+                                        </div>
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <Badge variant="secondary" className={
                                             t.status === 'Resolved' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'

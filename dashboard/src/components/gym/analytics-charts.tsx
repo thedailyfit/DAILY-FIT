@@ -18,13 +18,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const revData = [
-    { name: "Oct", revenue: 4000, expenses: 2400 },
-    { name: "Nov", revenue: 3000, expenses: 1398 },
-    { name: "Dec", revenue: 2000, expenses: 9800 },
-    { name: "Jan", revenue: 2780, expenses: 3908 },
-    { name: "Feb", revenue: 1890, expenses: 4800 },
-    { name: "Mar", revenue: 2390, expenses: 3800 },
-    { name: "Apr", revenue: 3490, expenses: 4300 },
+    { name: "Oct", revenue: 4000, expenses: 2400, profit: 1600 },
+    { name: "Nov", revenue: 3000, expenses: 1398, profit: 1602 },
+    { name: "Dec", revenue: 2000, expenses: 9800, profit: -7800 },
+    { name: "Jan", revenue: 2780, expenses: 3908, profit: -1128 },
+    { name: "Feb", revenue: 1890, expenses: 4800, profit: -2910 },
+    { name: "Mar", revenue: 2390, expenses: 3800, profit: -1410 },
+    { name: "Apr", revenue: 8490, expenses: 4300, profit: 4190 },
 ];
 
 const growthData = [
@@ -70,6 +70,7 @@ export function AnalyticsCharts() {
                             <Tooltip />
                             <Area type="monotone" dataKey="revenue" stroke="#cbfe00" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
                             <Area type="monotone" dataKey="expenses" stroke="#ff4d4d" strokeWidth={2} fillOpacity={0} fill="transparent" />
+                            <Area type="monotone" dataKey="profit" stroke="#3b82f6" strokeWidth={2} strokeDasharray="5 5" fillOpacity={0} fill="transparent" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </CardContent>

@@ -16,7 +16,8 @@ export const metadata: Metadata = {
   title: "DailyFit AI - Fitness Management Platform",
   description: "AI-powered fitness management for trainers and gym owners",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 

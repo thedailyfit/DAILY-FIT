@@ -4,13 +4,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard, AlertCircle, Bell } from "lucide-react";
+import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard, AlertCircle, Bell, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { AnimatedCard, AnimatedList, AnimatedPage } from "@/components/animated-components";
+import { AnimatedCard, AnimatedList, AnimatedPage, PopupCard, SlideIn } from "@/components/animated-components";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function GymOwnerDashboard() {
-    // Mock Data - More Realistic
+    // Mock Data
     const trainers = [
         { id: 1, name: "Alice Fit", clients: 15, status: "Active", revenue: "$1,200", lastActive: "2m ago" },
         { id: 2, name: "Bob Builder", clients: 8, status: "Active", revenue: "$850", lastActive: "1h ago" },
@@ -21,7 +21,7 @@ export default function GymOwnerDashboard() {
     return (
         <AnimatedPage>
             <main className="p-8 space-y-8 bg-background min-h-screen text-foreground">
-                {/* Intelligent Header - Glassmorphism */}
+                {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 sticky top-0 z-10 bg-background/80 backdrop-blur-md py-4 border-b border-border">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -48,180 +48,168 @@ export default function GymOwnerDashboard() {
                     </div>
                 </div>
 
-                {/* Stats Overview - High Contrast Cards */}
+                {/* Stats Overview */}
                 <AnimatedList className="grid gap-4 md:grid-cols-5">
-                    <AnimatedCard delay={0.1} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <PopupCard delay={0.1} className="bg-card border border-border shadow-xl rounded-xl p-6 relative overflow-hidden group">
                         <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
-                            <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Revenue</span>
-                            <DollarSign className="h-4 w-4 text-[#cbfe00] group-hover:scale-110 transition-transform" />
+                            <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Total Revenue</span>
+                            <DollarSign className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
                         </div>
                         <div>
-                            <div className="text-3xl font-black text-white">$12,450</div>
-                            <p className="text-[10px] text-zinc-500 font-bold mt-1 text-[#cbfe00]">+12.5% vs last month</p>
+                            <div className="text-3xl font-black text-foreground">$12,450</div>
+                            <p className="text-[10px] text-primary font-bold mt-1">+12.5% vs last month</p>
                         </div>
-                    </AnimatedCard>
+                    </PopupCard>
 
-                    <AnimatedCard delay={0.2} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <PopupCard delay={0.2} className="bg-card border border-border shadow-xl rounded-xl p-6 relative overflow-hidden group">
                         <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
-                            <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Total Due</span>
-                            <AlertCircle className="h-4 w-4 text-red-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Total Due</span>
+                            <AlertCircle className="h-4 w-4 text-destructive group-hover:scale-110 transition-transform" />
                         </div>
                         <div>
-                            <div className="text-3xl font-black text-white">$1,800</div>
-                            <p className="text-[10px] text-red-400 font-bold mt-1">15 Members Pending</p>
+                            <div className="text-3xl font-black text-foreground">$1,800</div>
+                            <p className="text-[10px] text-destructive font-bold mt-1">15 Members Pending</p>
                         </div>
-                    </AnimatedCard>
+                    </PopupCard>
 
-                    <AnimatedCard delay={0.3} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <PopupCard delay={0.3} className="bg-card border border-border shadow-xl rounded-xl p-6 relative overflow-hidden group">
                         <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
-                            <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Active Members</span>
-                            <Users className="h-4 w-4 text-[#cbfe00] group-hover:scale-110 transition-transform" />
+                            <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Active Members</span>
+                            <Users className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
                         </div>
                         <div>
-                            <div className="text-3xl font-black text-white">128</div>
-                            <p className="text-[10px] text-zinc-500 font-bold mt-1">+8 new this week</p>
+                            <div className="text-3xl font-black text-foreground">128</div>
+                            <p className="text-[10px] text-muted-foreground font-bold mt-1">+8 new this week</p>
                         </div>
-                    </AnimatedCard>
+                    </PopupCard>
 
-                    <AnimatedCard delay={0.4} className="bg-[#212121] text-white shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <PopupCard delay={0.4} className="bg-card border border-border shadow-xl rounded-xl p-6 relative overflow-hidden group">
                         <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
-                            <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Cardio Only</span>
+                            <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Cardio Only</span>
                             <Activity className="h-4 w-4 text-blue-500 group-hover:scale-110 transition-transform" />
                         </div>
                         <div>
-                            <div className="text-3xl font-black text-white">45</div>
+                            <div className="text-3xl font-black text-foreground">45</div>
                             <p className="text-[10px] text-blue-400 font-bold mt-1">Treadmill/Cycle Plan</p>
                         </div>
-                    </AnimatedCard>
+                    </PopupCard>
 
-                    <AnimatedCard delay={0.5} className="bg-[#cbfe00] text-black shadow-xl rounded-xl p-6 relative overflow-hidden group">
+                    <PopupCard delay={0.5} className="bg-primary text-primary-foreground shadow-xl rounded-xl p-6 relative overflow-hidden group">
                         <div className="flex flex-row items-center justify-between space-y-0 pb-2 mb-2">
-                            <span className="text-sm font-bold text-black uppercase tracking-wider">New Leads</span>
-                            <ShieldCheck className="h-4 w-4 text-black group-hover:scale-110 transition-transform" />
+                            <span className="text-sm font-bold text-primary-foreground uppercase tracking-wider">New Leads</span>
+                            <ShieldCheck className="h-4 w-4 text-primary-foreground group-hover:scale-110 transition-transform" />
                         </div>
                         <div>
-                            <div className="text-3xl font-black text-black">24</div>
-                            <p className="text-[10px] text-black/70 font-bold mt-1">12 unread enquiries</p>
+                            <div className="text-3xl font-black text-primary-foreground">24</div>
+                            <p className="text-[10px] text-primary-foreground/70 font-bold mt-1">12 unread enquiries</p>
                         </div>
-                    </AnimatedCard>
+                    </PopupCard>
                 </AnimatedList>
-                <Card className="bg-white border-none shadow-xl">
-                    <div className="flex items-center justify-between p-4">
-                        <div>
-                            <div className="text-sm font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
-                                <Activity className="h-4 w-4 text-black" /> Broadcast
+
+                {/* Broadcast Card */}
+                <SlideIn direction="up" delay={0.3}>
+                    <Card className="bg-card border-border shadow-xl">
+                        <div className="flex items-center justify-between p-4">
+                            <div>
+                                <div className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <Activity className="h-4 w-4 text-primary" /> Broadcast
+                                </div>
+                                <p className="text-[10px] text-muted-foreground mt-1">Reach all 128 active members.</p>
                             </div>
-                            <p className="text-[10px] text-zinc-400 mt-1">Reach all 128 active members.</p>
+                            <Button className="bg-primary text-primary-foreground hover:opacity-90 h-8 text-xs font-bold px-6">
+                                Send Message
+                            </Button>
                         </div>
-                        <Button className="bg-black text-white hover:bg-zinc-800 h-8 text-xs font-bold px-6">
-                            Send Message
-                        </Button>
-                    </div>
-                </Card>
+                    </Card>
+                </SlideIn>
 
                 {/* Main Data Section */}
                 <div className="grid gap-6 md:grid-cols-3">
                     {/* Trainer Performance Table */}
-                    <Card className="md:col-span-2 border-none shadow-xl bg-white">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <div>
-                                <CardTitle className="text-lg font-bold text-[#212121]">Trainer Performance</CardTitle>
-                                <CardDescription>Real-time oversight of staff metrics.</CardDescription>
-                            </div>
-                            <Link href="/gym/trainers" className="text-xs font-bold text-zinc-400 hover:text-black transition-colors">View All</Link>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="hover:bg-transparent border-zinc-100">
-                                        <TableHead className="w-[200px] text-[10px] uppercase font-bold text-zinc-400">Trainer</TableHead>
-                                        <TableHead className="text-[10px] uppercase font-bold text-zinc-400">Status</TableHead>
-                                        <TableHead className="text-[10px] uppercase font-bold text-zinc-400">Clients</TableHead>
-                                        <TableHead className="text-[10px] uppercase font-bold text-zinc-400">Est. Revenue</TableHead>
-                                        <TableHead className="text-right text-[10px] uppercase font-bold text-zinc-400">Last Active</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {trainers.map((trainer) => (
-                                        <TableRow key={trainer.id} className="hover:bg-zinc-50 border-zinc-100 group cursor-pointer">
-                                            <TableCell className="font-bold flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-black">
-                                                    {trainer.name[0]}
-                                                </div>
-                                                <div>
-                                                    <span className="block text-sm">{trainer.name}</span>
-                                                    <span className="text-[10px] text-zinc-400 font-normal">Certified L3</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline" className={
-                                                    trainer.status === "Active"
-                                                        ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                                                        : "bg-zinc-100 text-zinc-400 border-zinc-200"
-                                                }>
-                                                    {trainer.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold">{trainer.clients}</span>
-                                                    <div className="h-1 flex-1 bg-zinc-100 rounded-full w-12 overflow-hidden">
-                                                        <div className="h-full bg-black" style={{ width: `${(trainer.clients / 30) * 100}%` }}></div>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-zinc-600 font-mono text-xs">{trainer.revenue}</TableCell>
-                                            <TableCell className="text-right text-zinc-400 text-xs">{trainer.lastActive}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-
-                    {/* Quick Actions / Notifications */}
-                    <div className="space-y-6">
-                        <Card className="bg-gradient-to-br from-[#212121] to-black border-none shadow-xl text-white relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <CreditCard className="w-24 h-24 text-[#cbfe00]" />
-                            </div>
-                            <CardHeader>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Activity className="w-4 h-4 text-[#cbfe00]" />
-                                    <span className="text-xs font-bold text-[#cbfe00] uppercase tracking-wider">Subscription</span>
+                    <SlideIn direction="left" delay={0.2} className="md:col-span-2">
+                        <Card className="border-border shadow-xl bg-card">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <div>
+                                    <CardTitle className="text-lg font-bold text-foreground">Trainer Performance</CardTitle>
+                                    <CardDescription className="text-muted-foreground">Real-time oversight of staff metrics.</CardDescription>
                                 </div>
-                                <CardTitle className="text-lg font-bold">Gym SaaS Plan</CardTitle>
-                                <div className="mt-4">
-                                    <span className="text-4xl font-black">PRO</span> <span className="text-xl font-light text-zinc-400">Plan</span>
-                                </div>
-                                <p className="text-xs text-zinc-500 mt-1">Next billing: Dec 25, 2024</p>
+                                <Link href="/gym/trainers" className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">View All</Link>
                             </CardHeader>
                             <CardContent>
-                                <Button className="w-full bg-white text-black hover:bg-zinc-200 font-bold">Manage Billing</Button>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="hover:bg-transparent border-border">
+                                            <TableHead className="w-[200px] text-[10px] uppercase font-bold text-muted-foreground">Trainer</TableHead>
+                                            <TableHead className="text-[10px] uppercase font-bold text-muted-foreground">Status</TableHead>
+                                            <TableHead className="text-[10px] uppercase font-bold text-muted-foreground">Clients</TableHead>
+                                            <TableHead className="text-[10px] uppercase font-bold text-muted-foreground">Est. Revenue</TableHead>
+                                            <TableHead className="text-right text-[10px] uppercase font-bold text-muted-foreground">Last Active</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {trainers.map((trainer) => (
+                                            <TableRow key={trainer.id} className="hover:bg-accent border-border group cursor-pointer">
+                                                <TableCell className="font-bold flex items-center gap-3">
+                                                    <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-black">
+                                                        {trainer.name[0]}
+                                                    </div>
+                                                    <div>
+                                                        <span className="block text-sm text-foreground">{trainer.name}</span>
+                                                        <span className="text-[10px] text-muted-foreground font-normal">Certified L3</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className={
+                                                        trainer.status === "Active"
+                                                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
+                                                            : "bg-muted text-muted-foreground border-border"
+                                                    }>
+                                                        {trainer.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-bold text-foreground">{trainer.clients}</span>
+                                                        <div className="h-1 flex-1 bg-muted rounded-full w-12 overflow-hidden">
+                                                            <div className="h-full bg-primary" style={{ width: `${(trainer.clients / 30) * 100}%` }}></div>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-muted-foreground font-mono text-xs">{trainer.revenue}</TableCell>
+                                                <TableCell className="text-right text-muted-foreground text-xs">{trainer.lastActive}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             </CardContent>
                         </Card>
+                    </SlideIn>
 
-                        <Card className="bg-white border-none shadow-xl h-fit">
-                            <CardHeader>
-                                <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Recent Alerts</h3>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {[1, 2, 3].map((_, i) => (
-                                    <div key={i} className="flex gap-3 items-start pb-4 border-b border-zinc-50 last:border-0 last:pb-0">
-                                        <div className="h-2 w-2 mt-1.5 rounded-full bg-[#cbfe00]" />
-                                        <div>
-                                            <p className="text-sm font-bold text-black leading-tight">New Trainer Application</p>
-                                            <p className="text-xs text-zinc-500 mt-0.5">John Doe wants to join.</p>
-                                            <p className="text-[10px] text-zinc-400 mt-1">2 hours ago</p>
+                    {/* Recent Alerts */}
+                    <SlideIn direction="right" delay={0.3}>
+                        <div className="space-y-6">
+                            <Card className="bg-card border-border shadow-xl h-fit">
+                                <CardHeader>
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Recent Alerts</h3>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {[1, 2, 3].map((_, i) => (
+                                        <div key={i} className="flex gap-3 items-start pb-4 border-b border-border last:border-0 last:pb-0">
+                                            <div className="h-2 w-2 mt-1.5 rounded-full bg-primary" />
+                                            <div>
+                                                <p className="text-sm font-bold text-foreground leading-tight">New Trainer Application</p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">John Doe wants to join.</p>
+                                                <p className="text-[10px] text-muted-foreground mt-1">2 hours ago</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </CardContent>
-                            <CardContent className="pt-0">
-                                <Button className="w-full bg-[#111] text-white h-8 text-xs">View All Alerts</Button>
-                            </CardContent>
-                        </Card>
-                    </div>
+                                    ))}
+                                </CardContent>
+                                <CardContent className="pt-0">
+                                    <Button className="w-full bg-primary text-primary-foreground h-8 text-xs">View All Alerts</Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </SlideIn>
                 </div>
             </main>
         </AnimatedPage>

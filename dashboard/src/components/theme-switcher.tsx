@@ -10,26 +10,20 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Check } from "lucide-react"
+import { Check, Palette } from "lucide-react"
 
 const themes = [
     {
-        id: "cyber-bunker",
-        name: "Cyber Bunker",
-        description: "Neon Green Dark",
-        preview: { bg: "#0a0a0a", accent: "#cbfe00", border: "#27272a" }
+        id: "carbon",
+        name: "Carbon",
+        description: "Monochrome Dark",
+        preview: { bg: "#121212", accent: "#ffffff", border: "#333333" }
     },
     {
         id: "minimalist",
         name: "Minimal",
         description: "Clean Light",
         preview: { bg: "#ffffff", accent: "#18181b", border: "#e4e4e7" }
-    },
-    {
-        id: "carbon",
-        name: "Carbon",
-        description: "Monochrome Dark",
-        preview: { bg: "#121212", accent: "#ffffff", border: "#333333" }
     },
     {
         id: "royal-gold",
@@ -67,17 +61,9 @@ export function ThemeSwitcher() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 rounded-full border border-border bg-background hover:bg-accent"
+                    className="h-9 w-9 rounded-full border border-border bg-card hover:bg-accent transition-all"
                 >
-                    <div
-                        className="h-4 w-4 rounded-full"
-                        style={{
-                            background: currentTheme.preview.gradient
-                                ? `linear-gradient(135deg, ${currentTheme.preview.accent} 0%, #ec4899 100%)`
-                                : currentTheme.preview.accent,
-                            boxShadow: `0 0 8px ${currentTheme.preview.accent}40`
-                        }}
-                    />
+                    <Palette className="h-4 w-4" />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
             </DropdownMenuTrigger>

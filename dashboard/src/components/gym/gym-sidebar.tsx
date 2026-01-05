@@ -12,213 +12,128 @@ import {
     MessageSquare,
     Medal,
     Store,
-    Moon,
-    Sun
+    CreditCard,
+    Wrench
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 export function GymSidebar() {
     const pathname = usePathname();
-    const { theme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
 
     const isActive = (path: string) => pathname === path;
 
-    const toggleTheme = () => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    };
+    const navItemClass = (path: string) => cn(
+        "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
+        isActive(path)
+            ? "bg-primary text-primary-foreground shadow-lg hover:opacity-90"
+            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+    );
 
     return (
         <motion.aside
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="w-64 bg-[#212121] min-h-screen p-6 hidden md:flex flex-col flex-shrink-0 shadow-2xl z-20 border-r border-white/5"
+            className="w-64 bg-sidebar min-h-screen p-6 hidden md:flex flex-col flex-shrink-0 shadow-2xl z-20 border-r border-sidebar-border"
         >
             {/* Brand Logo Area */}
             <div className="mb-10 flex items-center gap-3 px-2">
-                <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center font-black text-black text-xl shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    G
+                <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center font-black text-primary-foreground text-xl shadow-lg">
+                    D
                 </div>
                 <div>
-                    <span className="text-xl font-black text-white tracking-tight block leading-none">DAILYFIT GYM</span>
-                    <span className="text-[10px] uppercase font-bold text-[#cbfe00] tracking-widest">Admin Pro</span>
+                    <span className="text-xl font-black text-sidebar-foreground tracking-tight block leading-none">DAILYFIT</span>
+                    <span className="text-[10px] uppercase font-bold text-primary tracking-widest">Gym Admin</span>
                 </div>
             </div>
 
             <nav className="space-y-1 flex-1">
-                <p className="px-4 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Main Menu</p>
+                <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Main Menu</p>
 
                 <Link href="/gym">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym")}>
                         <LayoutDashboard className="mr-3 h-4 w-4" /> Overview
                     </Button>
                 </Link>
 
-                <p className="px-4 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 mt-6">Management</p>
+                <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 mt-6">Management</p>
 
                 <Link href="/gym/members">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/members")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym/members")}>
                         <Users className="mr-3 h-4 w-4" /> Members
                     </Button>
                 </Link>
 
                 <Link href="/gym/pt-clients">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/pt-clients")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
-                        <Dumbbell className="mr-3 h-4 w-4" /> PT Clients
+                    <Button variant="ghost" className={navItemClass("/gym/pt-clients")}>
+                        <Medal className="mr-3 h-4 w-4" /> PT Clients
                     </Button>
                 </Link>
 
                 <Link href="/gym/trainers">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/trainers")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
-                        <Medal className="mr-3 h-4 w-4" /> Trainers
+                    <Button variant="ghost" className={navItemClass("/gym/trainers")}>
+                        <Dumbbell className="mr-3 h-4 w-4" /> Trainers
                     </Button>
                 </Link>
 
                 <Link href="/gym/programs">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/programs")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym/programs")}>
                         <BarChart3 className="mr-3 h-4 w-4" /> Program Builder
                     </Button>
                 </Link>
 
                 <Link href="/gym/maintenance">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/maintenance")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
-                        <Settings className="mr-3 h-4 w-4" /> Maintenance
+                    <Button variant="ghost" className={navItemClass("/gym/maintenance")}>
+                        <Wrench className="mr-3 h-4 w-4" /> Maintenance
                     </Button>
                 </Link>
 
-                <p className="px-4 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2 mt-6">Growth</p>
+                <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 mt-6">Growth</p>
 
                 <Link href="/gym/leads">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/leads")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym/leads")}>
                         <MessageSquare className="mr-3 h-4 w-4" /> Leads & Enquiries
                     </Button>
                 </Link>
 
                 <Link href="/gym/products">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/products")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym/products")}>
                         <Store className="mr-3 h-4 w-4" /> Pro Shop
                     </Button>
                 </Link>
 
                 <Link href="/gym/analytics">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/analytics")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym/analytics")}>
                         <BarChart3 className="mr-3 h-4 w-4" /> Analytics
                     </Button>
                 </Link>
 
             </nav>
 
-            <div className="pt-6 border-t border-white/10">
+            <div className="pt-6 border-t border-sidebar-border space-y-2">
+                <Link href="/gym/subscription">
+                    <Button variant="ghost" className={navItemClass("/gym/subscription")}>
+                        <CreditCard className="mr-3 h-4 w-4" /> Subscription
+                    </Button>
+                </Link>
+
                 <Link href="/gym/settings">
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "w-full justify-start font-bold h-11 text-sm mb-1 transition-all",
-                            isActive("/gym/settings")
-                                ? "bg-[#cbfe00] text-black shadow-[0_0_15px_rgba(203,254,0,0.3)] hover:bg-[#b0dc00]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
+                    <Button variant="ghost" className={navItemClass("/gym/settings")}>
                         <Settings className="mr-3 h-4 w-4" /> Settings
                     </Button>
                 </Link>
 
-                <div className="mt-4 p-4 rounded-xl bg-black/40 border border-white/5 hover:bg-black/60 transition-colors cursor-pointer group relative">
+                <div className="mt-4 p-4 rounded-xl bg-accent border border-border hover:bg-accent/80 transition-colors cursor-pointer group">
                     <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-white/10">
+                        <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground ring-2 ring-border">
                             JS
                         </div>
                         <div className="overflow-hidden">
-                            <p className="text-sm font-bold text-white truncate">John Smith</p>
-                            <p className="text-[10px] text-zinc-500 truncate">Owner • Iron Pump</p>
+                            <p className="text-sm font-bold text-foreground truncate">John Smith</p>
+                            <p className="text-[10px] text-muted-foreground truncate">Owner • DailyFit</p>
                         </div>
                     </div>
-                    {mounted && (
-                        <div
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleTheme(); }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/10 p-1.5 rounded-full hover:bg-white/20 transition-colors cursor-pointer"
-                        >
-                            {theme === 'dark' ? <Sun className="h-3 w-3 text-yellow-400" /> : <Moon className="h-3 w-3 text-white" />}
-                        </div>
-                    )}
                 </div>
             </div>
         </motion.aside>

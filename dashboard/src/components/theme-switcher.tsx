@@ -12,7 +12,36 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Check, Palette } from "lucide-react"
 
-const themes = [
+// Trainer Dashboard themes (original)
+const trainerThemes = [
+    {
+        id: "cyber-bunker",
+        name: "Cyber Bunker",
+        description: "Dark Neon",
+        preview: { bg: "#0a0a0a", accent: "#cbfe00", border: "#27272a" }
+    },
+    {
+        id: "minimalist",
+        name: "Minimalist",
+        description: "Clean Light",
+        preview: { bg: "#ffffff", accent: "#18181b", border: "#e4e4e7" }
+    },
+    {
+        id: "royal-blue",
+        name: "Royal Blue",
+        description: "Premium Blue",
+        preview: { bg: "#0f172a", accent: "#3b82f6", border: "#1e293b" }
+    },
+    {
+        id: "carbon",
+        name: "Carbon",
+        description: "Monochrome Dark",
+        preview: { bg: "#121212", accent: "#ffffff", border: "#333333" }
+    }
+]
+
+// Gym Admin Dashboard themes (new)
+const gymThemes = [
     {
         id: "carbon",
         name: "Carbon",
@@ -32,12 +61,6 @@ const themes = [
         preview: { bg: "#0c0a09", accent: "#f59e0b", border: "#44403c" }
     },
     {
-        id: "ember",
-        name: "Ember",
-        description: "Grey + Orange",
-        preview: { bg: "#171717", accent: "#f97316", border: "#52525b" }
-    },
-    {
         id: "neon-purple",
         name: "Neon Purple",
         description: "Gradient Glow",
@@ -45,7 +68,11 @@ const themes = [
     }
 ]
 
-export function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+    variant?: "trainer" | "gym"
+}
+
+export function ThemeSwitcher({ variant = "trainer" }: ThemeSwitcherProps) {
     const { setTheme, theme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
 
@@ -53,6 +80,7 @@ export function ThemeSwitcher() {
 
     if (!mounted) return null
 
+    const themes = variant === "gym" ? gymThemes : trainerThemes
     const currentTheme = themes.find(t => t.id === theme) || themes[0]
 
     return (
@@ -90,7 +118,7 @@ export function ThemeSwitcher() {
                             <div
                                 className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full"
                                 style={{
-                                    background: t.preview.gradient
+                                    background: (t.preview as any).gradient
                                         ? `linear-gradient(90deg, ${t.preview.accent} 0%, #ec4899 100%)`
                                         : t.preview.accent
                                 }}

@@ -79,6 +79,44 @@
     --sidebar-ring: #ffffff;
   }
 
+  [data-theme='cyber-bunker'] {
+    /* CYBER BUNKER (Dark Neon Green) - Trainer Dashboard Default */
+    --background: #0a0a0a;
+    --foreground: #ffffff;
+    --card: #141414;
+    --card-foreground: #ffffff;
+    --popover: #141414;
+    --popover-foreground: #ffffff;
+    --primary: #cbfe00;
+    --primary-foreground: #000000;
+    --secondary: #212121;
+    --secondary-foreground: #ffffff;
+    --muted: #212121;
+    --muted-foreground: #a1a1aa;
+    --accent: #212121;
+    --accent-foreground: #ffffff;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #ffffff;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #cbfe00;
+    --chart-1: #cbfe00;
+    --chart-2: #ffffff;
+    --chart-3: #212121;
+    --chart-4: #4b5563;
+    --chart-5: #9ca3af;
+
+    /* Sidebar - Cyber Bunker */
+    --sidebar: #0a0a0a;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #cbfe00;
+    --sidebar-primary-foreground: #000000;
+    --sidebar-accent: #212121;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #27272a;
+    --sidebar-ring: #cbfe00;
+  }
+
   [data-theme='minimalist'] {
     /* MINIMALIST (Light/Clean) */
     --background: #ffffff;

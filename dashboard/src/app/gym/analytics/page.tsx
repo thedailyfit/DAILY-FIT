@@ -23,7 +23,7 @@ export default function GymAnalyticsPage() {
                         <p className="text-muted-foreground font-medium">Financial health and growth tracking.</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <ThemeSwitcher />
+                        <ThemeSwitcher variant="gym" />
                         <Button variant="outline" className="h-10">
                             <Calendar className="mr-2 h-4 w-4" /> Last 90 Days
                         </Button>

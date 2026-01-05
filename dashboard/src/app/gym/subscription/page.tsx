@@ -64,7 +64,7 @@ export default function GymSubscriptionPage() {
                         <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Subscription Management</h1>
                         <p className="text-muted-foreground font-medium">Manage your DailyFit plan and billing.</p>
                     </div>
-                    <ThemeSwitcher />
+                    <ThemeSwitcher variant="gym" />
                 </div>
 
                 {/* Current Plan Status */}
@@ -140,8 +140,8 @@ export default function GymSubscriptionPage() {
                                         </ul>
                                         <Button
                                             className={`w-full ${currentPlan === plan.id
-                                                    ? 'bg-muted text-muted-foreground cursor-default'
-                                                    : 'bg-primary text-primary-foreground hover:opacity-90'
+                                                ? 'bg-muted text-muted-foreground cursor-default'
+                                                : 'bg-primary text-primary-foreground hover:opacity-90'
                                                 }`}
                                             disabled={currentPlan === plan.id}
                                         >

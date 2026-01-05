@@ -24,7 +24,7 @@ export default function GymTrainersPage() {
                         <p className="text-muted-foreground font-medium">Manage staff, shifts, and performance.</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <ThemeSwitcher />
+                        <ThemeSwitcher variant="gym" />
                         <AddTrainerDialog />
                     </div>
                 </div>

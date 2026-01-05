@@ -8,8 +8,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return (
         <NextThemesProvider
             attribute="data-theme"
-            defaultTheme="carbon"
-            themes={["carbon", "minimalist", "royal-gold", "ember", "neon-purple"]}
+            defaultTheme="cyber-bunker"
+            themes={["cyber-bunker", "carbon", "minimalist", "royal-blue", "royal-gold", "ember", "neon-purple"]}
             enableSystem={false}
             disableTransitionOnChange={false}
         >

@@ -32,7 +32,7 @@ export default function GymOwnerDashboard() {
                         <p className="text-muted-foreground font-medium">Flagship Location • New York, NY</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <ThemeSwitcher />
+                        <ThemeSwitcher variant="gym" />
                         <Button size="icon" variant="ghost" className="text-muted-foreground hover:text-foreground rounded-full hover:bg-muted relative">
                             <Bell className="h-5 w-5" />
                             <span className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full border-2 border-background"></span>

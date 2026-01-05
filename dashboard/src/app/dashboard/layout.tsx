@@ -1,6 +1,5 @@
 import { TrainerSidebar } from "@/components/dashboard/trainer-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { CursorTrail } from "@/components/cursor-trail";
 import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 import { Info } from "lucide-react";
@@ -39,7 +38,6 @@ export default async function DashboardLayout({
 
     return (
         <ThemeProvider>
-            <CursorTrail />
             <div className="flex h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
                 <TrainerSidebar />
                 <div className="flex-1 flex flex-col h-screen overflow-auto relative">

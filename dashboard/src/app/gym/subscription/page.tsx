@@ -98,20 +98,7 @@ export default function GymSubscriptionPage() {
                                         </div>
                                     </div>
 
-                                    {/* Monthly Included Credits */}
-                                    <div className="p-4 rounded-xl bg-background/50 border border-border space-y-3">
-                                        <div className="flex justify-between items-center text-sm font-bold">
-                                            <span>Monthly Credit Allowance</span>
-                                            <span className="text-primary">1,250 / 2,000 Left</span>
-                                        </div>
-                                        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                                            <div className="h-full bg-primary w-[62%]" />
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">
-                                            Includes 500 AI Plans, 20 Chat msgs/day, and 1000 WhatsApp Utility msgs.
-                                            <br />Resets automatically on Jan 25.
-                                        </p>
-                                    </div>
+
 
                                     <div className="flex gap-3">
                                         <Button variant="outline" className="border-border flex-1">Downgrade</Button>
@@ -139,7 +126,7 @@ export default function GymSubscriptionPage() {
                                     <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
                                         <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium flex gap-2">
                                             <Shield className="w-4 h-4 shrink-0" />
-                                            When daily limits (e.g. 20 chats) are exceeded, extra usage is deducted from here.
+                                            When daily limits (e.g. 20 chats per user) are exceeded, extra usage will be deducted from here.
                                         </p>
                                     </div>
 

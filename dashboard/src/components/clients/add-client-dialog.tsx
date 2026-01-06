@@ -54,13 +54,15 @@ const formSchema = z.object({
 interface AddClientDialogProps {
     dietPlans?: { id: string, name: string }[];
     workoutPlans?: { id: string, name: string }[];
+    clientCount?: number;
 }
 
-export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClientDialogProps) {
+export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount = 0 }: AddClientDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const router = useRouter()
     const supabase = createClient()
+    const isLimitReached = clientCount >= 10;
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -79,6 +81,19 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [] }: AddClient
     })
 
     const selectedGoal = form.watch("goal");
+
+
+    if (isLimitReached) {
+        return (
+            <Button
+                onClick={() => router.push('/dashboard/subscription')}
+                className="bg-primary text-primary-foreground font-bold"
+            >
+                <span className="mr-2">Upgrade to Add More</span>
+                ({clientCount}/10)
+            </Button>
+        )
+    }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);

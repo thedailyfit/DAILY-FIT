@@ -86,7 +86,7 @@ export default async function ClientsPage() {
                 </div>
                 <div className="flex gap-2">
                     <ImportClientsDialog />
-                    <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} />
+                    <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} clientCount={clients.length} />
                 </div>
             </div>
 

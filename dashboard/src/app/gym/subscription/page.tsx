@@ -6,9 +6,28 @@ import { Badge } from "@/components/ui/badge";
 import { Check, CreditCard, Calendar, Zap, Shield, Star } from "lucide-react";
 import { AnimatedPage, PopupCard, SlideIn, AnimatedCard } from "@/components/animated-components";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { ScanLine, Smartphone } from "lucide-react"
 
 export default function GymSubscriptionPage() {
     const currentPlan = "pro";
+    const [isUpgradeOpen, setIsUpgradeOpen] = useState(false)
+    const [logo, setLogo] = useState<string | null>(null)
+    const [paymentStep, setPaymentStep] = useState<'method' | 'qr' | 'confirm'>('method')
+
+    const handleUpgradeClick = () => {
+        setPaymentStep('method')
+        setIsUpgradeOpen(true)
+    }
+
+    const handlePaymentComplete = () => {
+        // Simulate Success
+        setTimeout(() => {
+            setIsUpgradeOpen(false)
+            // Here you would typically update the plan state or refresh
+        }, 1500)
+    }
 
     const plans = [
         {
@@ -17,7 +36,7 @@ export default function GymSubscriptionPage() {
             price: 29,
             description: "Perfect for small gyms",
             features: [
-                "Up to 50 members",
+                "Up to 10 members",
                 "Basic analytics",
                 "Email support",
                 "1 trainer account"
@@ -26,10 +45,10 @@ export default function GymSubscriptionPage() {
         {
             id: "pro",
             name: "Pro",
-            price: 79,
+            price: 59,
             description: "Most popular for growing gyms",
             features: [
-                "Up to 200 members",
+                "Up to 20 members",
                 "Advanced analytics",
                 "Priority support",
                 "5 trainer accounts",
@@ -205,6 +224,55 @@ export default function GymSubscriptionPage() {
                         ))}
                     </div>
                 </div>
+
+                {/* Upgrade Modal */}
+                <Dialog open={isUpgradeOpen} onOpenChange={setIsUpgradeOpen}>
+                    <DialogContent className="sm:max-w-md bg-card border-border text-card-foreground">
+                        <DialogHeader>
+                            <DialogTitle>Upgrade Subscription</DialogTitle>
+                            <DialogDescription>Unlock the full power of DailyFit AI for your gym.</DialogDescription>
+                        </DialogHeader>
+
+                        {paymentStep === 'method' && (
+                            <div className="space-y-4 py-4">
+                                <div className="p-4 border border-primary/20 bg-primary/5 rounded-xl text-center">
+                                    <p className="text-2xl font-black text-primary">₹14,999<span className="text-sm font-normal text-muted-foreground">/year</span></p>
+                                    <p className="text-xs text-muted-foreground mt-1">Includes GST & all charges</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Button variant="outline" className="h-24 flex flex-col gap-2 hover:bg-muted hover:border-primary" onClick={() => setPaymentStep('qr')}>
+                                        <ScanLine className="h-8 w-8 text-foreground" />
+                                        Scan QR Code
+                                    </Button>
+                                    <Button variant="outline" className="h-24 flex flex-col gap-2 hover:bg-muted hover:border-primary" onClick={() => setPaymentStep('qr')}>
+                                        <Smartphone className="h-8 w-8 text-foreground" />
+                                        UPI ID
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {paymentStep === 'qr' && (
+                            <div className="flex flex-col items-center gap-6 py-6 animate-in fade-in zoom-in duration-300">
+                                <div className="bg-white p-2 rounded-xl border shadow-inner">
+                                    {/* Placeholder QR */}
+                                    <div className="w-48 h-48 bg-zinc-900 flex items-center justify-center text-white text-xs">
+                                        [ UPI QR CODE HERE ]
+                                    </div>
+                                </div>
+                                <div className="text-center space-y-1">
+                                    <p className="font-mono bg-muted py-2 px-4 rounded-lg text-sm select-all">dailyfit@upi.business</p>
+                                    <p className="text-xs text-muted-foreground">Scan or copy UPI ID to pay</p>
+                                </div>
+                                <Button onClick={handlePaymentComplete} className="w-full bg-primary text-primary-foreground font-bold">
+                                    I've Completed Payment
+                                </Button>
+                                <Button variant="ghost" onClick={() => setPaymentStep('method')} className="text-xs text-muted-foreground">Back</Button>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
 
                 {/* Billing History */}
                 <SlideIn direction="up" delay={0.4}>

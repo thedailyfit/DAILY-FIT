@@ -126,7 +126,7 @@ export default function GymSubscriptionPage() {
                                     <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
                                         <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium flex gap-2">
                                             <Shield className="w-4 h-4 shrink-0" />
-                                            When daily limits (e.g. 20 chats per user) are exceeded, extra usage will be deducted from here.
+                                            When daily limits (e.g. 20 chats per user) are exceeded, extra charge will be deducted from here.
                                         </p>
                                     </div>
 

@@ -117,4 +117,17 @@ export class DatabaseManager {
             }
         }
     }
+
+    async countDailyMessages(memberId: string, sender: string): Promise<number> {
+        if (this.pool) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const res = await this.pool.query(
+                `SELECT COUNT(*) FROM chat_history WHERE member_id = $1 AND sender = $2 AND created_at >= $3`,
+                [memberId, sender, today.toISOString()]
+            );
+            return parseInt(res.rows[0].count);
+        }
+        return 0;
+    }
 }

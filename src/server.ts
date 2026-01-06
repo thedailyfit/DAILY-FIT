@@ -100,6 +100,17 @@ app.post('/webhook/whatsapp', async (req, res) => {
 
         // Save incoming user message
         if (memberId) {
+            // Check Daily Limit
+            const todayCount = await db.countDailyMessages(memberId, 'user');
+            if (todayCount >= 20) {
+                console.log(`⛔ Daily limit reached for ${whatsappId}`);
+                await sendWhatsAppMessage(whatsappId, "You have reached your daily AI chat limit (20 messages). Please contact your trainer or upgrade your plan to continue.", memberId);
+
+                res.type('text/xml');
+                res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);
+                return;
+            }
+
             await db.upsert('chat_history', {
                 id: crypto.randomUUID(),
                 member_id: memberId,

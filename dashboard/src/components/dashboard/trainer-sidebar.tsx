@@ -12,7 +12,7 @@ export function TrainerSidebar() {
     const navItems = [
         { name: "Overview", icon: LayoutDashboard, href: "/dashboard" },
         { name: "Clients", icon: Users, href: "/dashboard/clients" },
-        { name: "Messages", icon: MessageSquare, href: "/dashboard/chat" },
+        { name: "Messages", icon: MessageSquare, href: "/dashboard/messages" },
         { name: 'Programs Library', href: '/dashboard/programs/builder', icon: Dumbbell },
         { name: 'Diet Plans', href: '/dashboard/plans/diets', icon: Apple },
         { name: 'Workout Plans', href: '/dashboard/plans/workouts', icon: Activity },

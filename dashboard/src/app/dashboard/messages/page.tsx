@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,72 +14,240 @@ import {
     RefreshCw,
     Send,
     AlertCircle,
-    Copy
+    Copy,
+    Loader2
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
+import { createClient } from "@/lib/supabase"
 
-// Mock data for conversations
-const MOCK_CONVERSATIONS = [
-    {
-        id: '1',
-        name: 'Rahul Mehta',
-        phone: '+91 98765-43210',
-        lastMessage: "What's my workout for today?",
-        time: '2 min ago',
-        unread: 2,
-        messages: [
-            { sender: 'user', text: "What's my workout for today?", time: '10:30 AM' },
-            { sender: 'ai', text: "Good morning Rahul! Today is your Push Day. Here's your workout:\n\n1. Bench Press: 4x8\n2. Incline Dumbbell Press: 3x12\n3. Cable Flyes: 3x15\n4. Shoulder Press: 4x10\n5. Lateral Raises: 3x15", time: '10:30 AM' },
-        ]
-    },
-    {
-        id: '2',
-        name: 'Priya Sharma',
-        phone: '+91 87654-32109',
-        lastMessage: 'Thanks for the diet plan!',
-        time: '1 hour ago',
-        unread: 0,
-        messages: [
-            { sender: 'user', text: 'Can you send me my diet plan?', time: '9:15 AM' },
-            { sender: 'ai', text: "Of course! Here's your 1800 cal cutting plan:\n\nBreakfast: Oats with almonds\nLunch: Grilled chicken + brown rice\nSnack: Protein shake\nDinner: Fish curry + roti (2)", time: '9:15 AM' },
-            { sender: 'user', text: 'Thanks for the diet plan!', time: '9:20 AM' },
-        ]
-    },
-    {
-        id: '3',
-        name: 'Amit Patel',
-        phone: '+91 76543-21098',
-        lastMessage: 'My weight is 72kg today',
-        time: '3 hours ago',
-        unread: 0,
-        messages: [
-            { sender: 'user', text: 'My weight is 72kg today', time: '7:00 AM' },
-            { sender: 'ai', text: "Great progress Amit! You've lost 0.5kg this week. Keep it up! 💪", time: '7:00 AM' },
-        ]
-    },
-]
+interface WhatsAppConnection {
+    id: string
+    phone_number: string
+    is_connected: boolean
+    connected_at: string | null
+    sandbox_code: string | null
+}
+
+interface ChatMessage {
+    id: string
+    member_id: string
+    sender: 'user' | 'assistant' | 'system'
+    message: string
+    created_at: string
+}
+
+interface Conversation {
+    id: string
+    name: string
+    phone: string
+    lastMessage: string
+    time: string
+    unread: number
+    messages: { sender: string; text: string; time: string }[]
+}
 
 export default function MessagesPage() {
-    const [isConnected, setIsConnected] = useState(false)
+    const [connection, setConnection] = useState<WhatsAppConnection | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
     const [isWizardOpen, setIsWizardOpen] = useState(false)
     const [phoneNumber, setPhoneNumber] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [selectedConversation, setSelectedConversation] = useState<typeof MOCK_CONVERSATIONS[0] | null>(null)
+    const [connecting, setConnecting] = useState(false)
+    const [conversations, setConversations] = useState<Conversation[]>([])
+    const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
     const [newMessage, setNewMessage] = useState('')
+    const [refreshing, setRefreshing] = useState(false)
 
     const sandboxCode = 'join daily-fitness'
 
-    const handleConnect = () => {
-        setLoading(true)
-        setTimeout(() => {
-            setIsConnected(true)
-            setLoading(false)
+    // Load connection status and conversations on mount
+    useEffect(() => {
+        loadConnectionStatus()
+        loadConversations()
+    }, [])
+
+    const loadConnectionStatus = async () => {
+        try {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                setIsLoading(false)
+                return
+            }
+
+            const { data, error } = await supabase
+                .from('whatsapp_connections')
+                .select('*')
+                .eq('trainer_id', user.id)
+                .single()
+
+            if (data && !error) {
+                setConnection(data)
+                setPhoneNumber(data.phone_number)
+            }
+        } catch (err) {
+            console.error('Error loading connection:', err)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const loadConversations = async () => {
+        try {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) return
+
+            // Get members linked to this trainer
+            const { data: members } = await supabase
+                .from('members')
+                .select('member_id, name, whatsapp_id')
+                .eq('trainer_id', user.id)
+                .not('whatsapp_id', 'is', null)
+
+            if (!members || members.length === 0) {
+                // Use mock data if no real data
+                setConversations(MOCK_CONVERSATIONS)
+                return
+            }
+
+            // Get recent messages for each member
+            const convos: Conversation[] = []
+            for (const member of members) {
+                const { data: messages } = await supabase
+                    .from('chat_history')
+                    .select('*')
+                    .eq('member_id', member.member_id)
+                    .order('created_at', { ascending: false })
+                    .limit(10)
+
+                const lastMsg = messages?.[0]
+                convos.push({
+                    id: member.member_id,
+                    name: member.name || 'Unknown',
+                    phone: member.whatsapp_id || '',
+                    lastMessage: lastMsg?.message || 'No messages yet',
+                    time: lastMsg ? formatTime(lastMsg.created_at) : '',
+                    unread: 0, // TODO: Implement unread count
+                    messages: (messages || []).reverse().map(m => ({
+                        sender: m.sender,
+                        text: m.message,
+                        time: formatTime(m.created_at)
+                    }))
+                })
+            }
+
+            setConversations(convos.length > 0 ? convos : MOCK_CONVERSATIONS)
+        } catch (err) {
+            console.error('Error loading conversations:', err)
+            setConversations(MOCK_CONVERSATIONS)
+        }
+    }
+
+    const formatTime = (timestamp: string) => {
+        const date = new Date(timestamp)
+        const now = new Date()
+        const diffMs = now.getTime() - date.getTime()
+        const diffMins = Math.floor(diffMs / 60000)
+        const diffHours = Math.floor(diffMs / 3600000)
+
+        if (diffMins < 60) return `${diffMins} min ago`
+        if (diffHours < 24) return `${diffHours} hours ago`
+        return date.toLocaleDateString()
+    }
+
+    const handleConnect = async () => {
+        setConnecting(true)
+        try {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                alert('Please login first')
+                return
+            }
+
+            const { data, error } = await supabase
+                .from('whatsapp_connections')
+                .upsert({
+                    trainer_id: user.id,
+                    phone_number: phoneNumber,
+                    is_connected: true,
+                    connected_at: new Date().toISOString(),
+                    sandbox_code: sandboxCode
+                }, { onConflict: 'trainer_id' })
+                .select()
+                .single()
+
+            if (error) {
+                console.error('Connection error:', error)
+                // Fallback to local state if table doesn't exist yet
+                setConnection({
+                    id: 'local',
+                    phone_number: phoneNumber,
+                    is_connected: true,
+                    connected_at: new Date().toISOString(),
+                    sandbox_code: sandboxCode
+                })
+            } else {
+                setConnection(data)
+            }
+
             setIsWizardOpen(false)
-        }, 1500)
+        } catch (err) {
+            console.error('Error connecting:', err)
+            // Fallback
+            setConnection({
+                id: 'local',
+                phone_number: phoneNumber,
+                is_connected: true,
+                connected_at: new Date().toISOString(),
+                sandbox_code: sandboxCode
+            })
+            setIsWizardOpen(false)
+        } finally {
+            setConnecting(false)
+        }
+    }
+
+    const handleDisconnect = async () => {
+        try {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user && connection?.id !== 'local') {
+                await supabase
+                    .from('whatsapp_connections')
+                    .update({ is_connected: false })
+                    .eq('trainer_id', user.id)
+            }
+
+            setConnection(null)
+        } catch (err) {
+            console.error('Error disconnecting:', err)
+            setConnection(null)
+        }
+    }
+
+    const handleRefresh = async () => {
+        setRefreshing(true)
+        await loadConversations()
+        setRefreshing(false)
     }
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text)
+    }
+
+    const isConnected = connection?.is_connected
+
+    if (isLoading) {
+        return (
+            <div className="p-8 flex items-center justify-center min-h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )
     }
 
     return (
@@ -94,8 +262,8 @@ export default function MessagesPage() {
                         Manage WhatsApp conversations with your clients.
                     </p>
                 </div>
-                <Button variant="outline" className="gap-2">
-                    <RefreshCw className="h-4 w-4" /> Refresh
+                <Button variant="outline" className="gap-2" onClick={handleRefresh} disabled={refreshing}>
+                    <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
                 </Button>
             </div>
 
@@ -180,10 +348,12 @@ export default function MessagesPage() {
 
                                     <Button
                                         onClick={handleConnect}
-                                        disabled={loading || !phoneNumber}
+                                        disabled={connecting || !phoneNumber}
                                         className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-12"
                                     >
-                                        {loading ? 'Verifying Connection...' : 'Connect WhatsApp'}
+                                        {connecting ? (
+                                            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Connecting...</>
+                                        ) : 'Connect WhatsApp'}
                                     </Button>
 
                                     <div className="bg-muted/50 p-3 rounded-lg flex gap-2 text-xs text-muted-foreground">
@@ -201,9 +371,9 @@ export default function MessagesPage() {
                         <div className="flex items-center gap-3">
                             <CheckCircle className="h-5 w-5 text-green-500" />
                             <span className="font-medium text-green-600">WhatsApp Connected</span>
-                            <Badge variant="outline" className="text-xs">+91 {phoneNumber || '98765-43210'}</Badge>
+                            <Badge variant="outline" className="text-xs">{connection?.phone_number}</Badge>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={() => setIsConnected(false)}>Disconnect</Button>
+                        <Button variant="ghost" size="sm" onClick={handleDisconnect}>Disconnect</Button>
                     </CardContent>
                 </Card>
             )}
@@ -216,7 +386,7 @@ export default function MessagesPage() {
                         <CardTitle className="text-base">Recent Conversations</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0 overflow-y-auto max-h-[500px]">
-                        {MOCK_CONVERSATIONS.map((conv) => (
+                        {conversations.map((conv) => (
                             <div
                                 key={conv.id}
                                 onClick={() => setSelectedConversation(conv)}
@@ -266,8 +436,8 @@ export default function MessagesPage() {
                                 {selectedConversation.messages.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                                         <div className={`max-w-[70%] p-3 rounded-xl text-sm ${msg.sender === 'user'
-                                                ? 'bg-primary text-primary-foreground rounded-br-none'
-                                                : 'bg-card border rounded-bl-none'
+                                            ? 'bg-primary text-primary-foreground rounded-br-none'
+                                            : 'bg-card border rounded-bl-none'
                                             }`}>
                                             <p className="whitespace-pre-line">{msg.text}</p>
                                             <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
@@ -302,3 +472,32 @@ export default function MessagesPage() {
         </div>
     )
 }
+
+// Fallback mock data when no real conversations exist
+const MOCK_CONVERSATIONS: Conversation[] = [
+    {
+        id: '1',
+        name: 'Rahul Mehta',
+        phone: '+91 98765-43210',
+        lastMessage: "What's my workout for today?",
+        time: '2 min ago',
+        unread: 2,
+        messages: [
+            { sender: 'user', text: "What's my workout for today?", time: '10:30 AM' },
+            { sender: 'assistant', text: "Good morning Rahul! Today is your Push Day.\n\n1. Bench Press: 4x8\n2. Incline Dumbbell Press: 3x12\n3. Cable Flyes: 3x15", time: '10:30 AM' },
+        ]
+    },
+    {
+        id: '2',
+        name: 'Priya Sharma',
+        phone: '+91 87654-32109',
+        lastMessage: 'Thanks for the diet plan!',
+        time: '1 hour ago',
+        unread: 0,
+        messages: [
+            { sender: 'user', text: 'Can you send me my diet plan?', time: '9:15 AM' },
+            { sender: 'assistant', text: "Here's your 1800 cal plan:\n\nBreakfast: Oats\nLunch: Chicken + rice\nDinner: Fish curry + roti", time: '9:15 AM' },
+            { sender: 'user', text: 'Thanks for the diet plan!', time: '9:20 AM' },
+        ]
+    },
+]

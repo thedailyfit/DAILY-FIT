@@ -75,28 +75,34 @@ async function sendWhatsAppMessage(to: string, message: string, memberId?: strin
     }
 }
 
-// Webhook for WhatsApp
+// Webhook for WhatsApp - Multi-tenant support
 app.post('/webhook/whatsapp', async (req, res) => {
-    const { From, Body, MediaUrl0 } = req.body;
+    const { From, Body, MediaUrl0, To } = req.body;
 
     try {
         const whatsappId = From.replace('whatsapp:', '');
+        const toNumber = To?.replace('whatsapp:', '') || process.env.TWILIO_WHATSAPP_NUMBER?.replace('whatsapp:', '');
 
-        // 1. Lookup Member
-        const member = await db.findOne<any>('members', { whatsapp_id: whatsappId });
+        // 1. Multi-tenant: Find which trainer owns this WhatsApp number
+        let trainerId: string | null = null;
+        const connection = await db.findOne<any>('whatsapp_connections', { phone_number: toNumber, is_connected: true });
+        if (connection) {
+            trainerId = connection.trainer_id;
+            console.log(`📱 Message routed to trainer: ${trainerId}`);
+        }
+
+        // 2. Lookup Member (now with trainer context)
+        let member: any = null;
+        if (trainerId) {
+            member = await db.findOne<any>('members', { whatsapp_id: whatsappId, trainer_id: trainerId });
+        }
+        if (!member) {
+            // Fallback: find any member with this WhatsApp ID
+            member = await db.findOne<any>('members', { whatsapp_id: whatsappId });
+        }
         let memberId = member?.member_id;
 
-        // If no member found, we might be in onboarding or they are unknown.
-        // For now, if unknown, we can't link to chat_history effectively if it has FK constraint.
-        // But we can check if table allows null member_id? 
-        // Master script says: member_id UUID REFERENCES members(member_id)
-        // It's not NOT NULL, so it might allow null.
-        // Ideally we should create a 'prospect' or 'lead' member?
-        // For simplicity, if not found, we skip DB save or create a temp member?
-        // Let's log warning and try to save with raw whatsapp_id in metadata if possible?
-        // Actually, chat_history has member_id.
-
-        const metadata = { whatsapp_id: whatsappId };
+        const metadata = { whatsapp_id: whatsappId, trainer_id: trainerId };
 
         // Save incoming user message
         if (memberId) {

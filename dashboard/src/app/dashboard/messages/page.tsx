@@ -50,7 +50,7 @@ export default function MessagesPage() {
     const [connection, setConnection] = useState<WhatsAppConnection | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isWizardOpen, setIsWizardOpen] = useState(false)
-    const [phoneNumber, setPhoneNumber] = useState('+1 415 523 8886')
+    const [phoneNumber, setPhoneNumber] = useState('')
     const [connecting, setConnecting] = useState(false)
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)

@@ -63,6 +63,9 @@ export function AddGymMemberDialog() {
             // Mock insertion for fields that might not exist in schema yet
             // We'll insert what we can into 'members' table
 
+            // Generate Unique Invite Code (Simple Random for MVP)
+            const inviteCode = `DF-${Math.floor(1000 + Math.random() * 9000)}`;
+
             const memberData = {
                 name: formData.name,
                 whatsapp_id: formData.phone, // Assuming phone as ID for now or separate
@@ -80,7 +83,8 @@ export function AddGymMemberDialog() {
                 // For now, I will use existing columns and ignore extra if they fail, or assume strict schema.
                 // Given previous turns updated 'members' table, I 'll try to use those.
                 status: 'Active',
-                owner_id: user.id // If we have owner_id or joined via gym relation
+                owner_id: user.id, // If we have owner_id or joined via gym relation
+                invite_code: inviteCode
                 // user_id: we don't have a user_id yet for them, they are just a member entry
             };
 

@@ -44,6 +44,13 @@ const twilioClient = twilio(
 
 import { DatabaseManager } from './db/DatabaseManager';
 
+// Types
+interface ProxySession {
+    trainer_id: string;
+    active_member_id: string;
+    last_active_at: string;
+}
+
 // Initialize DB for saving messages
 const db = new DatabaseManager();
 
@@ -83,73 +90,132 @@ app.post('/webhook/whatsapp', async (req, res) => {
         const whatsappId = From.replace('whatsapp:', '');
         const toNumber = To?.replace('whatsapp:', '') || process.env.TWILIO_WHATSAPP_NUMBER?.replace('whatsapp:', '');
 
-        // 1. Multi-tenant: Find which trainer owns this WhatsApp number
+        // ============================================================
+        // CASE 1: Message from TRAINER (Proxy Reply)
+        // ============================================================
+        // Check if sender is a trainer
+        const trainerConnection = await db.findOne<any>('whatsapp_connections', { phone_number: whatsappId, is_connected: true });
+
+        if (trainerConnection) {
+            console.log(`👨‍🏫 Message from Trainer ${trainerConnection.trainer_id}`);
+
+            // Check for Active Proxy Session
+            const session = await db.findOne<ProxySession>('whatsapp_proxy_sessions', { trainer_id: trainerConnection.trainer_id });
+
+            if (session && session.active_member_id) {
+                // Get Member Details
+                const member = await db.findOne<any>('members', { member_id: session.active_member_id });
+
+                if (member && member.whatsapp_id) {
+                    console.log(`↪️ Proxying to Member ${member.name} (${member.whatsapp_id})`);
+
+                    // Forward message to Member
+                    await sendWhatsAppMessage(member.whatsapp_id, Body, member.member_id);
+
+                    // Respond to Trainer checkmark
+                    // await sendWhatsAppMessage(whatsappId, `✅ Sent to ${member.name}`); 
+
+                    res.type('text/xml').send('<Response></Response>');
+                    return;
+                }
+            } else {
+                await sendWhatsAppMessage(whatsappId, "⚠️ No active client session. Wait for a client to message you first.");
+                res.type('text/xml').send('<Response></Response>');
+                return;
+            }
+        }
+
+        // ============================================================
+        // CASE 2: Message from CLIENT (Standard Flow + Forwarding)
+        // ============================================================
+
+        // 1. Multi-tenant: Find which trainer owns this WhatsApp number (if dedicated) OR use shared logic
         let trainerId: string | null = null;
-        const connection = await db.findOne<any>('whatsapp_connections', { phone_number: toNumber, is_connected: true });
-        if (connection) {
-            trainerId = connection.trainer_id;
-            console.log(`📱 Message routed to trainer: ${trainerId}`);
+        // Logic: Who is this member's trainer?
+        let member = await db.findOne<any>('members', { whatsapp_id: whatsappId });
+
+        if (member) {
+            trainerId = member.trainer_id;
         }
 
-        // 2. Lookup Member (now with trainer context)
-        let member: any = null;
-        if (trainerId) {
-            member = await db.findOne<any>('members', { whatsapp_id: whatsappId, trainer_id: trainerId });
-        }
-        if (!member) {
-            // Fallback: find any member with this WhatsApp ID
-            member = await db.findOne<any>('members', { whatsapp_id: whatsappId });
-        }
+        /* 
+           Fallback for Shared Number: 
+           If member not found, we can't route yet unless we use Invite Code (Phase 14.3).
+           For now, assuming member is already registered via dashboard.
+        */
+
         let memberId = member?.member_id;
-
         const metadata = { whatsapp_id: whatsappId, trainer_id: trainerId };
+
+        if (!memberId) {
+            console.log(`❓ Unknown sender: ${whatsappId}`);
+            // Potentially handle "Join Code" here in future
+            res.type('text/xml').send('<Response></Response>');
+            return;
+        }
 
         // Save incoming user message
         if (memberId) {
             // Check Daily Limit
             const todayCount = await db.countDailyMessages(memberId, 'user');
             if (todayCount >= 20) {
-                console.log(`⛔ Daily limit reached for ${whatsappId}`);
-                await sendWhatsAppMessage(whatsappId, "You have reached your daily AI chat limit (20 messages). Please contact your trainer or upgrade your plan to continue.", memberId);
-
-                res.type('text/xml');
-                res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);
+                await sendWhatsAppMessage(whatsappId, "Daily AI limit reached.", memberId);
+                res.type('text/xml').send('<Response></Response>');
                 return;
             }
 
             await db.upsert('chat_history', {
                 id: crypto.randomUUID(),
                 member_id: memberId,
-                sender: 'user', // schema says: 'user', 'assistant', 'system'
+                sender: 'user',
                 message: Body,
                 metadata: metadata,
                 created_at: new Date()
             }, 'id');
         }
 
-        // Process message through Orchestrator
+        // ============================================================
+        // BRIDGE: Forward to Trainer & Update Session
+        // ============================================================
+        if (trainerId) {
+            // 1. Update Proxy Session (Set this member as Active)
+            await db.upsert('whatsapp_proxy_sessions', {
+                trainer_id: trainerId,
+                active_member_id: memberId,
+                last_active_at: new Date()
+            }, 'trainer_id');
+
+            // 2. Forward to Trainer's WhatsApp (if connected)
+            const trainerConn = await db.findOne<any>('whatsapp_connections', { trainer_id: trainerId, is_connected: true });
+            if (trainerConn) {
+                const forwardBody = `📩 *${member.name || 'Client'}*: ${Body}`;
+                await sendWhatsAppMessage(trainerConn.phone_number, forwardBody);
+            }
+        }
+
+        // Process message through Orchestrator (AI Agent)
         const orchestrator = new Orchestrator();
         const response = await orchestrator.handleIncomingMessage(
             whatsappId,
             Body,
             MediaUrl0,
-            req.body.MediaContentType0 // Pass MIME type
+            req.body.MediaContentType0
         );
 
-        // Check if request is from browser (has JSON content-type) or Twilio
         const isBrowserRequest = req.headers['content-type']?.includes('application/json');
 
         if (isBrowserRequest) {
-            // Browser request - return JSON
             res.json({ message: response });
         } else {
-            // Twilio WhatsApp request - send message via API and return empty TwiML
+            // Send AI Reply to Client
             await sendWhatsAppMessage(whatsappId, response, memberId);
 
-            // Return empty TwiML response (WhatsApp requires API, not TwiML messages)
+            // OPTIONAL: Forward AI reply to Trainer so they see what AI said?
+            // checking... user didn't explicitly ask, but it's good context.
+            // keeping it simple for now to save costs/noise.
+
             res.type('text/xml');
-            res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response></Response>`);
+            res.send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);
         }
     } catch (error) {
         console.error('Error processing message:', error);

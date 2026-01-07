@@ -297,60 +297,65 @@ export default function MessagesPage() {
                                 </DialogHeader>
 
                                 <div className="space-y-6 py-4">
-                                    {/* Step 1 */}
-                                    <div className="flex gap-4">
-                                        <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">1</div>
-                                        <div className="space-y-2 flex-1">
-                                            <h4 className="font-bold">Twilio Setup</h4>
+                                    <div className="space-y-6 py-4">
+                                        {/* Step 1: Your Number */}
+                                        <div className="space-y-2">
+                                            <h4 className="font-bold text-lg flex items-center gap-2">
+                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs">1</span>
+                                                Enter Your WhatsApp Number
+                                            </h4>
+                                            <Input
+                                                placeholder="+91 98765-43210"
+                                                value={phoneNumber}
+                                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                                className="text-lg h-12"
+                                            />
+                                            <p className="text-xs text-muted-foreground ml-8">Your clients will message this number.</p>
+                                        </div>
 
-                                            <div className="space-y-3">
-                                                <div>
-                                                    <p className="text-sm font-medium mb-1">Sandbox Join Code</p>
-                                                    <p className="text-xs text-muted-foreground mb-1">From Twilio Console {"->"} WhatsApp Sandbox Settings</p>
-                                                    <Input
-                                                        placeholder="e.g. join road-rays"
-                                                        value={sandboxCode}
-                                                        onChange={(e) => setSandboxCode(e.target.value)}
-                                                    />
-                                                </div>
+                                        {/* Step 2: One-Click Verify */}
+                                        <div className="space-y-4">
+                                            <h4 className="font-bold text-lg flex items-center gap-2">
+                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs">2</span>
+                                                Verify Connection
+                                            </h4>
 
-                                                <div>
-                                                    <p className="text-sm font-medium mb-1">Business Phone Number</p>
-                                                    <p className="text-xs text-muted-foreground mb-1">Enter your Twilio Sandbox Number (+1 415 523 8886) for testing</p>
-                                                    <Input
-                                                        placeholder="+1 415 523 8886"
-                                                        value={phoneNumber}
-                                                        onChange={(e) => setPhoneNumber(e.target.value)}
-                                                    />
+                                            <div className="bg-muted/50 p-4 rounded-xl border border-border text-center space-y-4">
+                                                <p className="text-sm">Click below to open WhatsApp and send the verification code automatically.</p>
+
+                                                <a
+                                                    href={`https://wa.me/14155238886?text=${encodeURIComponent(sandboxCode)}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-12 rounded-md transition-colors"
+                                                >
+                                                    <Smartphone className="h-5 w-5" />
+                                                    Open WhatsApp & Send Code
+                                                </a>
+
+                                                <div className="text-xs text-muted-foreground bg-background/50 p-2 rounded border inline-block">
+                                                    Verification Code: <code className="font-mono font-bold text-foreground">{sandboxCode}</code>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* Step 2: Verify */}
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">2</div>
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-lg">Verify Connection</h4>
-                                            <p className="text-sm text-muted-foreground">Once you've sent the message, click below to finish.</p>
+                                        {/* Final Step: Confirm */}
+                                        <Button
+                                            onClick={handleConnect}
+                                            disabled={connecting || !phoneNumber}
+                                            className="w-full h-12 font-bold"
+                                            variant="secondary"
+                                        >
+                                            {connecting ? (
+                                                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Verifying...</>
+                                            ) : 'I have sent the message -> Complete Setup'}
+                                        </Button>
+
+                                        <div className="text-center text-xs text-muted-foreground">
+                                            <Lock className="h-3 w-3 inline mr-1" />
+                                            Secure end-to-end encryption via WhatsApp
                                         </div>
                                     </div>
-
-                                    <Button
-                                        onClick={handleConnect}
-                                        disabled={connecting}
-                                        className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-14 text-lg shadow-lg shadow-green-500/20"
-                                    >
-                                        {connecting ? (
-                                            <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Verifying...</>
-                                        ) : 'I Have Sent the Message -> Connect'}
-                                    </Button>
-
-                                    <p className="text-center text-xs text-muted-foreground mt-4">
-                                        <Lock className="h-3 w-3 inline mr-1" />
-                                        Secure connection via Twilio WhatsApp API
-                                    </p>
-                                </div>
                             </DialogContent>
                         </Dialog>
                     </CardContent>

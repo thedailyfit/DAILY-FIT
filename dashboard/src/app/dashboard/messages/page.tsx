@@ -50,7 +50,7 @@ export default function MessagesPage() {
     const [connection, setConnection] = useState<WhatsAppConnection | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isWizardOpen, setIsWizardOpen] = useState(false)
-    const [phoneNumber, setPhoneNumber] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('+1 415 523 8886')
     const [connecting, setConnecting] = useState(false)
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
@@ -327,55 +327,29 @@ export default function MessagesPage() {
                                         </div>
                                     </div>
 
-                                    {/* Step 2 */}
-                                    <div className="flex gap-4">
+                                    {/* Step 2: Verify */}
+                                    <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">2</div>
-                                        <div className="space-y-2 flex-1">
-                                            <h4 className="font-bold">Send This Message from Your Phone</h4>
-                                            <p className="text-sm text-muted-foreground">Open WhatsApp and send this exact message to:</p>
-                                            <div className="bg-muted p-3 rounded-lg space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-mono text-sm">+1 415 523 8886</span>
-                                                    <Button variant="ghost" size="sm" onClick={() => copyToClipboard('+1 415 523 8886')}>
-                                                        <Copy className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                                <div className="border-t pt-2">
-                                                    <p className="text-xs text-muted-foreground">Message:</p>
-                                                    <div className="flex items-center justify-between">
-                                                        <code className="text-sm text-green-600 font-bold">{sandboxCode}</code>
-                                                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(sandboxCode)}>
-                                                            <Copy className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Step 3 */}
-                                    <div className="flex gap-4">
-                                        <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">3</div>
-                                        <div className="space-y-2 flex-1">
-                                            <h4 className="font-bold">Click Connect</h4>
-                                            <p className="text-sm text-muted-foreground">After sending the message, click below to verify.</p>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-lg">Verify Connection</h4>
+                                            <p className="text-sm text-muted-foreground">Once you've sent the message, click below to finish.</p>
                                         </div>
                                     </div>
 
                                     <Button
                                         onClick={handleConnect}
-                                        disabled={connecting || !phoneNumber}
-                                        className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-12"
+                                        disabled={connecting}
+                                        className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-14 text-lg shadow-lg shadow-green-500/20"
                                     >
                                         {connecting ? (
-                                            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Connecting...</>
-                                        ) : 'Connect WhatsApp'}
+                                            <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Verifying...</>
+                                        ) : 'I Have Sent the Message -> Connect'}
                                     </Button>
 
-                                    <div className="bg-muted/50 p-3 rounded-lg flex gap-2 text-xs text-muted-foreground">
-                                        <Lock className="h-4 w-4 shrink-0" />
-                                        <span>Your number is encrypted and only used to route messages.</span>
-                                    </div>
+                                    <p className="text-center text-xs text-muted-foreground mt-4">
+                                        <Lock className="h-3 w-3 inline mr-1" />
+                                        Secure connection via Twilio WhatsApp API
+                                    </p>
                                 </div>
                             </DialogContent>
                         </Dialog>

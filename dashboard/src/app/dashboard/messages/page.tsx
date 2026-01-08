@@ -297,65 +297,64 @@ export default function MessagesPage() {
                                 </DialogHeader>
 
                                 <div className="space-y-6 py-4">
-                                    <div className="space-y-6 py-4">
-                                        {/* Step 1: Your Number */}
-                                        <div className="space-y-2">
-                                            <h4 className="font-bold text-lg flex items-center gap-2">
-                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs">1</span>
-                                                Enter Your WhatsApp Number
-                                            </h4>
-                                            <Input
-                                                placeholder="+91 98765-43210"
-                                                value={phoneNumber}
-                                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                                className="text-lg h-12"
-                                            />
-                                            <p className="text-xs text-muted-foreground ml-8">Your clients will message this number.</p>
-                                        </div>
+                                    {/* Step 1: Your Number */}
+                                    <div className="space-y-2">
+                                        <h4 className="font-bold text-lg flex items-center gap-2">
+                                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs">1</span>
+                                            Enter Your WhatsApp Number
+                                        </h4>
+                                        <Input
+                                            placeholder="+91 98765-43210"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            className="text-lg h-12"
+                                        />
+                                        <p className="text-xs text-muted-foreground ml-8">Your clients will message this number.</p>
+                                    </div>
 
-                                        {/* Step 2: One-Click Verify */}
-                                        <div className="space-y-4">
-                                            <h4 className="font-bold text-lg flex items-center gap-2">
-                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs">2</span>
-                                                Verify Connection
-                                            </h4>
+                                    {/* Step 2: One-Click Verify */}
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-lg flex items-center gap-2">
+                                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs">2</span>
+                                            Verify Connection
+                                        </h4>
 
-                                            <div className="bg-muted/50 p-4 rounded-xl border border-border text-center space-y-4">
-                                                <p className="text-sm">Click below to open WhatsApp and send the verification code automatically.</p>
+                                        <div className="bg-muted/50 p-4 rounded-xl border border-border text-center space-y-4">
+                                            <p className="text-sm">Click below to open WhatsApp and send the verification code automatically.</p>
 
-                                                <a
-                                                    href={`https://wa.me/14155238886?text=${encodeURIComponent(sandboxCode)}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-12 rounded-md transition-colors"
-                                                >
-                                                    <Smartphone className="h-5 w-5" />
-                                                    Open WhatsApp & Send Code
-                                                </a>
+                                            <a
+                                                href={`https://wa.me/14155238886?text=${encodeURIComponent(sandboxCode)}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-12 rounded-md transition-colors"
+                                            >
+                                                <Smartphone className="h-5 w-5" />
+                                                Open WhatsApp & Send Code
+                                            </a>
 
-                                                <div className="text-xs text-muted-foreground bg-background/50 p-2 rounded border inline-block">
-                                                    Verification Code: <code className="font-mono font-bold text-foreground">{sandboxCode}</code>
-                                                </div>
+                                            <div className="text-xs text-muted-foreground bg-background/50 p-2 rounded border inline-block">
+                                                Verification Code: <code className="font-mono font-bold text-foreground">{sandboxCode}</code>
                                             </div>
                                         </div>
-
-                                        {/* Final Step: Confirm */}
-                                        <Button
-                                            onClick={handleConnect}
-                                            disabled={connecting || !phoneNumber}
-                                            className="w-full h-12 font-bold"
-                                            variant="secondary"
-                                        >
-                                            {connecting ? (
-                                                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Verifying...</>
-                                            ) : 'I have sent the message -> Complete Setup'}
-                                        </Button>
-
-                                        <div className="text-center text-xs text-muted-foreground">
-                                            <Lock className="h-3 w-3 inline mr-1" />
-                                            Secure end-to-end encryption via WhatsApp
-                                        </div>
                                     </div>
+
+                                    {/* Final Step: Confirm */}
+                                    <Button
+                                        onClick={handleConnect}
+                                        disabled={connecting || !phoneNumber}
+                                        className="w-full h-12 font-bold"
+                                        variant="secondary"
+                                    >
+                                        {connecting ? (
+                                            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Verifying...</>
+                                        ) : 'I have sent the message -> Complete Setup'}
+                                    </Button>
+
+                                    <div className="text-center text-xs text-muted-foreground">
+                                        <Lock className="h-3 w-3 inline mr-1" />
+                                        Secure end-to-end encryption via WhatsApp
+                                    </div>
+                                </div>
                             </DialogContent>
                         </Dialog>
                     </CardContent>

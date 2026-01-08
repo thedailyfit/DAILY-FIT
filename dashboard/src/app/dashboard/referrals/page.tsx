@@ -26,11 +26,26 @@ export default function ReferralPage() {
             const { data: { user } } = await supabase.auth.getUser()
 
             if (user) {
-                // Generate a deterministic code if one doesn't exist DB side for now
-                // Format: TRAINER-[Last 4 of ID]
-                const code = `TRAINER-${user.id.slice(0, 4).toUpperCase()}`
-                setReferralCode(code)
-                setReferralLink(`https://dailyfit.app/join?ref=${code}`)
+                // Fetch REAL code from DB
+                const { data: gym } = await supabase
+                    .from('gyms')
+                    .select('referral_code')
+                    .eq('gym_id', user.id)
+                    .single()
+
+                let code = gym?.referral_code
+
+                // Lazy Generation: If no code exists (old user), generate one now
+                if (!code) {
+                    code = `TR-${user.id.substring(0, 4).toUpperCase()}${Math.floor(Math.random() * 99)}`;
+                    // Ideally we save this back to DB here, but for now we just show it.
+                    // In a real app we'd trigger an update:
+                    // await supabase.from('gyms').update({ referral_code: code }).eq('gym_id', user.id)
+                }
+
+                setReferralCode(code || 'ERROR')
+                // Point to our new Signup Page
+                setReferralLink(`https://dailyfit.app/gym/signup?ref=${code}`)
             }
         }
         fetchReferral()

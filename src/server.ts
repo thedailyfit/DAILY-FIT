@@ -28,6 +28,20 @@ app.get('/', (req, res) => {
     res.send('DailyFit Backend is Running! 🚀');
 });
 
+// DEBUG ENDPOINT - To verify the server is running the latest code
+app.get('/api/debug-status', (req, res) => {
+    res.json({
+        status: 'online',
+        version: 'v3.0-fixed-numbers', // increment this to prove deployment
+        env: {
+            port: PORT,
+            twilio_number_set: !!process.env.TWILIO_WHATSAPP_NUMBER,
+            twilio_sid_set: !!process.env.TWILIO_ACCOUNT_SID
+        },
+        timestamp: new Date().toISOString()
+    });
+});
+
 // RAILWAY DETECTION:
 // If on Railway, trust their dynamic PORT.
 // If Local, force 4000 to avoid conflict with Dashboard (3000).

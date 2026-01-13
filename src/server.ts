@@ -112,7 +112,7 @@ app.post('/webhook/whatsapp', async (req, res) => {
         // For now, let's assume DB stores "+1936..." or "1936..."
         // We'll try to match both forms.
 
-        const { data: connections } = await db.select('whatsapp_connections', 'trainer_id, phone_number, is_connected');
+        const connections = await db.read<any>('whatsapp_connections');
 
         const trainerConnection = connections?.find((c: any) => {
             const dbPhone = normalizePhoneNumber(c.phone_number);
@@ -154,7 +154,7 @@ app.post('/webhook/whatsapp', async (req, res) => {
 
         // Logic: Who is this member's trainer?
         // We also normalize member's whatsapp_id for robust matching
-        const { data: members } = await db.select('members', '*');
+        const members = await db.read<any>('members');
         const member = members?.find((m: any) => m.whatsapp_id && normalizePhoneNumber(m.whatsapp_id) === whatsappId);
 
         if (member) {

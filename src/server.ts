@@ -172,7 +172,13 @@ app.post('/webhook/whatsapp', async (req, res) => {
 
         if (!memberId) {
             console.log(`❓ Unknown sender: ${whatsappId}`);
-            // Potentially handle "Join Code" here in future
+
+            // Check if this is a "Join" attempt or just a random message
+            // We'll send a generic Welcome / Fallback message so the user knows the bot is alive.
+            const welcomeMsg = `👋 Welcome to DailyFit!\n\nI don't recognize this number yet. Please ask your trainer to add you to their client list.\n\n(If you are a trainer testing this, please ensure your number is connected in the Dashboard).`;
+
+            await sendWhatsAppMessage(whatsappId, welcomeMsg);
+
             res.type('text/xml').send('<Response></Response>');
             return;
         }

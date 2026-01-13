@@ -323,7 +323,7 @@ export default function MessagesPage() {
                                             <p className="text-sm">Click below to open WhatsApp and send the verification code automatically.</p>
 
                                             <a
-                                                href={`https://wa.me/14155238886?text=${encodeURIComponent(sandboxCode)}`}
+                                                href={`https://wa.me/19362336699?text=${encodeURIComponent("Hi 👋 This is Trainer Support.\nA fitness assistant that works with your trainer to help with daily workouts, nutrition reminders, and progress tracking.\nPowered by DailyFit AI.")}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-12 rounded-md transition-colors"

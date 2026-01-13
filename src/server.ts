@@ -130,7 +130,7 @@ app.post('/webhook/whatsapp', async (req, res) => {
 
         const trainerConnection = connections?.find((c: any) => {
             const dbPhone = normalizePhoneNumber(c.phone_number);
-            return dbPhone === whatsappId && c.is_connected;
+            return (dbPhone.endsWith(whatsappId) || whatsappId.endsWith(dbPhone)) && c.is_connected;
         });
 
         if (trainerConnection) {
@@ -169,7 +169,11 @@ app.post('/webhook/whatsapp', async (req, res) => {
         // Logic: Who is this member's trainer?
         // We also normalize member's whatsapp_id for robust matching
         const members = await db.read<any>('members');
-        const member = members?.find((m: any) => m.whatsapp_id && normalizePhoneNumber(m.whatsapp_id) === whatsappId);
+        const member = members?.find((m: any) => {
+            if (!m.whatsapp_id) return false;
+            const dbPhone = normalizePhoneNumber(m.whatsapp_id);
+            return dbPhone.endsWith(whatsappId) || whatsappId.endsWith(dbPhone);
+        });
 
         if (member) {
             trainerId = member.trainer_id;

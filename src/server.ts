@@ -87,14 +87,37 @@ app.post('/webhook/whatsapp', async (req, res) => {
     const { From, Body, MediaUrl0, To } = req.body;
 
     try {
-        const whatsappId = From.replace('whatsapp:', '');
-        const toNumber = To?.replace('whatsapp:', '') || process.env.TWILIO_WHATSAPP_NUMBER?.replace('whatsapp:', '');
+        // Helper to normalize phone numbers (remove +, spaces, dashes)
+        const normalizePhoneNumber = (phone: string) => {
+            return phone.replace('whatsapp:', '').replace(/[^0-9]/g, '');
+        };
+
+        const rawFrom = From;
+        const rawTo = To || process.env.TWILIO_WHATSAPP_NUMBER || '';
+
+        const whatsappId = normalizePhoneNumber(rawFrom); // e.g., "19362336699"
+        // Twilio sends "whatsapp:+1..." so we strip everything non-numeric. 
+        // We also need to be careful if DB stores it with "+" or not.
+
+        console.log(`📩 Webhook received from: ${whatsappId} (Raw: ${rawFrom})`);
 
         // ============================================================
         // CASE 1: Message from TRAINER (Proxy Reply)
         // ============================================================
         // Check if sender is a trainer
-        const trainerConnection = await db.findOne<any>('whatsapp_connections', { phone_number: whatsappId, is_connected: true });
+        // We search effectively by checking if the DB number contains this digits or matches exactly
+        // Since DB usually stores "+1936..." we try to match robustly
+
+        // Fetch all connections and filter in memory if needed, or search by exact match if standardized.
+        // For now, let's assume DB stores "+1936..." or "1936..."
+        // We'll try to match both forms.
+
+        const { data: connections } = await db.select('whatsapp_connections', 'trainer_id, phone_number, is_connected');
+
+        const trainerConnection = connections?.find((c: any) => {
+            const dbPhone = normalizePhoneNumber(c.phone_number);
+            return dbPhone === whatsappId && c.is_connected;
+        });
 
         if (trainerConnection) {
             console.log(`👨‍🏫 Message from Trainer ${trainerConnection.trainer_id}`);
@@ -112,9 +135,6 @@ app.post('/webhook/whatsapp', async (req, res) => {
                     // Forward message to Member
                     await sendWhatsAppMessage(member.whatsapp_id, Body, member.member_id);
 
-                    // Respond to Trainer checkmark
-                    // await sendWhatsAppMessage(whatsappId, `✅ Sent to ${member.name}`); 
-
                     res.type('text/xml').send('<Response></Response>');
                     return;
                 }
@@ -131,8 +151,11 @@ app.post('/webhook/whatsapp', async (req, res) => {
 
         // 1. Multi-tenant: Find which trainer owns this WhatsApp number (if dedicated) OR use shared logic
         let trainerId: string | null = null;
+
         // Logic: Who is this member's trainer?
-        let member = await db.findOne<any>('members', { whatsapp_id: whatsappId });
+        // We also normalize member's whatsapp_id for robust matching
+        const { data: members } = await db.select('members', '*');
+        const member = members?.find((m: any) => m.whatsapp_id && normalizePhoneNumber(m.whatsapp_id) === whatsappId);
 
         if (member) {
             trainerId = member.trainer_id;

@@ -12,17 +12,17 @@ import {
 import { motion } from "framer-motion";
 
 const proFeatures = [
-    { icon: Users, title: "Up to 5 Trainers", description: "Manage your entire team" },
-    { icon: MessageSquare, title: "Unified WhatsApp", description: "One number for all clients" },
-    { icon: BarChart3, title: "Performance Analytics", description: "Track trainer metrics" },
-    { icon: Shield, title: "Priority Support", description: "24/7 dedicated assistance" },
-    { icon: Zap, title: "Unlimited Clients", description: "No restrictions on growth" },
+    { icon: Users, title: "Up to 20 Clients", description: "Room to grow your clientele" },
+    { icon: MessageSquare, title: "WhatsApp AI Agent", description: "24/7 automated member support" },
+    { icon: BarChart3, title: "Gym Owner Dashboard", description: "Advanced analytics & tracking" },
+    { icon: Shield, title: "AI Diet/Workout Generator", description: "Personalized plans for every client" },
+    { icon: Zap, title: "Lead Follow-up Automation", description: "Never lose a prospect" },
 ];
 
 const pricingPlans = [
-    { id: 'monthly', name: 'Monthly', price: 99, period: '/month', discount: null },
-    { id: 'quarterly', name: 'Quarterly', price: 269, period: '/3 months', discount: '10% OFF', perMonth: 90 },
-    { id: 'annual', name: 'Annual', price: 990, period: '/year', discount: '2 MONTHS FREE', perMonth: 82 },
+    { id: 'starter', name: 'Starter', price: 29, period: '/month', discount: null, clients: '10 Clients' },
+    { id: 'pro', name: 'Pro Gym', price: 59, period: '/month', discount: 'MOST POPULAR', clients: '20 Clients' },
+    { id: 'enterprise', name: 'Enterprise', price: 'Custom', period: '', discount: 'UNLIMITED', clients: 'Unlimited' },
 ];
 
 function BillingContent() {
@@ -116,8 +116,8 @@ function BillingContent() {
                                         key={plan.id}
                                         onClick={() => setSelectedPlan(plan.id)}
                                         className={`w-full p-4 rounded-xl border-2 text-left transition-all ${selectedPlan === plan.id
-                                                ? 'border-purple-600 bg-purple-50'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            ? plan.id === 'pro' ? 'border-blue-600 bg-blue-50' : 'border-purple-600 bg-purple-50'
+                                            : 'border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         <div className="flex items-center justify-between">
@@ -131,18 +131,18 @@ function BillingContent() {
                                                 <div>
                                                     <span className="font-bold text-gray-900">{plan.name}</span>
                                                     {plan.discount && (
-                                                        <Badge className="ml-2 bg-green-100 text-green-700 border-green-200 text-xs">
+                                                        <Badge className={`ml-2 text-xs ${plan.id === 'pro' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-green-100 text-green-700 border-green-200'}`}>
                                                             {plan.discount}
                                                         </Badge>
                                                     )}
+                                                    <p className="text-xs text-gray-500">{plan.clients}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-2xl font-black text-gray-900">${plan.price}</span>
+                                                <span className="text-2xl font-black text-gray-900">
+                                                    {typeof plan.price === 'number' ? `$${plan.price}` : plan.price}
+                                                </span>
                                                 <span className="text-gray-500 text-sm">{plan.period}</span>
-                                                {plan.perMonth && (
-                                                    <p className="text-xs text-gray-500">${plan.perMonth}/month</p>
-                                                )}
                                             </div>
                                         </div>
                                     </button>

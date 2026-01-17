@@ -274,8 +274,8 @@ export default function LoginPage() {
                                             type="button"
                                             onClick={() => updateForm('role', 'solo_trainer')}
                                             className={`p-3 border-2 rounded-xl flex flex-col items-center gap-1 transition-all ${formData.role === 'solo_trainer'
-                                                    ? 'border-purple-600 bg-purple-50 text-purple-700'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                                : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
                                             <User className="h-5 w-5" />
@@ -286,8 +286,8 @@ export default function LoginPage() {
                                             type="button"
                                             onClick={() => updateForm('role', 'gym_owner')}
                                             className={`p-3 border-2 rounded-xl flex flex-col items-center gap-1 transition-all relative overflow-hidden ${formData.role === 'gym_owner'
-                                                    ? 'border-amber-500 bg-amber-50 text-amber-700'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                                : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
                                             <Crown className="h-5 w-5" />
@@ -395,21 +395,21 @@ export default function LoginPage() {
 
                                     {/* Plan Info */}
                                     <div className={`p-3 rounded-xl text-xs ${formData.role === 'gym_owner'
-                                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200'
-                                            : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200'
+                                        ? 'bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-200'
+                                        : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200'
                                         }`}>
                                         {formData.role === 'gym_owner' ? (
                                             <div className="flex items-center gap-2">
-                                                <Crown className="h-4 w-4 text-amber-600" />
-                                                <span className="font-medium text-amber-800">
-                                                    Pro Plan: $99/month - Manage multiple trainers
+                                                <Crown className="h-4 w-4 text-blue-600" />
+                                                <span className="font-medium text-blue-800">
+                                                    Pro Gym: $59/month - Up to 20 clients
                                                 </span>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <Zap className="h-4 w-4 text-green-600" />
                                                 <span className="font-medium text-green-800">
-                                                    7-Day Free Trial - No credit card required
+                                                    Starter: $29/month after 7-day free trial
                                                 </span>
                                             </div>
                                         )}

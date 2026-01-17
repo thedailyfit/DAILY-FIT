@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
     const authPages = ['/login', '/gym/login', '/trainer/login']
     const isAuthPage = authPages.includes(pathname)
 
-    // Protected dashboard paths
+    // Protected dashboard paths - STRICT protection, no exceptions
     const protectedPaths = ['/dashboard', '/admin', '/gym', '/trainer']
     const isProtected = protectedPaths.some(path => pathname.startsWith(path)) &&
         !pathname.startsWith('/gym/login') &&
@@ -74,11 +74,8 @@ export async function middleware(request: NextRequest) {
         !pathname.startsWith('/trainer/login') &&
         !pathname.startsWith('/trainer/join')
 
-    // Bypass auth for localhost in development
-    const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1'
-
-    // If not logged in and trying to access protected route
-    if (isProtected && !user && !isLocal) {
+    // STRICT AUTH CHECK - If not logged in and trying to access protected route, ALWAYS redirect
+    if (isProtected && !user) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
@@ -90,7 +87,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Role-based access control for dashboards
-    if (user && isProtected && !isLocal) {
+    if (user && isProtected) {
         const role = await getUserRole(supabase, user.id)
 
         // Gym owner trying to access trainer dashboard
@@ -153,16 +150,17 @@ function getRoleBasedUrl(role: string): string {
         case 'pro_trainer': return '/trainer'
         default: return '/dashboard'
     }
+}
 
-    export const config = {
-        matcher: [
-            /*
-             * Match all request paths except for the ones starting with:
-             * - _next/static (static files)
-             * - _next/image (image optimization files)
-             * - favicon.ico (favicon file)
-             * - public folder
-             */
-            '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-        ],
-    }
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - public folder
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
+}

@@ -6,117 +6,116 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Lock, UserPlus, LogIn, Building2, User } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+    Lock, UserPlus, LogIn, Building2, User, Mail, Phone,
+    Eye, EyeOff, ArrowRight, Dumbbell, CheckCircle2, Sparkles,
+    Crown, Zap
+} from 'lucide-react'
 
 export default function LoginPage() {
     const [isSignUp, setIsSignUp] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [message, setMessage] = useState<string | null>(null)
+    const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
     const supabase = createClient()
 
     // Form State
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [name, setName] = useState('')
-    const [phone, setPhone] = useState('')
-    const [role, setRole] = useState<'trainer' | 'gym_owner'>('trainer')
-    const [gymName, setGymName] = useState('')
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        name: '',
+        phone: '',
+        role: 'solo_trainer' as 'solo_trainer' | 'gym_owner',
+        gymName: '',
+        city: ''
+    })
+
+    const updateForm = (field: string, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }))
+    }
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
         setError(null)
-        setMessage(null)
 
         try {
             if (isSignUp) {
-                // --- SIGN UP LOGIC ---
+                // Validation
+                if (formData.password !== formData.confirmPassword) {
+                    throw new Error("Passwords don't match")
+                }
+                if (formData.password.length < 6) {
+                    throw new Error("Password must be at least 6 characters")
+                }
 
                 // 1. Sign Up with Supabase Auth
                 const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email,
-                    password,
+                    email: formData.email,
+                    password: formData.password,
                     options: {
                         data: {
-                            full_name: name,
-                            phone: phone,
+                            full_name: formData.name,
+                            phone: formData.phone,
+                            role: formData.role
                         }
                     }
                 })
 
                 if (authError) throw authError
-                if (!authData.user) throw new Error("No user created")
+                if (!authData.user) throw new Error("Registration failed")
 
                 const userId = authData.user.id
-                let newGymId = null;
 
-                // 2. If Gym Owner, Create Gym First
-                if (role === 'gym_owner') {
-                    if (!gymName) throw new Error("Gym Name is required for Gym Owners")
-
+                // 2. Create Gym if Gym Owner
+                if (formData.role === 'gym_owner') {
                     const { data: gymData, error: gymError } = await supabase
                         .from('gyms')
                         .insert([{
-                            name: gymName,
+                            gym_name: formData.gymName,
                             owner_id: userId,
-                            subscription_status: 'active'
+                            city: formData.city,
+                            plan_type: 'pro',
+                            subscription_status: 'pending'
                         }])
                         .select()
                         .single()
 
-                    if (gymError) throw new Error("Failed to create Gym: " + gymError.message)
-                    newGymId = gymData.id
+                    if (gymError) throw new Error("Failed to create gym: " + gymError.message)
+
+                    // Redirect to Pro Plan billing
+                    router.push('/gym/billing?plan=pro&new=true')
+                } else {
+                    // Solo Trainer - 7-day free trial
+                    const { error: gymError } = await supabase
+                        .from('gyms')
+                        .insert([{
+                            gym_name: `${formData.name}'s Training`,
+                            owner_id: userId,
+                            plan_type: 'basic',
+                            subscription_status: 'trial',
+                            trial_ends_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+                        }])
+
+                    if (gymError) console.error("Gym creation error:", gymError)
+
+                    router.push('/dashboard?welcome=true')
                 }
-
-                // 3. Create Trainer Profile (Linked to User & Optional Gym)
-                const { error: dbError } = await supabase
-                    .from('trainers')
-                    .insert([
-                        {
-                            id: userId, // Link to Auth ID
-                            // trainer_id: userId, // Assuming legacy column might exist, map both for safety if migration transitional
-                            name: name,
-                            full_name: name, // New column
-                            email: email,
-                            phone_number: phone, // New column
-                            role: role, // 'trainer' or 'gym_owner'
-                            gym_id: newGymId, // Null if independent trainer
-                            specialization: 'General Fitness',
-                        }
-                    ])
-
-                if (dbError) {
-                    console.error("DB Error:", dbError)
-                    throw new Error("Account created but profile failed: " + dbError.message)
-                }
-
-                setMessage("Registration successful! Redirecting to setup billing...")
-                // Redirect to Payment Mandate for new users
-                setTimeout(() => {
-                    router.push('/dashboard/billing/mandate')
-                }, 1500)
-                // setIsSignUp(false) // No need to return to login, go forward
 
             } else {
-                // --- LOGIN LOGIC ---
+                // LOGIN
                 const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
+                    email: formData.email,
+                    password: formData.password,
                 })
 
                 if (error) throw error
 
-                // Redirect based on role
-                // Fetch role first? 
-                const { data: userData } = await supabase.from('trainers').select('role').eq('email', email).single()
-
-                if (userData?.role === 'super_admin') router.push('/admin')
-                else if (userData?.role === 'gym_owner') router.push('/gym')
-                else router.push('/dashboard')
+                // Middleware will handle redirect based on role
+                router.push('/dashboard')
             }
         } catch (err: any) {
             setError(err.message || "An error occurred")
@@ -125,122 +124,336 @@ export default function LoginPage() {
         }
     }
 
+    const flipToSignUp = () => {
+        setIsSignUp(true)
+        setError(null)
+    }
+
+    const flipToLogin = () => {
+        setIsSignUp(false)
+        setError(null)
+    }
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-slate-50 transition-colors duration-500" data-theme="minimalist">
-            <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] pointer-events-none" />
+        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 overflow-hidden">
+            {/* Animated Background */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000" />
+                <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000" />
+            </div>
 
-            <Card className="w-full max-w-md relative z-10 shadow-xl border-slate-200">
-                <CardHeader className="space-y-1 text-center">
-                    <div className="flex justify-center mb-4">
-                        <div className="h-12 w-12 bg-violet-100 rounded-full flex items-center justify-center text-violet-600">
-                            {isSignUp ? <UserPlus className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
-                        </div>
-                    </div>
-                    <CardTitle className="text-2xl font-bold tracking-tight">
-                        {isSignUp ? 'Create your DailyFit Account' : 'Welcome back'}
-                    </CardTitle>
-                    <CardDescription>
-                        {isSignUp ? 'Join as a Trainer or Gym Owner' : 'Enter your credentials to access your dashboard'}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full border-slate-300 bg-white text-black hover:bg-gray-50 flex items-center gap-2 h-11 font-medium text-md shadow-sm"
-                            onClick={() => {
-                                setLoading(true);
-                                setTimeout(() => router.push('/dashboard'), 1500);
-                            }}
-                        >
-                            <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg>
-                            Sign in with Google
-                        </Button>
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-slate-200" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-white px-2 text-slate-500">Or continue with</span>
-                            </div>
-                        </div>
-                        <form onSubmit={handleAuth} className="space-y-4">
+            {/* Main Flip Card Container */}
+            <div className="relative w-full max-w-4xl h-[600px] perspective-1000">
+                <motion.div
+                    className="relative w-full h-full"
+                    style={{ transformStyle: 'preserve-3d' }}
+                    animate={{ rotateY: isSignUp ? 180 : 0 }}
+                    transition={{ duration: 0.6, ease: 'easeInOut' }}
+                >
+                    {/* FRONT: Login Side */}
+                    <div
+                        className="absolute inset-0 w-full h-full backface-hidden"
+                        style={{ backfaceVisibility: 'hidden' }}
+                    >
+                        <div className="flex h-full rounded-3xl overflow-hidden shadow-2xl">
+                            {/* Left: Form */}
+                            <div className="w-1/2 bg-white p-10 flex flex-col justify-center">
+                                <div className="mb-8">
+                                    <h1 className="text-3xl font-black text-gray-900 mb-2">Sign In</h1>
+                                    <p className="text-gray-500">Welcome back to DailyFit</p>
+                                </div>
 
-                            {isSignUp && (
-                                <>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="name">Full Name</Label>
-                                            <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="phone">WhatsApp</Label>
-                                            <Input id="phone" placeholder="+91 98765..." value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                                <form onSubmit={handleAuth} className="space-y-5">
+                                    <div className="space-y-2">
+                                        <Label className="text-gray-700">Email Address</Label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                            <Input
+                                                type="email"
+                                                placeholder="name@example.com"
+                                                value={formData.email}
+                                                onChange={(e) => updateForm('email', e.target.value)}
+                                                className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                                required
+                                            />
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>I am registering as:</Label>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div
-                                                className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center gap-2 transition-all ${role === 'trainer' ? 'border-violet-600 bg-violet-50 text-violet-700' : 'border-slate-200 hover:border-slate-300'}`}
-                                                onClick={() => setRole('trainer')}
+                                        <Label className="text-gray-700">Password</Label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                            <Input
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="••••••••"
+                                                value={formData.password}
+                                                onChange={(e) => updateForm('password', e.target.value)}
+                                                className="pl-10 pr-10 h-12 border-gray-200 focus:border-purple-500"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                             >
-                                                <User className="h-5 w-5" />
-                                                <span className="text-sm font-medium">Trainer</span>
-                                            </div>
-                                            <div
-                                                className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center gap-2 transition-all ${role === 'gym_owner' ? 'border-violet-600 bg-violet-50 text-violet-700' : 'border-slate-200 hover:border-slate-300'}`}
-                                                onClick={() => setRole('gym_owner')}
-                                            >
-                                                <Building2 className="h-5 w-5" />
-                                                <span className="text-sm font-medium">Gym Owner</span>
-                                            </div>
+                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            </button>
                                         </div>
                                     </div>
 
-                                    {role === 'gym_owner' && (
-                                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                            <Label htmlFor="gymName">Gym / Studio Name</Label>
-                                            <Input id="gymName" placeholder="e.g. Iron Pump Fitness" value={gymName} onChange={(e) => setGymName(e.target.value)} required />
-                                        </div>
+                                    {error && !isSignUp && (
+                                        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg">{error}</div>
                                     )}
-                                </>
-                            )}
 
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                    <Button
+                                        type="submit"
+                                        className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30"
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Signing In...' : 'SIGN IN'}
+                                    </Button>
+                                </form>
+
+                                <p className="mt-6 text-center text-sm text-gray-500">
+                                    <a href="#" className="text-purple-600 hover:underline">Forgot your password?</a>
+                                </p>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                            </div>
 
-                            {error && <div className="text-sm text-red-500 text-center bg-red-50 p-2 rounded">{error}</div>}
-                            {message && <div className="text-sm text-green-600 text-center bg-green-50 p-2 rounded">{message}</div>}
-
-                            <Button type="submit" className="w-full bg-violet-600 hover:bg-violet-700" disabled={loading}>
-                                {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
-                            </Button>
-                        </form>
-
-                        <div className="mt-6 text-center">
-                            <p className="text-sm text-slate-500">
-                                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                                <button
-                                    type="button"
-                                    onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
-                                    className="ml-1 text-violet-600 hover:underline font-medium"
+                            {/* Right: CTA Panel */}
+                            <div className="w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-10 flex flex-col items-center justify-center text-white text-center">
+                                <Dumbbell className="h-16 w-16 mb-6 opacity-80" />
+                                <h2 className="text-3xl font-black mb-4">Hey There!</h2>
+                                <p className="text-white/80 mb-8 max-w-xs">
+                                    Begin your amazing journey by creating an account with us today
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    onClick={flipToSignUp}
+                                    className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-purple-600 font-bold px-8 py-3 rounded-full transition-all"
                                 >
-                                    {isSignUp ? 'Sign In' : 'Sign Up Now'}
-                                </button>
-                            </p>
+                                    SIGN UP <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+
+                    {/* BACK: Sign Up Side (Rotated 180) */}
+                    <div
+                        className="absolute inset-0 w-full h-full backface-hidden"
+                        style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                    >
+                        <div className="flex h-full rounded-3xl overflow-hidden shadow-2xl">
+                            {/* Left: CTA Panel */}
+                            <div className="w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-10 flex flex-col items-center justify-center text-white text-center">
+                                <Sparkles className="h-16 w-16 mb-6 opacity-80" />
+                                <h2 className="text-3xl font-black mb-4">Welcome Back!</h2>
+                                <p className="text-white/80 mb-8 max-w-xs">
+                                    Already have an account? Sign in to access your dashboard
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    onClick={flipToLogin}
+                                    className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-purple-600 font-bold px-8 py-3 rounded-full transition-all"
+                                >
+                                    SIGN IN <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
+
+                            {/* Right: Sign Up Form */}
+                            <div className="w-1/2 bg-white p-8 flex flex-col justify-center overflow-y-auto">
+                                <div className="mb-6">
+                                    <h1 className="text-2xl font-black text-gray-900 mb-1">Create Account</h1>
+                                    <p className="text-gray-500 text-sm">Join DailyFit today</p>
+                                </div>
+
+                                <form onSubmit={handleAuth} className="space-y-4">
+                                    {/* Role Selection */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => updateForm('role', 'solo_trainer')}
+                                            className={`p-3 border-2 rounded-xl flex flex-col items-center gap-1 transition-all ${formData.role === 'solo_trainer'
+                                                    ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                        >
+                                            <User className="h-5 w-5" />
+                                            <span className="text-xs font-bold">Solo Trainer</span>
+                                            <span className="text-[10px] text-gray-500">7-day free trial</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => updateForm('role', 'gym_owner')}
+                                            className={`p-3 border-2 rounded-xl flex flex-col items-center gap-1 transition-all relative overflow-hidden ${formData.role === 'gym_owner'
+                                                    ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                        >
+                                            <Crown className="h-5 w-5" />
+                                            <span className="text-xs font-bold">Gym Owner</span>
+                                            <span className="text-[10px] text-amber-600 font-medium">PRO PLAN</span>
+                                        </button>
+                                    </div>
+
+                                    {/* Name & Phone */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <Label className="text-gray-700 text-xs">Full Name</Label>
+                                            <Input
+                                                placeholder="John Doe"
+                                                value={formData.name}
+                                                onChange={(e) => updateForm('name', e.target.value)}
+                                                className="h-10 text-sm"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-gray-700 text-xs">WhatsApp</Label>
+                                            <Input
+                                                placeholder="+91 98765..."
+                                                value={formData.phone}
+                                                onChange={(e) => updateForm('phone', e.target.value)}
+                                                className="h-10 text-sm"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Gym Owner Extra Fields */}
+                                    {formData.role === 'gym_owner' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="grid grid-cols-2 gap-3"
+                                        >
+                                            <div>
+                                                <Label className="text-gray-700 text-xs">Gym Name</Label>
+                                                <Input
+                                                    placeholder="Iron Pump Fitness"
+                                                    value={formData.gymName}
+                                                    onChange={(e) => updateForm('gymName', e.target.value)}
+                                                    className="h-10 text-sm"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className="text-gray-700 text-xs">City</Label>
+                                                <Input
+                                                    placeholder="Mumbai"
+                                                    value={formData.city}
+                                                    onChange={(e) => updateForm('city', e.target.value)}
+                                                    className="h-10 text-sm"
+                                                    required
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Email */}
+                                    <div>
+                                        <Label className="text-gray-700 text-xs">Email</Label>
+                                        <Input
+                                            type="email"
+                                            placeholder="name@example.com"
+                                            value={formData.email}
+                                            onChange={(e) => updateForm('email', e.target.value)}
+                                            className="h-10 text-sm"
+                                            required
+                                        />
+                                    </div>
+
+                                    {/* Passwords */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <Label className="text-gray-700 text-xs">Password</Label>
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                value={formData.password}
+                                                onChange={(e) => updateForm('password', e.target.value)}
+                                                className="h-10 text-sm"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-gray-700 text-xs">Confirm</Label>
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                value={formData.confirmPassword}
+                                                onChange={(e) => updateForm('confirmPassword', e.target.value)}
+                                                className="h-10 text-sm"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {error && isSignUp && (
+                                        <div className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{error}</div>
+                                    )}
+
+                                    {/* Plan Info */}
+                                    <div className={`p-3 rounded-xl text-xs ${formData.role === 'gym_owner'
+                                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200'
+                                            : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200'
+                                        }`}>
+                                        {formData.role === 'gym_owner' ? (
+                                            <div className="flex items-center gap-2">
+                                                <Crown className="h-4 w-4 text-amber-600" />
+                                                <span className="font-medium text-amber-800">
+                                                    Pro Plan: $99/month - Manage multiple trainers
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <Zap className="h-4 w-4 text-green-600" />
+                                                <span className="font-medium text-green-800">
+                                                    7-Day Free Trial - No credit card required
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold rounded-xl"
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Creating Account...' : (
+                                            formData.role === 'gym_owner' ? 'Continue to Billing →' : 'Start Free Trial'
+                                        )}
+                                    </Button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* CSS for animations */}
+            <style jsx>{`
+                .perspective-1000 {
+                    perspective: 1000px;
+                }
+                .backface-hidden {
+                    backface-visibility: hidden;
+                }
+                @keyframes blob {
+                    0%, 100% { transform: translate(0, 0) scale(1); }
+                    33% { transform: translate(30px, -50px) scale(1.1); }
+                    66% { transform: translate(-20px, 20px) scale(0.9); }
+                }
+                .animate-blob {
+                    animation: blob 7s infinite;
+                }
+                .animation-delay-2000 {
+                    animation-delay: 2s;
+                }
+                .animation-delay-4000 {
+                    animation-delay: 4s;
+                }
+            `}</style>
         </div>
     )
 }

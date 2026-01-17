@@ -56,33 +56,113 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    // 1. Protected Routes Logic
-    const protectedPaths = ['/dashboard', '/admin', '/gym']
-    const isProtected = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
-    // Bypass auth for localhost verification
-    const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1';
+    const pathname = request.nextUrl.pathname
 
+    // Public paths that don't need auth
+    const publicPaths = ['/', '/login', '/pricing', '/about', '/blog', '/gym/login', '/gym/signup', '/trainer/login', '/trainer/join']
+    const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith('/blog/'))
+
+    // Auth pages - redirect to dashboard if already logged in
+    const authPages = ['/login', '/gym/login', '/trainer/login']
+    const isAuthPage = authPages.includes(pathname)
+
+    // Protected dashboard paths
+    const protectedPaths = ['/dashboard', '/admin', '/gym', '/trainer']
+    const isProtected = protectedPaths.some(path => pathname.startsWith(path)) &&
+        !pathname.startsWith('/gym/login') &&
+        !pathname.startsWith('/gym/signup') &&
+        !pathname.startsWith('/trainer/login') &&
+        !pathname.startsWith('/trainer/join')
+
+    // Bypass auth for localhost in development
+    const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1'
+
+    // If not logged in and trying to access protected route
     if (isProtected && !user && !isLocal) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // 2. Role-Based Redirection Logic (Future implementation based on 'metadata' or DB lookup)
-    // For now, we allow access if logged in, but in a real scenario, we would check:
-    // const role = user?.user_metadata?.role
-    // if (request.nextUrl.pathname.startsWith('/admin') && role !== 'super_admin') ...
+    // If logged in and on auth page, redirect to appropriate dashboard
+    if (user && isAuthPage) {
+        const role = await getUserRole(supabase, user.id)
+        const redirectUrl = getRoleBasedUrl(role)
+        return NextResponse.redirect(new URL(redirectUrl, request.url))
+    }
+
+    // Role-based access control for dashboards
+    if (user && isProtected && !isLocal) {
+        const role = await getUserRole(supabase, user.id)
+
+        // Gym owner trying to access trainer dashboard
+        if (pathname.startsWith('/trainer') && role === 'gym_owner') {
+            return NextResponse.redirect(new URL('/gym', request.url))
+        }
+
+        // Pro trainer trying to access gym owner dashboard
+        if (pathname.startsWith('/gym') && role === 'pro_trainer') {
+            return NextResponse.redirect(new URL('/trainer', request.url))
+        }
+
+        // Solo trainer trying to access wrong dashboards
+        if ((pathname.startsWith('/gym') || pathname.startsWith('/trainer')) && role === 'solo_trainer') {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+
+        // Pro trainer or gym owner trying to access basic dashboard
+        if (pathname.startsWith('/dashboard') && (role === 'gym_owner' || role === 'pro_trainer')) {
+            const redirectUrl = getRoleBasedUrl(role)
+            return NextResponse.redirect(new URL(redirectUrl, request.url))
+        }
+    }
 
     return response
 }
 
-export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder
-         */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-    ],
+// Helper: Determine user role from database
+async function getUserRole(supabase: any, userId: string): Promise<string> {
+    try {
+        // Check if user is a gym owner
+        const { data: gym } = await supabase
+            .from('gyms')
+            .select('gym_id')
+            .eq('owner_id', userId)
+            .single()
+
+        if (gym) return 'gym_owner'
+
+        // Check if user is a pro trainer (staff)
+        const { data: staff } = await supabase
+            .from('staff')
+            .select('id')
+            .eq('auth_id', userId)
+            .single()
+
+        if (staff) return 'pro_trainer'
+
+        // Default: solo trainer
+        return 'solo_trainer'
+    } catch {
+        return 'solo_trainer'
+    }
 }
+
+// Helper: Get redirect URL based on role
+function getRoleBasedUrl(role: string): string {
+    switch (role) {
+        case 'gym_owner': return '/gym'
+        case 'pro_trainer': return '/trainer'
+        default: return '/dashboard'
+    }
+
+    export const config = {
+        matcher: [
+            /*
+             * Match all request paths except for the ones starting with:
+             * - _next/static (static files)
+             * - _next/image (image optimization files)
+             * - favicon.ico (favicon file)
+             * - public folder
+             */
+            '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        ],
+    }

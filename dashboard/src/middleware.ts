@@ -58,6 +58,10 @@ export async function middleware(request: NextRequest) {
 
     const pathname = request.nextUrl.pathname
 
+    // Admin/Test accounts with full access to all dashboards
+    const adminEmails = ['theakhileshreddy07@gmail.com']
+    const isAdmin = user?.email && adminEmails.includes(user.email.toLowerCase())
+
     // Public paths that don't need auth
     const publicPaths = ['/', '/login', '/pricing', '/about', '/blog', '/gym/login', '/gym/signup', '/trainer/login', '/trainer/join']
     const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith('/blog/'))
@@ -86,8 +90,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL(redirectUrl, request.url))
     }
 
-    // Role-based access control for dashboards
-    if (user && isProtected) {
+    // Role-based access control for dashboards (skip for admins)
+    if (user && isProtected && !isAdmin) {
         const role = await getUserRole(supabase, user.id)
 
         // Gym owner trying to access trainer dashboard

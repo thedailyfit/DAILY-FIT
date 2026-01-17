@@ -12,7 +12,8 @@ import {
     Calendar,
     Trophy,
     Target,
-    Activity
+    Activity,
+    Dumbbell
 } from "lucide-react";
 import Link from "next/link";
 

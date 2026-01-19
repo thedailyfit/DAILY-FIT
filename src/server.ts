@@ -186,7 +186,15 @@ app.post('/webhook/whatsapp', async (req, res) => {
         */
 
         let memberId = member?.member_id;
-        const metadata = { whatsapp_id: whatsappId, trainer_id: trainerId };
+
+        // For Pro Plan: Use assigned_trainer_id (staff trainer) if set, otherwise fallback to trainer_id (solo trainer)
+        const assignedTrainerId = member?.assigned_trainer_id || member?.trainer_id;
+        const metadata = {
+            whatsapp_id: whatsappId,
+            trainer_id: member?.trainer_id,
+            assigned_trainer_id: member?.assigned_trainer_id,
+            routing_trainer: assignedTrainerId // The trainer who will receive this message
+        };
 
         if (!memberId) {
             console.log(`❓ Unknown sender: ${whatsappId}`);
@@ -224,19 +232,28 @@ app.post('/webhook/whatsapp', async (req, res) => {
         // ============================================================
         // BRIDGE: Forward to Trainer & Update Session
         // ============================================================
-        if (trainerId) {
+        // Use assignedTrainerId for Pro Plan trainers
+        if (assignedTrainerId) {
             // 1. Update Proxy Session (Set this member as Active)
             await db.upsert('whatsapp_proxy_sessions', {
-                trainer_id: trainerId,
+                trainer_id: assignedTrainerId,
                 active_member_id: memberId,
                 last_active_at: new Date()
             }, 'trainer_id');
 
             // 2. Forward to Trainer's WhatsApp (if connected)
-            const trainerConn = await db.findOne<any>('whatsapp_connections', { trainer_id: trainerId, is_connected: true });
-            if (trainerConn) {
+            // First check staff table for Pro trainers
+            const staffTrainer = await db.findOne<any>('staff', { id: assignedTrainerId });
+            if (staffTrainer?.whatsapp_notification_number) {
                 const forwardBody = `📩 *${member.name || 'Client'}*: ${Body}`;
-                await sendWhatsAppMessage(trainerConn.phone_number, forwardBody);
+                await sendWhatsAppMessage(staffTrainer.whatsapp_notification_number, forwardBody);
+            } else {
+                // Fallback to whatsapp_connections for solo trainers
+                const trainerConn = await db.findOne<any>('whatsapp_connections', { trainer_id: assignedTrainerId, is_connected: true });
+                if (trainerConn) {
+                    const forwardBody = `📩 *${member.name || 'Client'}*: ${Body}`;
+                    await sendWhatsAppMessage(trainerConn.phone_number, forwardBody);
+                }
             }
         }
 

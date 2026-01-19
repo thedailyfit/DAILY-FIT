@@ -76,7 +76,7 @@ export default function TrainerDashboard() {
 
                 setStats({
                     clientCount: clientCount || 0,
-                    clientLimit: 20,
+                    clientLimit: 10, // Pro Plan trainer limit
                     messagesThisWeek: messageCount || 0,
                     activeClients: clientCount || 0,
                     workoutsAssigned: 12 // Mock for now

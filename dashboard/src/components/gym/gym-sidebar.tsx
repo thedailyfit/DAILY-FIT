@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase";
 import {
     Users,
     LayoutDashboard,
@@ -13,13 +15,70 @@ import {
     Medal,
     Store,
     CreditCard,
-    Wrench
+    Wrench,
+    UsersRound,
+    Eye,
+    ChevronDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+interface Trainer {
+    id: string;
+    name: string;
+    email: string;
+}
 
 export function GymSidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const [trainers, setTrainers] = useState<Trainer[]>([]);
+    const [ownerName, setOwnerName] = useState("Owner");
+    const supabase = createClient();
+
+    useEffect(() => {
+        fetchTrainers();
+    }, []);
+
+    const fetchTrainers = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            // Get gym
+            const { data: gym } = await supabase
+                .from('gyms')
+                .select('gym_id, gym_name')
+                .eq('owner_id', user.id)
+                .single();
+
+            if (gym) {
+                setOwnerName(gym.gym_name || 'Owner');
+
+                // Get staff trainers
+                const { data: staff } = await supabase
+                    .from('staff')
+                    .select('id, name, email')
+                    .eq('gym_id', gym.gym_id);
+
+                setTrainers(staff || []);
+            }
+        } catch (error) {
+            console.error('Error fetching trainers:', error);
+        }
+    };
+
+    const switchToTrainerView = (trainerId: string) => {
+        router.push(`/gym/trainers/${trainerId}`);
+    };
 
     const isActive = (path: string) => pathname === path;
 
@@ -38,7 +97,7 @@ export function GymSidebar() {
             className="w-64 bg-sidebar min-h-screen p-6 hidden md:flex flex-col flex-shrink-0 shadow-2xl z-20 border-r border-sidebar-border"
         >
             {/* Brand Logo Area */}
-            <div className="mb-10 flex items-center gap-3 px-2">
+            <div className="mb-6 flex items-center gap-3 px-2">
                 <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center font-black text-primary-foreground text-xl shadow-lg">
                     D
                 </div>
@@ -47,6 +106,37 @@ export function GymSidebar() {
                     <span className="text-[10px] uppercase font-bold text-primary tracking-widest">Gym Admin</span>
                 </div>
             </div>
+
+            {/* Trainer Switch Dropdown */}
+            {trainers.length > 0 && (
+                <div className="mb-6 px-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full justify-between text-sm">
+                                <span className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4" />
+                                    Switch to Trainer
+                                </span>
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                            <DropdownMenuLabel>View Trainer Dashboard</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {trainers.map((trainer) => (
+                                <DropdownMenuItem
+                                    key={trainer.id}
+                                    onClick={() => switchToTrainerView(trainer.id)}
+                                    className="cursor-pointer"
+                                >
+                                    <UsersRound className="h-4 w-4 mr-2" />
+                                    {trainer.name || trainer.email}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
 
             <nav className="space-y-1 flex-1">
                 <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Main Menu</p>

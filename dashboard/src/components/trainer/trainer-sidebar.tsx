@@ -13,7 +13,8 @@ import {
     LogOut,
     ChevronLeft,
     ChevronRight,
-    Calendar
+    Calendar,
+    FileText
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
@@ -24,6 +25,7 @@ const navigation = [
     { name: "Dashboard", href: "/trainer", icon: Home },
     { name: "My Clients", href: "/trainer/clients", icon: Users },
     { name: "Messages", href: "/trainer/messages", icon: MessageSquare },
+    { name: "Gym Plans", href: "/trainer/plans", icon: FileText },
     { name: "Schedule", href: "/trainer/schedule", icon: Calendar },
     { name: "Workouts", href: "/trainer/workouts", icon: Dumbbell },
     { name: "Profile", href: "/trainer/profile", icon: User },
@@ -34,7 +36,7 @@ export function TrainerSidebar() {
     const [collapsed, setCollapsed] = useState(false);
     const [trainerName, setTrainerName] = useState("Trainer");
     const [clientCount, setClientCount] = useState(0);
-    const clientLimit = 20;
+    const clientLimit = 10; // Pro Plan trainer limit
 
     const supabase = createClient();
 

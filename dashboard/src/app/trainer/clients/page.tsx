@@ -22,7 +22,7 @@ export default function TrainerClientsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [staffId, setStaffId] = useState<string | null>(null);
-    const clientLimit = 20;
+    const clientLimit = 10; // Pro Plan trainer limit
 
     const supabase = createClient();
 

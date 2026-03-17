@@ -22,6 +22,7 @@ interface TrainerStats {
     messagesThisWeek: number;
     responseRate: number;
     role: string;
+    revenue: number;
 }
 
 export default function GymAnalyticsPage() {
@@ -76,9 +77,11 @@ export default function GymAnalyticsPage() {
 
             // Build trainer stats
             const trainerStats: TrainerStats[] = (staff || []).map(s => {
-                const clientCount = (members || []).filter(m => m.assigned_trainer_id === s.id).length;
-                const trainerClients = (members || []).filter(m => m.assigned_trainer_id === s.id).map(m => m.member_id);
-                const msgCount = (messages || []).filter(m => trainerClients.includes(m.member_id)).length;
+                const trainerClients = (members || []).filter(m => m.assigned_trainer_id === s.id);
+                const clientCount = trainerClients.length;
+                const trainerClientIds = trainerClients.map(m => m.member_id);
+                const msgCount = (messages || []).filter(m => trainerClientIds.includes(m.member_id)).length;
+                const revenue = trainerClients.reduce((sum, m) => sum + (m.monthly_fee || 0), 0);
 
                 return {
                     id: s.id,
@@ -86,7 +89,8 @@ export default function GymAnalyticsPage() {
                     clientCount,
                     messagesThisWeek: msgCount,
                     responseRate: Math.floor(Math.random() * 30) + 70, // Mock for now
-                    role: s.role || 'trainer'
+                    role: s.role || 'trainer',
+                    revenue
                 };
             });
 
@@ -224,9 +228,17 @@ export default function GymAnalyticsPage() {
                                         <div className="w-32">
                                             <div className="flex justify-between text-xs mb-1">
                                                 <span>Clients</span>
-                                                <span>{trainer.clientCount}/20</span>
+                                                <span>{trainer.clientCount}/10</span>
                                             </div>
-                                            <Progress value={(trainer.clientCount / 20) * 100} className="h-2" />
+                                            <Progress value={(trainer.clientCount / 10) * 100} className="h-2" />
+                                        </div>
+
+                                        {/* Revenue */}
+                                        <div className="w-24 text-right">
+                                            <div className="text-sm font-bold text-emerald-600">
+                                                ₹{trainer.revenue.toLocaleString()}
+                                            </div>
+                                            <div className="text-[10px] text-muted-foreground uppercase">Revenue</div>
                                         </div>
 
                                         {/* Response Rate */}

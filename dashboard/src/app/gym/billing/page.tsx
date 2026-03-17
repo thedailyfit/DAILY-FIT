@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,7 @@ import {
 import { motion } from "framer-motion";
 
 const proFeatures = [
-    { icon: Users, title: "Up to 20 Clients", description: "Room to grow your clientele" },
+    { icon: Users, title: "Up to 10 Clients per Trainer", description: "Efficiently manage your elite clientele" },
     { icon: MessageSquare, title: "WhatsApp AI Agent", description: "24/7 automated member support" },
     { icon: BarChart3, title: "Gym Owner Dashboard", description: "Advanced analytics & tracking" },
     { icon: Shield, title: "AI Diet/Workout Generator", description: "Personalized plans for every client" },
@@ -20,8 +21,8 @@ const proFeatures = [
 ];
 
 const pricingPlans = [
-    { id: 'starter', name: 'Starter', price: 29, period: '/month', discount: null, clients: '10 Clients' },
-    { id: 'pro', name: 'Pro Gym', price: 59, period: '/month', discount: 'MOST POPULAR', clients: '20 Clients' },
+    { id: 'starter', name: 'Starter', price: 29, period: '/month', discount: null, clients: '5 Clients' },
+    { id: 'pro', name: 'Pro Gym', price: 59, period: '/month', discount: 'MOST POPULAR', clients: '10 Clients/Trainer' },
     { id: 'enterprise', name: 'Enterprise', price: 'Custom', period: '', discount: 'UNLIMITED', clients: 'Unlimited' },
 ];
 
@@ -34,11 +35,40 @@ function BillingContent() {
 
     const handleCheckout = async () => {
         setLoading(true);
-        // TODO: Integrate with payment provider (Stripe/Razorpay)
-        // For now, simulate and redirect to dashboard
-        setTimeout(() => {
+        const supabase = createClient();
+        
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                alert("Please log in to update your subscription.");
+                router.push('/gym/login');
+                return;
+            }
+
+            // Update gym subscription in database
+            // We set trial_ends_at to NULL if it's a paid plan to indicate trial over
+            // Or we could set a long distance future date.
+            const { error } = await supabase
+                .from('gyms')
+                .update({ 
+                    subscription_plan: selectedPlan,
+                    subscription_status: 'active',
+                    trial_ends_at: null, // End trial on purchase
+                    members_limit: selectedPlan === 'pro' ? 100 : selectedPlan === 'starter' ? 20 : 1000,
+                    trainers_allowed: selectedPlan === 'pro' ? 5 : selectedPlan === 'starter' ? 2 : 50
+                })
+                .eq('owner_id', user.id);
+
+            if (error) throw error;
+
+            alert(`Successfully upgraded to ${selectedPlan.toUpperCase()}!`);
             router.push('/gym?payment=success');
-        }, 2000);
+        } catch (error) {
+            console.error('Checkout error:', error);
+            alert('Failed to process payment. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

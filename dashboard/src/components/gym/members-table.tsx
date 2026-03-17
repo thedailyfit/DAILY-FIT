@@ -18,18 +18,49 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageSquare, Edit, Trash, DollarSign } from "lucide-react";
+import { MoreHorizontal, MessageSquare, Edit, Trash, DollarSign, UserCheck, Loader2 } from "lucide-react";
 import { GymMember } from "@/types/gym-member";
 import { EditGymMemberDialog } from "./edit-member-dialog";
+import { createClient } from "@/lib/supabase";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 // import { SendPaymentReminder } from "./send-payment-reminder"; // Future
 
 interface GymMembersTableProps {
     members: GymMember[];
+    trainers: { id: string; name: string }[];
 }
 
-export function GymMembersTable({ members }: GymMembersTableProps) {
+export function GymMembersTable({ members, trainers }: GymMembersTableProps) {
     const [selectedMember, setSelectedMember] = useState<GymMember | null>(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
+    const [updatingTrainer, setUpdatingTrainer] = useState<string | null>(null);
+    const supabase = createClient();
+
+    const handleTrainerChange = async (memberId: string, trainerId: string) => {
+        setUpdatingTrainer(memberId);
+        try {
+            const { error } = await supabase
+                .from('members')
+                .update({ assigned_trainer_id: trainerId === "none" ? null : trainerId })
+                .eq('member_id', memberId);
+
+            if (error) throw error;
+            
+            // Optionally show success toast
+            console.log(`Updated trainer for member ${memberId}`);
+        } catch (error) {
+            console.error('Error updating trainer:', error);
+            alert('Failed to update trainer');
+        } finally {
+            setUpdatingTrainer(null);
+        }
+    };
 
     const handleEdit = (member: GymMember) => {
         setSelectedMember(member);
@@ -63,6 +94,7 @@ export function GymMembersTable({ members }: GymMembersTableProps) {
                         <TableHead className="font-bold text-zinc-500 uppercase text-xs">Goal</TableHead>
                         <TableHead className="font-bold text-zinc-500 uppercase text-xs">Fees</TableHead>
                         <TableHead className="font-bold text-zinc-500 uppercase text-xs">Stats (H/W/BMI)</TableHead>
+                        <TableHead className="font-bold text-zinc-500 uppercase text-xs">Assigned Trainer</TableHead>
                         <TableHead className="font-bold text-zinc-500 uppercase text-xs">Location</TableHead>
                         <TableHead className="font-bold text-zinc-500 uppercase text-xs">Status</TableHead>
                         <TableHead className="font-bold text-zinc-500 uppercase text-xs text-right">Actions</TableHead>
@@ -108,6 +140,31 @@ export function GymMembersTable({ members }: GymMembersTableProps) {
                                             <span title="Height">{m.height_cm || '-'}cm</span> •
                                             <span title="Weight">{m.weight_kg || '-'}kg</span>
                                             <div className="font-bold text-black mt-1">BMI: {bmi}</div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            {updatingTrainer === m.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                            ) : (
+                                                <UserCheck className="h-4 w-4 text-primary" />
+                                            )}
+                                            <Select
+                                                defaultValue={m.assigned_trainer_id || "none"}
+                                                onValueChange={(val) => handleTrainerChange(m.id, val)}
+                                            >
+                                                <SelectTrigger className="w-[150px] h-8 text-xs bg-zinc-50 border-zinc-200">
+                                                    <SelectValue placeholder="Assign Trainer" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="none">No Trainer</SelectItem>
+                                                    {trainers.map((t) => (
+                                                        <SelectItem key={t.id} value={t.id}>
+                                                            {t.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-xs text-zinc-600 max-w-[100px] truncate" title={m.area}>

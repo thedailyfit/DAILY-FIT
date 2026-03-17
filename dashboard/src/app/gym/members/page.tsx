@@ -20,6 +20,12 @@ export default async function GymMembersPage() {
         .select('*')
         .order('created_at', { ascending: false });
 
+    // Fetch staff trainers for the gym
+    const { data: staff } = await supabase
+        .from('staff')
+        .select('id, name')
+        .order('name', { ascending: true });
+
     if (error) {
         console.error("Error fetching members:", error);
     }
@@ -57,7 +63,10 @@ export default async function GymMembersPage() {
                 />
             </div>
 
-            <GymMembersTable members={gymMembers} />
+            <GymMembersTable 
+                members={gymMembers} 
+                trainers={staff || []}
+            />
         </div>
     );
 }

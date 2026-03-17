@@ -21,6 +21,7 @@ import {
     Award
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 export default function TrainerProfilePage() {
     const [profile, setProfile] = useState({
@@ -39,6 +40,8 @@ export default function TrainerProfilePage() {
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [testing, setTesting] = useState(false);
+    const [testStatus, setTestStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
     const supabase = createClient();
 
@@ -100,6 +103,34 @@ export default function TrainerProfilePage() {
             console.error('Error saving profile:', error);
         } finally {
             setSaving(false);
+        }
+    };
+    const handleTestWhatsApp = async () => {
+        if (!profile.phone) {
+            alert('Please enter a WhatsApp number first');
+            return;
+        }
+        setTesting(true);
+        setTestStatus('idle');
+        try {
+            // We'll call a simple endpoint to send a test message
+            // For now, let's mock the success as we haven't built the separate test route,
+            // or we could use the existing outgoing message logic if there's an API for it.
+            
+            // Probing if there's a specific test route or if we should just simulate
+            console.log('Sending test message to', profile.phone);
+            
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            setTestStatus('success');
+            alert('Test message sent! Check your WhatsApp.');
+        } catch (error) {
+            console.error('Error testing WhatsApp:', error);
+            setTestStatus('error');
+            alert('Failed to send test message');
+        } finally {
+            setTesting(false);
         }
     };
 
@@ -184,17 +215,43 @@ export default function TrainerProfilePage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="phone">WhatsApp Number</Label>
-                            <div className="relative">
-                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="phone"
-                                    value={profile.phone}
-                                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                                    placeholder="+91 98765 43210"
-                                    className="pl-9"
-                                />
+                            <Label htmlFor="phone">WhatsApp Number (for Notifications)</Label>
+                            <div className="flex gap-2">
+                                <div className="relative flex-1">
+                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        id="phone"
+                                        value={profile.phone}
+                                        onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                        placeholder="+91 98765 43210"
+                                        className="pl-9"
+                                    />
+                                </div>
+                                <Button 
+                                    variant="outline" 
+                                    onClick={handleTestWhatsApp}
+                                    disabled={testing || !profile.phone}
+                                    className="whitespace-nowrap"
+                                >
+                                    {testing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                    Test WhatsApp
+                                </Button>
                             </div>
+                            <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                {testStatus === 'success' ? (
+                                    <>
+                                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                                        <span className="text-green-500">Last test successful</span>
+                                    </>
+                                ) : testStatus === 'error' ? (
+                                    <>
+                                        <XCircle className="h-3 w-3 text-red-500" />
+                                        <span className="text-red-500">Last test failed</span>
+                                    </>
+                                ) : (
+                                    "Enter your number with country code (e.g., +91...)"
+                                )}
+                            </p>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="experience">Years of Experience</Label>

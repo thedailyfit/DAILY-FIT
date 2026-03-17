@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -39,9 +39,67 @@ export function AddGymMemberDialog() {
         weight_kg: "",
         goal: "General Fitness",
         monthly_fee: "",
-        cardio_fee: "", // Optional, might need to store in metadata
-        area: "",       // Optional, metadata?
+        cardio_fee: "", // Optional
+        area: "",       // Optional
+        assigned_trainer_id: "none",
     });
+    const [trainers, setTrainers] = useState<{ id: string, name: string, client_count: number }[]>([]);
+    const [gymLimits, setGymLimits] = useState({ members_limit: 50, subscription_plan: 'basic' });
+    const [currentMemberCount, setCurrentMemberCount] = useState(0);
+
+    const supabase = createClient();
+
+    useEffect(() => {
+        if (open) fetchLimitsAndTrainers();
+    }, [open]);
+
+    const fetchLimitsAndTrainers = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            // Get gym limits
+            const { data: gym } = await supabase
+                .from('gyms')
+                .select('members_limit, subscription_plan, gym_id')
+                .eq('owner_id', user.id)
+                .single();
+
+            if (gym) {
+                setGymLimits({
+                    members_limit: gym.members_limit || 50,
+                    subscription_plan: gym.subscription_plan || 'basic'
+                });
+
+                // Get member count
+                const { count } = await supabase
+                    .from('members')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('gym_id', gym.gym_id);
+                
+                setCurrentMemberCount(count || 0);
+
+                // Get trainers and their client counts
+                const { data: staff } = await supabase
+                    .from('staff')
+                    .select('id, name')
+                    .eq('gym_id', gym.gym_id);
+
+                if (staff) {
+                    const trainersWithCount = await Promise.all(staff.map(async (s) => {
+                        const { count } = await supabase
+                            .from('members')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('assigned_trainer_id', s.id);
+                        return { ...s, client_count: count || 0 };
+                    }));
+                    setTrainers(trainersWithCount);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching limits:', error);
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,7 +114,23 @@ export function AddGymMemberDialog() {
         const supabase = createClient();
 
         try {
-            // Get current user (Gym Owner)
+            // Check overall gym limit
+            if (currentMemberCount >= gymLimits.members_limit) {
+                alert(`Member limit reached (${gymLimits.members_limit}). Upgrade your plan to add more members.`);
+                setLoading(false);
+                return;
+            }
+
+            // Check trainer limit if assigning
+            if (formData.assigned_trainer_id !== "none") {
+                const selectedTrainer = trainers.find(t => t.id === formData.assigned_trainer_id);
+                if (selectedTrainer && selectedTrainer.client_count >= 10 && gymLimits.subscription_plan === 'pro') {
+                    alert(`${selectedTrainer.name} has reached the maximum of 10 clients. Please assign to another trainer.`);
+                    setLoading(false);
+                    return;
+                }
+            }
+
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Not authenticated");
 
@@ -83,9 +157,9 @@ export function AddGymMemberDialog() {
                 // For now, I will use existing columns and ignore extra if they fail, or assume strict schema.
                 // Given previous turns updated 'members' table, I 'll try to use those.
                 status: 'Active',
-                owner_id: user.id, // If we have owner_id or joined via gym relation
-                invite_code: inviteCode
-                // user_id: we don't have a user_id yet for them, they are just a member entry
+                owner_id: user.id,
+                invite_code: inviteCode,
+                assigned_trainer_id: formData.assigned_trainer_id === "none" ? null : formData.assigned_trainer_id
             };
 
             const { error } = await supabase.from('members').insert(memberData);
@@ -96,7 +170,7 @@ export function AddGymMemberDialog() {
             } else {
                 setOpen(false);
                 setFormData({
-                    name: "", phone: "", email: "", gender: "", age: "", height_cm: "", weight_kg: "", goal: "General Fitness", monthly_fee: "", cardio_fee: "", area: ""
+                    name: "", phone: "", email: "", gender: "", age: "", height_cm: "", weight_kg: "", goal: "General Fitness", monthly_fee: "", cardio_fee: "", area: "", assigned_trainer_id: "none"
                 });
                 router.refresh();
             }
@@ -169,20 +243,43 @@ export function AddGymMemberDialog() {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Fitness Goal</Label>
-                        <Select onValueChange={(val) => handleValueChange("goal", val)} defaultValue="General Fitness">
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Goal" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Weight Loss">Weight Loss</SelectItem>
-                                <SelectItem value="Muscle Gain">Muscle Gain</SelectItem>
-                                <SelectItem value="General Fitness">General Fitness</SelectItem>
-                                <SelectItem value="Endurance">Endurance</SelectItem>
-                                <SelectItem value="Strength">Strength</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Fitness Goal</Label>
+                            <Select onValueChange={(val) => handleValueChange("goal", val)} defaultValue="General Fitness">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Goal" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Weight Loss">Weight Loss</SelectItem>
+                                    <SelectItem value="Muscle Gain">Muscle Gain</SelectItem>
+                                    <SelectItem value="General Fitness">General Fitness</SelectItem>
+                                    <SelectItem value="Endurance">Endurance</SelectItem>
+                                    <SelectItem value="Strength">Strength</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Assign Trainer (Optional)</Label>
+                            <Select onValueChange={(val) => handleValueChange("assigned_trainer_id", val)} defaultValue="none">
+                                <SelectTrigger className={formData.assigned_trainer_id !== "none" ? "border-primary/50 bg-primary/5 font-bold" : ""}>
+                                    <SelectValue placeholder="Select Trainer" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No Trainer (Gym Admin Only)</SelectItem>
+                                    {trainers.map((t) => (
+                                        <SelectItem key={t.id} value={t.id} disabled={t.client_count >= 10}>
+                                            {t.name} ({t.client_count}/10)
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {formData.assigned_trainer_id !== "none" && (
+                                <p className="text-[10px] text-primary font-bold animate-pulse uppercase tracking-wider">
+                                    Member messages will route to this trainer
+                                </p>
+                            )}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">

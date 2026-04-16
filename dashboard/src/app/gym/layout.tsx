@@ -17,7 +17,7 @@ export default function GymLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const isLoginPage = pathname === "/gym/login";
+    const isAuthPage = pathname === "/gym/login" || pathname === "/gym/signup";
     const isBillingPage = pathname === "/gym/billing";
 
     const [subscription, setSubscription] = useState<{
@@ -31,8 +31,8 @@ export default function GymLayout({
     const supabase = createClient();
 
     useEffect(() => {
-        if (!isLoginPage) fetchSubscription();
-    }, [isLoginPage]);
+        if (!isAuthPage) fetchSubscription();
+    }, [isAuthPage]);
 
     const fetchSubscription = async () => {
         try {
@@ -70,7 +70,7 @@ export default function GymLayout({
     return (
         <ThemeProvider>
             <CursorTrail />
-            {isLoginPage ? (
+            {isAuthPage ? (
                 children
             ) : (
                 <div className="flex min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">

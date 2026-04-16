@@ -9,22 +9,37 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Dumbbell, Lock, Mail, ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function GymAdminLoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError(null);
 
-        // Simulate login delay
-        setTimeout(() => {
-            setIsLoading(false);
+        try {
+            const supabase = createClient();
+            const { error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (authError) throw authError;
+
+            // Auth succeeded — middleware will allow access to /gym
             router.push("/gym");
-        }, 1500);
+        } catch (err: any) {
+            setError(err.message || "Invalid credentials");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -103,6 +118,10 @@ export default function GymAdminLoginPage() {
                                 </div>
                             </div>
 
+                            {error && (
+                                <div className="text-sm text-red-500 bg-red-50 dark:bg-red-950/30 p-3 rounded-lg">{error}</div>
+                            )}
+
                             <Button
                                 type="submit"
                                 className="w-full bg-primary text-primary-foreground font-bold h-11"
@@ -127,7 +146,7 @@ export default function GymAdminLoginPage() {
                             Secure 256-bit SSL Encrypted Connection
                         </div>
                         <div className="text-xs text-center opacity-70">
-                            Don't have an owner account? <a href="#" className="font-bold hover:underline">Partner with us</a>
+                            Don't have an owner account? <Link href="/gym/signup" className="font-bold hover:underline text-primary">Sign up here</Link>
                         </div>
                     </CardFooter>
                 </Card>

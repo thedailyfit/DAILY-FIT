@@ -21,8 +21,7 @@ async function getPayments(): Promise<Payment[]> {
             member:members (
                 name
             )
-        `)
-        .order("due_date", { ascending: false });
+        `);
 
     if (error) {
         console.error("Error fetching payments:", error);

@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
@@ -120,7 +121,7 @@ export async function middleware(request: NextRequest) {
 }
 
 // Helper: Determine user role from database
-async function getUserRole(supabase: any, userId: string): Promise<string> {
+async function getUserRole(supabase: SupabaseClient, userId: string): Promise<string> {
     try {
         // Check if user is a gym owner
         const { data: gym } = await supabase

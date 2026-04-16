@@ -139,9 +139,30 @@ export default function TrainerMessagesPage() {
                 message: newMessage,
                 created_at: new Date().toISOString()
             }]);
+
+            const messageCopy = newMessage;
             setNewMessage("");
 
-            // TODO: Send via Twilio WhatsApp
+            // Send via WhatsApp using the backend server
+            try {
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+                const memberPhone = selectedConversation.phone;
+
+                if (memberPhone) {
+                    await fetch(`${backendUrl}/api/notify/member`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            memberId: selectedConversation.memberId,
+                            message: messageCopy,
+                            phone: memberPhone,
+                            trainerId: trainerId
+                        })
+                    });
+                }
+            } catch (whatsappError) {
+                console.error('WhatsApp delivery failed (message saved to DB):', whatsappError);
+            }
         }
     };
 

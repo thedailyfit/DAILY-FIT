@@ -301,9 +301,33 @@ app.post('/api/plans', async (req, res) => {
 });
 
 app.post('/api/notify/member', async (req, res) => {
-    const { memberId, message } = req.body;
-    // Send notification via WhatsApp
-    res.json({ message: 'Notification sent' });
+    const { memberId, message, phone, trainerId } = req.body;
+
+    if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+    }
+
+    try {
+        let targetPhone = phone;
+
+        // If phone not passed directly, look up the member
+        if (!targetPhone && memberId) {
+            const member = await db.findOne<any>('members', { member_id: memberId });
+            targetPhone = member?.whatsapp_id || member?.phone_number;
+        }
+
+        if (!targetPhone) {
+            return res.status(400).json({ error: 'No phone number found for this member' });
+        }
+
+        // Send via WhatsApp
+        await sendWhatsAppMessage(targetPhone, message, memberId);
+
+        res.json({ success: true, message: 'WhatsApp notification sent' });
+    } catch (error) {
+        console.error('Error sending notification:', error);
+        res.status(500).json({ error: 'Failed to send notification' });
+    }
 });
 
 // Health check

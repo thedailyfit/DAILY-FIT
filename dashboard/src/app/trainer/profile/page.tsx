@@ -113,22 +113,26 @@ export default function TrainerProfilePage() {
         setTesting(true);
         setTestStatus('idle');
         try {
-            // We'll call a simple endpoint to send a test message
-            // For now, let's mock the success as we haven't built the separate test route,
-            // or we could use the existing outgoing message logic if there's an API for it.
-            
-            // Probing if there's a specific test route or if we should just simulate
-            console.log('Sending test message to', profile.phone);
-            
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            setTestStatus('success');
-            alert('Test message sent! Check your WhatsApp.');
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+            const response = await fetch(`${backendUrl}/api/notify/member`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: profile.phone,
+                    message: '✅ DailyFit WhatsApp Test — Your notifications are working! 🎉'
+                })
+            });
+
+            if (response.ok) {
+                setTestStatus('success');
+                alert('Test message sent! Check your WhatsApp.');
+            } else {
+                throw new Error('Backend returned error');
+            }
         } catch (error) {
             console.error('Error testing WhatsApp:', error);
             setTestStatus('error');
-            alert('Failed to send test message');
+            alert('Failed to send test message. Make sure your backend server is running.');
         } finally {
             setTesting(false);
         }

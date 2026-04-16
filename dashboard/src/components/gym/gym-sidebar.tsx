@@ -42,6 +42,7 @@ export function GymSidebar() {
     const router = useRouter();
     const [trainers, setTrainers] = useState<Trainer[]>([]);
     const [ownerName, setOwnerName] = useState("Owner");
+    const [ownerEmail, setOwnerEmail] = useState("");
     const supabase = createClient();
 
     useEffect(() => {
@@ -52,16 +53,17 @@ export function GymSidebar() {
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
+            setOwnerEmail(user.email || '');
 
             // Get gym
             const { data: gym } = await supabase
                 .from('gyms')
-                .select('gym_id, gym_name')
+                .select('gym_id, gym_name, owner_name')
                 .eq('owner_id', user.id)
                 .single();
 
             if (gym) {
-                setOwnerName(gym.gym_name || 'Owner');
+                setOwnerName(gym.owner_name || gym.gym_name || 'Owner');
 
                 // Get staff trainers
                 const { data: staff } = await supabase
@@ -229,11 +231,11 @@ export function GymSidebar() {
                 <div className="mt-4 p-4 rounded-xl bg-accent border border-border hover:bg-accent/80 transition-colors cursor-pointer group">
                     <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground ring-2 ring-border">
-                            JS
+                            {ownerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'GY'}
                         </div>
                         <div className="overflow-hidden">
-                            <p className="text-sm font-bold text-foreground truncate">John Smith</p>
-                            <p className="text-[10px] text-muted-foreground truncate">Owner • DailyFit</p>
+                            <p className="text-sm font-bold text-foreground truncate">{ownerName}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">Owner • {ownerEmail || 'DailyFit'}</p>
                         </div>
                     </div>
                 </div>

@@ -11,7 +11,9 @@ import {
     User,
     Plus,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Users,
+    Loader2
 } from "lucide-react";
 
 interface ScheduleEvent {
@@ -29,6 +31,95 @@ export default function TrainerSchedulePage() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [events, setEvents] = useState<ScheduleEvent[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [clientCount, setClientCount] = useState(0);
+
+    const supabase = createClient();
+
+    useEffect(() => {
+        fetchScheduleData();
+    }, []);
+
+    useEffect(() => {
+        fetchEventsForDate(selectedDate);
+    }, [selectedDate]);
+
+    const fetchScheduleData = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data: staff } = await supabase
+                .from('staff')
+                .select('id')
+                .eq('auth_id', user.id)
+                .single();
+
+            if (staff) {
+                // Count assigned clients
+                const { count } = await supabase
+                    .from('members')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('assigned_trainer_id', staff.id);
+
+                setClientCount(count || 0);
+
+                // Try to fetch schedule events for today
+                await fetchEventsForDate(selectedDate);
+            }
+        } catch (error) {
+            console.error('Error fetching schedule data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchEventsForDate = async (date: Date) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data: staff } = await supabase
+                .from('staff')
+                .select('id')
+                .eq('auth_id', user.id)
+                .single();
+
+            if (!staff) return;
+
+            // Try fetching from a schedule table if it exists
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            const { data: scheduleData, error } = await supabase
+                .from('trainer_schedule')
+                .select('*, members:member_id(name)')
+                .eq('trainer_id', staff.id)
+                .gte('scheduled_at', startOfDay.toISOString())
+                .lte('scheduled_at', endOfDay.toISOString())
+                .order('scheduled_at', { ascending: true });
+
+            if (!error && scheduleData && scheduleData.length > 0) {
+                setEvents(scheduleData.map((s: any) => ({
+                    id: s.id,
+                    title: s.title || 'PT Session',
+                    clientName: s.members?.name || 'Client',
+                    time: new Date(s.scheduled_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                    duration: s.duration || 60,
+                    type: s.type || 'session'
+                })));
+            } else {
+                // Table might not exist yet — show empty state gracefully
+                setEvents([]);
+            }
+        } catch (error) {
+            // trainer_schedule table may not exist yet — graceful fallback
+            console.log('Schedule table not available yet, showing empty state');
+            setEvents([]);
+        }
+    };
 
     // Get calendar days
     const getDaysInMonth = (date: Date) => {
@@ -66,15 +157,6 @@ export default function TrainerSchedulePage() {
         return date.toDateString() === selectedDate.toDateString();
     };
 
-    // Mock events for demonstration
-    useEffect(() => {
-        setEvents([
-            { id: '1', title: 'PT Session', clientName: 'John Doe', time: '09:00', duration: 60, type: 'session' },
-            { id: '2', title: 'Check-in', clientName: 'Jane Smith', time: '11:00', duration: 30, type: 'followup' },
-            { id: '3', title: 'New Client', clientName: 'Mike Johnson', time: '14:00', duration: 45, type: 'consultation' },
-        ]);
-    }, [selectedDate]);
-
     const getEventColor = (type: string) => {
         switch (type) {
             case 'session': return 'bg-blue-500';
@@ -93,7 +175,13 @@ export default function TrainerSchedulePage() {
                         <CalendarIcon className="h-8 w-8 text-primary" />
                         Schedule
                     </h1>
-                    <p className="text-muted-foreground mt-1">Manage your training sessions</p>
+                    <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                        Manage your training sessions
+                        <Badge variant="outline" className="gap-1">
+                            <Users className="h-3 w-3" />
+                            {clientCount} clients
+                        </Badge>
+                    </p>
                 </div>
                 <Button className="gap-2">
                     <Plus className="h-4 w-4" />
@@ -112,6 +200,12 @@ export default function TrainerSchedulePage() {
                             <div className="flex gap-2">
                                 <Button variant="outline" size="icon" onClick={() => navigateMonth(-1)}>
                                     <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => {
+                                    setCurrentDate(new Date());
+                                    setSelectedDate(new Date());
+                                }}>
+                                    Today
                                 </Button>
                                 <Button variant="outline" size="icon" onClick={() => navigateMonth(1)}>
                                     <ChevronRight className="h-4 w-4" />
@@ -160,10 +254,17 @@ export default function TrainerSchedulePage() {
                         <CardDescription>{events.length} sessions scheduled</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        {events.length === 0 ? (
+                        {loading ? (
+                            <div className="flex justify-center py-8">
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : events.length === 0 ? (
                             <div className="text-center py-8">
                                 <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <p className="text-muted-foreground">No sessions scheduled</p>
+                                <p className="text-muted-foreground font-medium">No sessions scheduled</p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Click &quot;Add Session&quot; to create one
+                                </p>
                             </div>
                         ) : (
                             events.map((event) => (

@@ -63,7 +63,7 @@ export default function GymAnalyticsPage() {
             // Get all members
             const { data: members } = await supabase
                 .from('members')
-                .select('member_id, assigned_trainer_id')
+                .select('member_id, assigned_trainer_id, monthly_fee')
                 .eq('gym_id', gym.gym_id);
 
             // Get messages from this week
@@ -80,15 +80,21 @@ export default function GymAnalyticsPage() {
                 const trainerClients = (members || []).filter(m => m.assigned_trainer_id === s.id);
                 const clientCount = trainerClients.length;
                 const trainerClientIds = trainerClients.map(m => m.member_id);
-                const msgCount = (messages || []).filter(m => trainerClientIds.includes(m.member_id)).length;
+                const trainerMessages = (messages || []).filter(m => trainerClientIds.includes(m.member_id));
+                const msgCount = trainerMessages.length;
                 const revenue = trainerClients.reduce((sum, m) => sum + (m.monthly_fee || 0), 0);
+
+                // Calculate real response rate: assistant replies / user messages
+                const userMsgs = trainerMessages.filter(m => m.sender === 'user').length;
+                const assistantMsgs = trainerMessages.filter(m => m.sender === 'assistant').length;
+                const responseRate = userMsgs > 0 ? Math.min(100, Math.round((assistantMsgs / userMsgs) * 100)) : 100;
 
                 return {
                     id: s.id,
                     name: s.name || 'Unknown',
                     clientCount,
                     messagesThisWeek: msgCount,
-                    responseRate: Math.floor(Math.random() * 30) + 70, // Mock for now
+                    responseRate,
                     role: s.role || 'trainer',
                     revenue
                 };

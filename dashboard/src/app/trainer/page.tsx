@@ -74,12 +74,41 @@ export default function TrainerDashboard() {
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', weekAgo.toISOString());
 
+                // Count workouts assigned by this trainer or shared from their gym
+                const { count: workoutCount } = await supabase
+                    .from('workout_templates')
+                    .select('*', { count: 'exact', head: true })
+                    .or(`trainer_id.eq.${staff.id},gym_id.eq.${staff.gym_id}`);
+
+                // Count active clients (those who messaged this week)
+                const memberIds: string[] = [];
+                const { data: assignedMembers } = await supabase
+                    .from('members')
+                    .select('member_id')
+                    .eq('assigned_trainer_id', staff.id);
+
+                if (assignedMembers) {
+                    for (const m of assignedMembers) {
+                        memberIds.push(m.member_id);
+                    }
+                }
+
+                let activeCount = 0;
+                if (memberIds.length > 0) {
+                    const { count } = await supabase
+                        .from('chat_history')
+                        .select('member_id', { count: 'exact', head: true })
+                        .in('member_id', memberIds)
+                        .gte('created_at', weekAgo.toISOString());
+                    activeCount = count || 0;
+                }
+
                 setStats({
                     clientCount: clientCount || 0,
                     clientLimit: 10, // Pro Plan trainer limit
                     messagesThisWeek: messageCount || 0,
-                    activeClients: clientCount || 0,
-                    workoutsAssigned: 12 // Mock for now
+                    activeClients: activeCount,
+                    workoutsAssigned: workoutCount || 0
                 });
             }
         } catch (error) {

@@ -6,8 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CursorTrail } from "@/components/cursor-trail";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
-import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, Clock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -17,7 +16,7 @@ export default function GymLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
-    const router = useRouter(); // Error: usePathname is from navigation, layout might need proper imports or just keep client
+    const router = useRouter();
     const isLoginPage = pathname === "/gym/login";
     const isBillingPage = pathname === "/gym/billing";
 

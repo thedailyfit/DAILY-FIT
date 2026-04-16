@@ -1,27 +1,90 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MessageSquare, CheckCircle, Smartphone, Globe, Lock } from "lucide-react"
+import { createClient } from "@/lib/supabase"
 
 export default function WhatsAppSettingsPage() {
     const [isConnected, setIsConnected] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [initialLoading, setInitialLoading] = useState(true)
 
     // Form
     const [phoneId, setPhoneId] = useState('')
     const [token, setToken] = useState('')
 
-    const handleConnect = () => {
+    const supabase = createClient()
+
+    useEffect(() => {
+        checkConnection()
+    }, [])
+
+    const checkConnection = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            const { data } = await supabase
+                .from('whatsapp_connections')
+                .select('is_connected, phone_number')
+                .eq('trainer_id', user.id)
+                .single()
+
+            if (data?.is_connected) {
+                setIsConnected(true)
+                setPhoneId(data.phone_number || '')
+            }
+        } catch (error) {
+            console.log('No existing connection found')
+        } finally {
+            setInitialLoading(false)
+        }
+    }
+
+    const handleConnect = async () => {
         setLoading(true)
-        // Simulate API verification
-        setTimeout(() => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            const { error } = await supabase
+                .from('whatsapp_connections')
+                .upsert({
+                    trainer_id: user.id,
+                    phone_number: phoneId,
+                    access_token: token,
+                    is_connected: true,
+                    connected_at: new Date().toISOString()
+                }, { onConflict: 'trainer_id' })
+
+            if (error) throw error
             setIsConnected(true)
+        } catch (error) {
+            console.error('Error connecting WhatsApp:', error)
+            alert('Failed to connect. Please check your credentials.')
+        } finally {
             setLoading(false)
-        }, 1500)
+        }
+    }
+
+    const handleDisconnect = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            await supabase
+                .from('whatsapp_connections')
+                .update({ is_connected: false })
+                .eq('trainer_id', user.id)
+
+            setIsConnected(false)
+        } catch (error) {
+            console.error('Error disconnecting:', error)
+        }
     }
 
     return (
@@ -49,7 +112,7 @@ export default function WhatsAppSettingsPage() {
                                 </div>
                                 <h3 className="text-xl font-bold text-green-600">Connected Successfully</h3>
                                 <p className="text-sm text-muted-foreground">Your AI agent is now active and listening to messages on <strong>+91 *****-8821</strong>.</p>
-                                <Button variant="outline" className="mt-4" onClick={() => setIsConnected(false)}>Disconnect</Button>
+                                <Button variant="outline" className="mt-4" onClick={handleDisconnect}>Disconnect</Button>
                             </div>
                         ) : (
                             <div className="space-y-4">

@@ -3,25 +3,15 @@ import { DatabaseManager } from '../db/DatabaseManager';
 import { ConversationManager } from './ConversationManager';
 import { RAGService } from './RAGService';
 import { LLMService } from './LLMService';
-import { Member, Trainer } from '../models/types';
+import { Member, Trainer, MealPlan, WorkoutPlan } from '../models/types';
 import { AgentRegistry } from './AgentRegistry';
 
-// Agents
+// Active Agents — only import agents that are actually wired into the message flow
 import { OnboardingAgent } from '../agents/OnboardingAgent';
 import { MemberAgent } from '../agents/MemberAgent';
 import { TrainerAgent } from '../agents/TrainerAgent';
 import { PlanGeneratorAgent } from '../agents/PlanGeneratorAgent';
 import { PhotoEstimatorAgent } from '../agents/PhotoEstimatorAgent';
-import { PersonalizationAgent } from '../agents/PersonalizationAgent';
-import { TrainerOverrideAgent } from '../agents/TrainerOverrideAgent';
-import { MotivationAgent } from '../agents/MotivationAgent';
-import { ProgressAnalysisAgent } from '../agents/ProgressAnalysisAgent';
-import { GymAdminAgent } from '../agents/GymAdminAgent';
-import { PricingUpsellAgent } from '../agents/PricingUpsellAgent';
-import { NotificationSchedulerAgent } from '../agents/NotificationSchedulerAgent';
-// Note: NutritionPlanGeneratorAgent & WorkoutGeneratorAgent are sub-agents of PlanGenerator, 
-// so they don't need top-level registration unless we want to use them independently.
-// For now, we leave them as dependencies of PlanGeneratorAgent.
 
 export class Orchestrator {
     private db: DatabaseManager;
@@ -30,6 +20,7 @@ export class Orchestrator {
     private rag: RAGService;
     private llm: LLMService;
     private registry: AgentRegistry;
+    private planGenerator: PlanGeneratorAgent;
 
     constructor() {
         this.db = new DatabaseManager();
@@ -39,50 +30,48 @@ export class Orchestrator {
         this.llm = new LLMService();
         this.registry = new AgentRegistry();
 
+        // M-05: Only initialize agents that are actually active in the message flow
+        this.planGenerator = new PlanGeneratorAgent(this.db, this.rag, this.llm);
         this.initializeAgents();
     }
 
     private initializeAgents() {
-        // Service Agents (Dependencies)
+        // Service agents (used by core agents)
         const photoEstimator = new PhotoEstimatorAgent(this.llm);
-        const planGenerator = new PlanGeneratorAgent(this.db, this.rag, this.llm);
-        const personalization = new PersonalizationAgent(this.llm, this.db);
-        const trainerOverride = new TrainerOverrideAgent(this.llm, this.db);
-        const motivation = new MotivationAgent(this.llm);
-        const progressAnalyst = new ProgressAnalysisAgent(this.llm, this.db);
-        const gymAdmin = new GymAdminAgent(this.llm, this.db);
-        const pricingUpsell = new PricingUpsellAgent(this.llm);
-        const scheduler = new NotificationSchedulerAgent(this.db);
 
-        // Core Agents
-        const onboarding = new OnboardingAgent(this.conversation, this.db, this.llm, planGenerator);
+        // Core agents (handle messages directly)
+        const onboarding = new OnboardingAgent(this.conversation, this.db, this.llm, this.planGenerator);
         const member = new MemberAgent(this.llm, this.db, photoEstimator);
         const trainer = new TrainerAgent(this.llm, this.db);
 
-        // Register Agents
+        // Register only active agents
         this.registry.register(onboarding);
         this.registry.register(member);
         this.registry.register(trainer);
         this.registry.register(photoEstimator);
-        this.registry.register(planGenerator);
-        this.registry.register(personalization);
-        this.registry.register(trainerOverride);
-        this.registry.register(motivation);
-        this.registry.register(progressAnalyst);
-        this.registry.register(gymAdmin);
-        this.registry.register(pricingUpsell);
-        this.registry.register(scheduler);
+        this.registry.register(this.planGenerator);
+
+        // M-05: Removed orphaned agents that returned null from handleMessage:
+        // - PersonalizationAgent, TrainerOverrideAgent, MotivationAgent,
+        //   ProgressAnalysisAgent, GymAdminAgent, PricingUpsellAgent,
+        //   NotificationSchedulerAgent
+        // These should be re-added when their service methods are actually
+        // wired into specific triggers (cron jobs, events, etc.)
     }
 
-    async handleIncomingMessage(whatsappId: string, messageBody: string, mediaUrl?: string, mediaContentType?: string): Promise<string> {
+    async handleIncomingMessage(
+        whatsappId: string,
+        messageBody: string,
+        mediaUrl?: string,
+        mediaContentType?: string
+    ): Promise<string> {
         const user = await this.router.identifyUser(whatsappId);
         const state = await this.conversation.getState(whatsappId);
 
-        // MEDIA HANDLING STRATEGY
-        // 1. Audio: Transcribe immediately -> Treat as text
+        // MEDIA HANDLING: Audio → Transcribe → Treat as text
         if (mediaUrl && mediaContentType?.startsWith('audio/')) {
             messageBody = await this.llm.transcribeAudio(mediaUrl);
-            mediaUrl = undefined; // Clear mediaUrl so downstream agents don't get confused thinking it's an image
+            mediaUrl = undefined;
         }
 
         // Context for agents
@@ -93,11 +82,10 @@ export class Orchestrator {
             mediaUrl
         };
 
-        // 2. Images: Send to PhotoEstimator
-        if (mediaUrl && (mediaContentType?.startsWith('image/') || !mediaContentType)) { // Fallback to image if no type
+        // Image → PhotoEstimator
+        if (mediaUrl && (mediaContentType?.startsWith('image/') || !mediaContentType)) {
             const photoAgent = this.registry.get('photo_estimator');
             if (photoAgent) {
-                // Pass photo_url in context explicitly if agent expects it
                 const photoContext = { ...context, photo_url: mediaUrl };
                 const response = await photoAgent.handleMessage(user, messageBody, photoContext);
                 if (response) return response;
@@ -132,5 +120,10 @@ export class Orchestrator {
         }
 
         return "Error: User type not recognized.";
+    }
+
+    // M-10: Public method for API-triggered plan generation
+    async generatePlanForMember(member: Member): Promise<{ mealPlan: MealPlan; workoutPlan: WorkoutPlan; summary: string }> {
+        return this.planGenerator.generatePlan(member);
     }
 }

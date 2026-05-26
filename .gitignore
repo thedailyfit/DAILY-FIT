@@ -1,13 +1,40 @@
+# Dependencies
 node_modules/
 dist/
+
+# Environment files (NEVER commit secrets)
 .env
+.env.local
+.env.production
+.env.*.local
+dashboard/.env.local
+dashboard/.env.production
+
+# Data files (runtime generated)
 data/*.json
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Editor files
 *.swp
 *.swo
 .vscode/
 .idea/
+
+# Test coverage
 coverage/
 .nyc_output/
-package-lock.json
+
+# Build caches
+.next/
+dashboard/.next/
+
+# Backup files
+*.backup
+*.bak

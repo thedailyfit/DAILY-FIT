@@ -1,5 +1,5 @@
-import { Orchestrator } from './src/core/Orchestrator';
-import { DatabaseManager } from './src/db/DatabaseManager';
+import { Orchestrator } from '../src/core/Orchestrator';
+import { DatabaseManager } from '../src/db/DatabaseManager';
 
 async function testArchitecture() {
     console.log("🚀 Starting Architecture Test...");
@@ -30,7 +30,7 @@ async function testArchitecture() {
     // Let's insert a dummy trainer first.
     const db = new DatabaseManager();
     await db.upsert('trainers', {
-        trainer_id: 'T_TEST',
+        trainer_id: '123e4567-e89b-12d3-a456-426614174000',
         whatsapp_id: 'T_WA_TEST',
         name: 'Test Trainer',
         specialization: 'General',

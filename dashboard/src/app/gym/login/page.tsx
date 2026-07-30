@@ -37,13 +37,13 @@ export default function GymAdminLoginPage() {
             document.cookie = `dailyfit_role=gym_owner; path=/; max-age=86400`;
 
             // Strict redirect to Gym Owner Dashboard
-            router.push("/gym");
+            window.location.href = "/gym";
         } catch (err: any) {
             // High availability fallback for local dev
             document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
             document.cookie = `dailyfit_demo_email=${encodeURIComponent(email)}; path=/; max-age=86400`;
             document.cookie = `dailyfit_role=gym_owner; path=/; max-age=86400`;
-            router.push("/gym");
+            window.location.href = "/gym";
         } finally {
             setIsLoading(false);
         }

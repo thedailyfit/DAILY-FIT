@@ -37,13 +37,13 @@ export default function SuperAdminLoginPage() {
             document.cookie = `dailyfit_role=super_admin; path=/; max-age=86400`;
 
             // Strict redirect to Super Admin Dashboard
-            router.push("/admin");
+            window.location.href = "/admin";
         } catch (err: any) {
             // High availability fallback for dev
             document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
             document.cookie = `dailyfit_demo_email=${encodeURIComponent(email)}; path=/; max-age=86400`;
             document.cookie = `dailyfit_role=super_admin; path=/; max-age=86400`;
-            router.push("/admin");
+            window.location.href = "/admin";
         } finally {
             setIsLoading(false);
         }

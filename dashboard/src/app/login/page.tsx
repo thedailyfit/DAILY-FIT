@@ -105,12 +105,12 @@ export default function LoginPage() {
                     console.warn("DB insert notice:", dbErr.message);
                 }
 
-                if (formData.email.toLowerCase() === 'theakhileshreddy07@gmail.com') {
-                    router.push('/admin')
-                } else if (formData.role === 'gym_owner') {
-                    router.push('/gym/billing?plan=pro&new=true')
+                if (formData.role === 'gym_owner') {
+                    document.cookie = `dailyfit_role=gym_owner; path=/; max-age=86400`
+                    window.location.href = '/gym/billing?plan=pro&new=true'
                 } else {
-                    router.push('/dashboard?welcome=true')
+                    document.cookie = `dailyfit_role=solo_trainer; path=/; max-age=86400`
+                    window.location.href = '/dashboard?welcome=true'
                 }
 
             } else {
@@ -129,14 +129,14 @@ export default function LoginPage() {
                 document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`
                 document.cookie = `dailyfit_role=solo_trainer; path=/; max-age=86400`
 
-                // Strict redirect to Solo Trainer Dashboard
-                router.push('/dashboard')
+                // Hard navigation to Solo Trainer Dashboard so middleware receives cookies
+                window.location.href = '/dashboard'
             }
         } catch (err: any) {
             document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`
             document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`
             document.cookie = `dailyfit_role=solo_trainer; path=/; max-age=86400`
-            router.push('/dashboard')
+            window.location.href = '/dashboard'
         } finally {
             setLoading(false)
         }

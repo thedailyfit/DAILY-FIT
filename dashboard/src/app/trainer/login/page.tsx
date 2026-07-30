@@ -39,13 +39,13 @@ export default function TrainerLoginPage() {
             document.cookie = `dailyfit_role=pro_trainer; path=/; max-age=86400`;
 
             // Strict redirect to Pro Trainer Dashboard
-            router.push('/trainer');
+            window.location.href = '/trainer';
 
         } catch (err: any) {
             document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
             document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`;
             document.cookie = `dailyfit_role=pro_trainer; path=/; max-age=86400`;
-            router.push('/trainer');
+            window.location.href = '/trainer';
         } finally {
             setIsLoading(false);
         }

@@ -1,5 +1,7 @@
 import { DatabaseManager } from '../db/DatabaseManager';
-import { Member, MealPlan } from '../models/types';
+import { Member, Trainer, MealPlan } from '../models/types';
+import { MotivationAgent } from '../agents/MotivationAgent';
+import { LLMService } from '../core/LLMService';
 
 // M-02: Cron-style scheduling with proper time handling
 interface ScheduledTask {
@@ -15,10 +17,14 @@ export class DailyScheduler {
     private tasks: ScheduledTask[] = [];
     private checkInterval: NodeJS.Timeout | null = null;
     private sendMessage: ((to: string, message: string, memberId?: string) => Promise<void>) | null = null;
+    private motivationAgent?: MotivationAgent;
 
-    constructor(db?: DatabaseManager) {
+    constructor(db?: DatabaseManager, llm?: LLMService) {
         // C-05: Accept shared DatabaseManager instance
         this.db = db || new DatabaseManager();
+        if (llm) {
+            this.motivationAgent = new MotivationAgent(llm);
+        }
 
         // Register scheduled tasks
         this.tasks = [
@@ -152,9 +158,21 @@ export class DailyScheduler {
         for (const member of members) {
             if (member.whatsapp_id && this.sendMessage) {
                 try {
+                    let quote = randomQuote;
+                    if (this.motivationAgent) {
+                        quote = await this.motivationAgent.generateMotivation({
+                            member_profile: { name: member.name, goal: member.goal || 'fat_loss' },
+                            last_7_days: {
+                                adherence: member.adherence_score || 80,
+                                workouts_done: 3,
+                                meals_logged: member.meal_logs?.length || 15
+                            }
+                        });
+                    }
+
                     await this.sendMessage(
                         member.whatsapp_id,
-                        `Good morning, ${member.name}! ☀️\n\n${randomQuote}`,
+                        `Good morning, ${member.name}! ☀️\n\n${quote}`,
                         member.member_id
                     );
                 } catch (error) {
@@ -167,18 +185,35 @@ export class DailyScheduler {
     async sendTrainerDigest(): Promise<void> {
         console.log('📊 Generating Trainer Digest...');
         const members = await this.db.read<Member>('members');
-        const lowAdherence = members.filter(m => m.adherence_score < 60);
+        const trainers = await this.db.read<Trainer>('trainers');
 
-        if (lowAdherence.length > 0) {
-            console.log(`⚠️ ${lowAdherence.length} members with low adherence:`);
-            lowAdherence.forEach(m => {
-                console.log(`  - ${m.name} (${m.member_id}): ${m.adherence_score}%`);
-            });
+        if (!trainers || trainers.length === 0) {
+            console.log('ℹ️ No trainers found to send digest to.');
+            return;
+        }
 
-            // TODO: Send digest to trainers via WhatsApp
-            // This requires knowing which trainer each member belongs to
-        } else {
-            console.log('✅ All members have good adherence!');
+        for (const trainer of trainers) {
+            const trainerMembers = members.filter(m => m.trainer_id === trainer.trainer_id || trainer.assigned_member_ids?.includes(m.member_id));
+            const lowAdherenceMembers = trainerMembers.filter(m => (m.adherence_score ?? 100) < 60);
+
+            if (lowAdherenceMembers.length > 0 && trainer.whatsapp_id && this.sendMessage) {
+                const memberListStr = lowAdherenceMembers
+                    .map(m => `• ${m.name} (${m.adherence_score ?? 0}% adherence)`)
+                    .join('\n');
+
+                const digestMsg = `📊 *DailyFit Evening Digest for Coach ${trainer.name}*\n\n` +
+                    `⚠️ *Clients Needing Attention (${lowAdherenceMembers.length}):*\n${memberListStr}\n\n` +
+                    `💡 _Tip: Reach out to them via WhatsApp or check their daily logs in your dashboard!_`;
+
+                try {
+                    await this.sendMessage(trainer.whatsapp_id, digestMsg, trainer.trainer_id);
+                    console.log(`✅ Sent trainer digest to ${trainer.name} (${trainer.whatsapp_id})`);
+                } catch (error) {
+                    console.error(`❌ Failed to send digest to ${trainer.name}:`, error);
+                }
+            } else {
+                console.log(`ℹ️ Coach ${trainer.name}: All clients doing great (${trainerMembers.length} active clients).`);
+            }
         }
     }
 

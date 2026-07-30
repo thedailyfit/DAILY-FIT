@@ -6,12 +6,18 @@ import { LLMService } from './LLMService';
 import { Member, Trainer, MealPlan, WorkoutPlan } from '../models/types';
 import { AgentRegistry } from './AgentRegistry';
 
-// Active Agents — only import agents that are actually wired into the message flow
+// Active & Background Agents
 import { OnboardingAgent } from '../agents/OnboardingAgent';
 import { MemberAgent } from '../agents/MemberAgent';
 import { TrainerAgent } from '../agents/TrainerAgent';
 import { PlanGeneratorAgent } from '../agents/PlanGeneratorAgent';
 import { PhotoEstimatorAgent } from '../agents/PhotoEstimatorAgent';
+import { MotivationAgent } from '../agents/MotivationAgent';
+import { TrainerOverrideAgent } from '../agents/TrainerOverrideAgent';
+import { PersonalizationAgent } from '../agents/PersonalizationAgent';
+import { ProgressAnalysisAgent } from '../agents/ProgressAnalysisAgent';
+import { GymAdminAgent } from '../agents/GymAdminAgent';
+import { PricingUpsellAgent } from '../agents/PricingUpsellAgent';
 
 export class Orchestrator {
     private db: DatabaseManager;
@@ -21,42 +27,82 @@ export class Orchestrator {
     private llm: LLMService;
     private registry: AgentRegistry;
     private planGenerator: PlanGeneratorAgent;
+    private trainerOverrideAgent: TrainerOverrideAgent;
 
     constructor() {
         this.db = new DatabaseManager();
         this.router = new MessageRouter(this.db);
         this.conversation = new ConversationManager(this.db);
-        this.rag = new RAGService();
         this.llm = new LLMService();
+        this.rag = new RAGService(this.llm); // Vector RAG equipped with LLM embedding engine
         this.registry = new AgentRegistry();
 
-        // M-05: Only initialize agents that are actually active in the message flow
         this.planGenerator = new PlanGeneratorAgent(this.db, this.rag, this.llm);
+        this.trainerOverrideAgent = new TrainerOverrideAgent(this.llm, this.db);
         this.initializeAgents();
     }
 
     private initializeAgents() {
-        // Service agents (used by core agents)
+        // Service agents
         const photoEstimator = new PhotoEstimatorAgent(this.llm);
 
-        // Core agents (handle messages directly)
+        // Core message agents
         const onboarding = new OnboardingAgent(this.conversation, this.db, this.llm, this.planGenerator);
         const member = new MemberAgent(this.llm, this.db, photoEstimator);
         const trainer = new TrainerAgent(this.llm, this.db);
 
-        // Register only active agents
+        // Background service agents
+        const motivation = new MotivationAgent(this.llm);
+        const personalization = new PersonalizationAgent(this.llm, this.db);
+        const progressAnalysis = new ProgressAnalysisAgent(this.llm, this.db);
+        const gymAdmin = new GymAdminAgent(this.llm, this.db);
+        const pricingUpsell = new PricingUpsellAgent(this.llm);
+
+        // Register all agents in registry
         this.registry.register(onboarding);
         this.registry.register(member);
         this.registry.register(trainer);
         this.registry.register(photoEstimator);
         this.registry.register(this.planGenerator);
+        this.registry.register(motivation);
+        this.registry.register(this.trainerOverrideAgent);
+        this.registry.register(personalization);
+        this.registry.register(progressAnalysis);
+        this.registry.register(gymAdmin);
+        this.registry.register(pricingUpsell);
+    }
 
-        // M-05: Removed orphaned agents that returned null from handleMessage:
-        // - PersonalizationAgent, TrainerOverrideAgent, MotivationAgent,
-        //   ProgressAnalysisAgent, GymAdminAgent, PricingUpsellAgent,
-        //   NotificationSchedulerAgent
-        // These should be re-added when their service methods are actually
-        // wired into specific triggers (cron jobs, events, etc.)
+    /**
+     * Called when a trainer manually edits or overrides a client's plan.
+     * Uses TrainerOverrideAgent to extract insight and save to Vector RAG.
+     */
+    async handleTrainerOverride(
+        trainerId: string,
+        memberProfile: any,
+        beforePlan: any,
+        afterPlan: any,
+        reason: string
+    ): Promise<void> {
+        try {
+            const analysis = await this.trainerOverrideAgent.analyzeOverride({
+                trainer_id: trainerId,
+                member_profile: memberProfile,
+                before_plan: beforePlan,
+                after_plan: afterPlan,
+                reason
+            });
+
+            if (analysis?.rag_doc) {
+                await this.rag.addDocument({
+                    id: `override_${Date.now()}`,
+                    content: analysis.rag_doc,
+                    meta: { trainerId, tags: analysis.tags }
+                });
+                console.log("🧠 Successfully learned from trainer override and added to Vector RAG!");
+            }
+        } catch (err) {
+            console.error("Error in handleTrainerOverride:", err);
+        }
     }
 
     async handleIncomingMessage(

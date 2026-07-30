@@ -50,6 +50,27 @@ export class LLMService {
         this.apiKey = key;
     }
 
+    async getEmbedding(text: string): Promise<number[]> {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${this.apiKey}`;
+            const response = await axios.post(
+                url,
+                {
+                    model: "models/text-embedding-004",
+                    content: { parts: [{ text }] }
+                },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000
+                }
+            );
+            return response.data?.embedding?.values || [];
+        } catch (error: any) {
+            console.error("Embedding API Error:", error.response?.data || error.message);
+            return [];
+        }
+    }
+
     async generateResponse(
         userMessage: string,
         context: any,

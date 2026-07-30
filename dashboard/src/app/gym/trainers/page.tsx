@@ -1,20 +1,58 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase";
 import { TrainersTable } from "@/components/gym/trainers-table";
 import { AddTrainerDialog } from "@/components/gym/add-trainer-dialog";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AnimatedPage } from "@/components/animated-components";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
-// Mock data for demo since we're client component now
-const mockTrainers = [
-    { id: "1", name: "Alice Fit", email: "alice@gym.com", phone: "555-1234", shift_start: "06:00", shift_end: "14:00", salary: 3500, status: "Active", performance_code: "A1" },
-    { id: "2", name: "Bob Builder", email: "bob@gym.com", phone: "555-5678", shift_start: "14:00", shift_end: "22:00", salary: 3200, status: "Active", performance_code: "B2" },
-    { id: "3", name: "Charlie Cardio", email: "charlie@gym.com", phone: "555-9999", shift_start: "06:00", shift_end: "22:00", salary: 4000, status: "Active", performance_code: "A1" },
-];
-
 export default function GymTrainersPage() {
+    const [trainers, setTrainers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const supabase = createClient();
+
+    useEffect(() => {
+        fetchTrainers();
+    }, []);
+
+    const fetchTrainers = async () => {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase.from('staff').select('*');
+            if (error) {
+                console.error("Error fetching trainers from staff:", error);
+                setTrainers([]);
+            } else if (data) {
+                const mapped = data.map((item: any) => ({
+                    id: String(item.id || item.staff_id || ""),
+                    name: item.name || `${item.first_name || ""} ${item.last_name || ""}`.trim() || "Unknown",
+                    email: item.email || "",
+                    phone: item.phone || item.phone_number || item.whatsapp_notification_number || "",
+                    shift_start: item.shift_start || undefined,
+                    shift_end: item.shift_end || undefined,
+                    salary: item.salary ? Number(item.salary) : undefined,
+                    status: item.status || "Active",
+                    performance_code: item.performance_code || item.code || "N/A",
+                }));
+                setTrainers(mapped);
+            }
+        } catch (err) {
+            console.error("Failed to fetch trainers:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filteredTrainers = trainers.filter((t) =>
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.phone.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <AnimatedPage>
             <div className="p-8 space-y-8 bg-background min-h-screen">
@@ -33,12 +71,22 @@ export default function GymTrainersPage() {
                     <Search className="h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder="Search trainers..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="border-none shadow-none focus-visible:ring-0 bg-transparent h-auto p-0 placeholder:text-muted-foreground"
                     />
                 </div>
 
-                <TrainersTable trainers={mockTrainers} />
+                {loading ? (
+                    <div className="flex items-center justify-center p-12 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                        <span>Loading trainers...</span>
+                    </div>
+                ) : (
+                    <TrainersTable trainers={filteredTrainers} />
+                )}
             </div>
         </AnimatedPage>
     );
 }
+

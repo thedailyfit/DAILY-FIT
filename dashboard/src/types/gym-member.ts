@@ -8,4 +8,5 @@ export type GymMember = Client & {
     whatsapp?: string; // Alias for phone/whatsapp_id
     assigned_trainer_id?: string;
     trainer_name?: string;
+    created_at?: string;
 };

@@ -32,6 +32,13 @@ export default function ProgramBuilderPage() {
 
     // Stage 3: Supplements (Array)
     const [supplements, setSupplements] = useState<any[]>([]);
+    
+    // Supplement form state
+    const [suppName, setSuppName] = useState("");
+    const [suppDoseAmount, setSuppDoseAmount] = useState("");
+    const [suppDoseUnit, setSuppDoseUnit] = useState("mg");
+    const [suppTime, setSuppTime] = useState("");
+    const [suppComments, setSuppComments] = useState("");
 
     // Stage 4: Sleep & Recovery
     const [sleepProtocol, setSleepProtocol] = useState("");
@@ -61,8 +68,8 @@ export default function ProgramBuilderPage() {
         fetchLibrary();
     }, [supabase]);
 
-    const addSupplement = (name: string, dosage: string, timing: string) => {
-        setSupplements([...supplements, { name, dosage, timing }]);
+    const addSupplement = (name: string, dosage: string, timing: string, comments: string) => {
+        setSupplements([...supplements, { name, dosage, timing, comments }]);
     };
 
     const removeSupplement = (index: number) => {
@@ -321,22 +328,56 @@ export default function ProgramBuilderPage() {
                                 <Input
                                     placeholder="Name (e.g. Whey Protein)"
                                     className="mb-2 bg-transparent border-b border-input rounded-none px-0 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0"
-                                    id="suppName"
+                                    value={suppName}
+                                    onChange={(e) => setSuppName(e.target.value)}
                                 />
-                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                    <Input placeholder="Dosage" className="bg-transparent border-b border-input rounded-none px-0 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0" id="suppDose" />
-                                    <Input placeholder="Timing" className="bg-transparent border-b border-input rounded-none px-0 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0" id="suppTime" />
+                                <div className="grid grid-cols-2 gap-4 mb-2">
+                                    <div className="flex gap-2">
+                                        <Input 
+                                            placeholder="Amt" 
+                                            className="w-1/2 bg-transparent border-b border-input rounded-none px-0 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0" 
+                                            value={suppDoseAmount}
+                                            onChange={(e) => setSuppDoseAmount(e.target.value)}
+                                        />
+                                        <Select value={suppDoseUnit} onValueChange={setSuppDoseUnit}>
+                                            <SelectTrigger className="w-1/2 bg-transparent border-b border-input rounded-none px-0 text-foreground focus:border-primary focus:ring-0">
+                                                <SelectValue placeholder="Unit" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="mg">mg</SelectItem>
+                                                <SelectItem value="grams">grams</SelectItem>
+                                                <SelectItem value="scoops">scoops</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <Select value={suppTime} onValueChange={setSuppTime}>
+                                        <SelectTrigger className="bg-transparent border-b border-input rounded-none px-0 text-foreground focus:border-primary focus:ring-0">
+                                            <SelectValue placeholder="Timing" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Before Gym">Before Gym</SelectItem>
+                                            <SelectItem value="After Gym">After Gym</SelectItem>
+                                            <SelectItem value="Morning">Morning</SelectItem>
+                                            <SelectItem value="Evening">Evening</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
+                                <Textarea
+                                    placeholder="Comments..."
+                                    className="mb-4 bg-transparent border-b border-input rounded-none px-0 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-0 resize-none min-h-[60px]"
+                                    value={suppComments}
+                                    onChange={(e) => setSuppComments(e.target.value)}
+                                />
                                 <Button
                                     onClick={() => {
-                                        const nameEl = document.getElementById('suppName') as HTMLInputElement;
-                                        const doseEl = document.getElementById('suppDose') as HTMLInputElement;
-                                        const timeEl = document.getElementById('suppTime') as HTMLInputElement;
-                                        if (nameEl && doseEl && timeEl && nameEl.value) {
-                                            addSupplement(nameEl.value, doseEl.value, timeEl.value);
-                                            nameEl.value = '';
-                                            doseEl.value = '';
-                                            timeEl.value = '';
+                                        if (suppName) {
+                                            const dosage = `${suppDoseAmount} ${suppDoseUnit}`;
+                                            addSupplement(suppName, dosage, suppTime, suppComments);
+                                            setSuppName("");
+                                            setSuppDoseAmount("");
+                                            setSuppDoseUnit("mg");
+                                            setSuppTime("");
+                                            setSuppComments("");
                                         }
                                     }}
                                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-lg h-10 transition-colors"
@@ -355,6 +396,7 @@ export default function ProgramBuilderPage() {
                                                 <p className="font-bold text-muted-foreground text-sm italic">New Item</p>
                                             )}
                                             <p className="text-xs text-muted-foreground">{s.dosage || "-"} • {s.timing || "-"}</p>
+                                            {s.comments && <p className="text-xs text-muted-foreground italic mt-1">{s.comments}</p>}
                                         </div>
                                         <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-transparent" onClick={() => removeSupplement(index)}>
                                             <Minus className="h-4 w-4" />

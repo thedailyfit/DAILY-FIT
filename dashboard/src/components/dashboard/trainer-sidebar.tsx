@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Users, Settings, MessageSquare, Dumbbell, CreditCard, Apple, Activity, Gift, LayoutDashboard, Layers, FilePlus2, LogOut, Utensils, CalendarDays } from "lucide-react";
+import { Home, Users, Settings, MessageSquare, Dumbbell, CreditCard, Apple, Activity, Gift, LayoutDashboard, Layers, FilePlus2, LogOut, Utensils, CalendarDays, ClipboardCheck } from "lucide-react";
 
 export function TrainerSidebar() {
     const pathname = usePathname();
@@ -15,14 +15,16 @@ export function TrainerSidebar() {
     const navItems = [
         { name: "Overview", icon: LayoutDashboard, href: "/dashboard" },
         { name: "Calendar", icon: CalendarDays, href: "/dashboard/calendar" },
+        { name: "Tasks", href: "/dashboard/tasks", icon: ClipboardCheck },
         { name: "Clients", icon: Users, href: "/dashboard/clients" },
-        { name: "Messages", icon: MessageSquare, href: "/dashboard/messages" },
-        { name: 'Programs Library', href: '/dashboard/programs', icon: Dumbbell },
-        { name: 'Diet Plans', href: '/dashboard/plans/diets', icon: Apple },
-        { name: 'Workout Plans', href: '/dashboard/plans/workouts', icon: Activity },
-        { name: 'Subscription', href: '/dashboard/subscription', icon: CreditCard },
-        { name: 'Refer & Earn', href: '/dashboard/referrals', icon: Gift }, // New Link
-        { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+        { name: "Programs Library", href: "/dashboard/programs", icon: Dumbbell },
+        { name: "Diet Plans", href: "/dashboard/plans/diets", icon: Apple },
+        { name: "Workout Plans", href: "/dashboard/plans/workouts", icon: Activity },
+        { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
+        { name: "Refer & Earn", href: "/dashboard/referrals", icon: Gift },
+        { name: "Profile Page", href: "/dashboard/settings", icon: Settings },
+        { name: "Support Request", href: "/dashboard/support", icon: MessageSquare }, // Changed icon to match generic support
+        { name: "WhatsApp AI", icon: MessageSquare, href: "/dashboard/messages" }, // Moved to bottom
     ];
 
     return (
@@ -57,7 +59,18 @@ export function TrainerSidebar() {
 
             {/* Footer */}
             <div className="mt-auto border-t border-sidebar-border pt-6">
-                <button className="flex items-center gap-3 px-4 py-2 w-full text-zinc-500 hover:text-red-400 transition-colors rounded-xl hover:bg-white/5 group">
+                <button 
+                    onClick={async () => {
+                        const { createClient } = await import('@/lib/supabase');
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        document.cookie = 'dailyfit_demo_auth=; path=/; max-age=0';
+                        document.cookie = 'dailyfit_demo_email=; path=/; max-age=0';
+                        document.cookie = 'dailyfit_role=; path=/; max-age=0';
+                        window.location.href = '/login';
+                    }}
+                    className="flex items-center gap-3 px-4 py-2 w-full text-zinc-500 hover:text-red-400 transition-colors rounded-xl hover:bg-white/5 group"
+                >
                     <LogOut className="h-5 w-5 group-hover:rotate-180 transition-transform" />
                     <span className="text-sm font-medium">Log out</span>
                 </button>

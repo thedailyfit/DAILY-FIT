@@ -87,8 +87,8 @@ export async function middleware(request: NextRequest) {
         !pathname.startsWith('/trainer/join')
 
     // In local development mode, auto-authenticate if accessing directly
-    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV
-    const isAuthenticated = !!user || isDemoAuthenticated || isDev
+    const isDevBypass = process.env.DAILYFIT_DEV_AUTH_BYPASS === 'true'
+    const isAuthenticated = !!user || isDemoAuthenticated || isDevBypass
 
     // STRICT AUTH CHECK - If not logged in and trying to access protected route, ALWAYS redirect
     if (isProtected && !isAuthenticated) {

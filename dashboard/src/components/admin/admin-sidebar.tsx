@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Users, CreditCard, LifeBuoy, PackageOpen } from "lucide-react";
+import { LayoutDashboard, Users, CreditCard, LifeBuoy, PackageOpen, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function AdminSidebar() {
@@ -76,6 +76,23 @@ export function AdminSidebar() {
                     </Button>
                 </Link>
             </nav>
+            <div className="mt-auto pt-6 mt-10">
+                <Button 
+                    variant="ghost" 
+                    onClick={async () => {
+                        const { createClient } = await import('@/lib/supabase');
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        document.cookie = 'dailyfit_demo_auth=; path=/; max-age=0';
+                        document.cookie = 'dailyfit_demo_email=; path=/; max-age=0';
+                        document.cookie = 'dailyfit_role=; path=/; max-age=0';
+                        window.location.href = '/admin/login';
+                    }}
+                    className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                >
+                    <LogOut className="mr-3 h-4 w-4" /> Log out
+                </Button>
+            </div>
         </aside>
     );
 }

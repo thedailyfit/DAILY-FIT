@@ -100,7 +100,8 @@ export function ImportClientsDialog() {
                 <DialogHeader>
                     <DialogTitle>Import Clients</DialogTitle>
                     <DialogDescription>
-                        Upload a CSV file with columns: <strong>Name, Phone, Email</strong>.
+                        Upload a CSV file with columns: <strong>Name, Phone, Email</strong> separated by commas.
+                        The import uses standard secure data mapping (not an AI Agent).
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">

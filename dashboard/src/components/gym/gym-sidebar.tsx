@@ -18,7 +18,8 @@ import {
     Wrench,
     UsersRound,
     Eye,
-    ChevronDown
+    ChevronDown,
+    LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -239,6 +240,21 @@ export function GymSidebar() {
                         </div>
                     </div>
                 </div>
+                
+                <Button 
+                    variant="ghost" 
+                    onClick={async () => {
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        document.cookie = 'dailyfit_demo_auth=; path=/; max-age=0';
+                        document.cookie = 'dailyfit_demo_email=; path=/; max-age=0';
+                        document.cookie = 'dailyfit_role=; path=/; max-age=0';
+                        window.location.href = '/gym/login';
+                    }}
+                    className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 mt-2"
+                >
+                    <LogOut className="mr-3 h-4 w-4" /> Log out
+                </Button>
             </div>
         </motion.aside>
     );

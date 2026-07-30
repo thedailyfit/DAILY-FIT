@@ -1,91 +1,108 @@
-import { Metadata } from "next";
-import { SupportTicketsTable } from "@/components/support/support-tickets-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SupportTicket } from "@/types/support";
-import { MessageSquarePlus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { MessageSquare, CheckCircle, LifeBuoy } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
-export const metadata: Metadata = {
-    title: "Support | DailyFit Trainer Dashboard",
-};
+export default function SupportPage() {
+    const [subject, setSubject] = useState("");
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
 
-async function getSupportTickets(): Promise<SupportTicket[]> {
-    // TODO: Replace with real Supabase query from support_view
-    // const { data } = await supabase.from("support_view").select("*");
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
 
-    return [
-        {
-            id: "t1",
-            ticket_id: "t1",
-            trainer_id: "tr1",
-            client_id: "c1",
-            client_name: "Akhil",
-            subject: "App crashing on login",
-            category: "technical",
-            status: "open",
-            priority: "high",
-            created_at: "2025-12-04T10:00:00Z",
-            updated_at: "2025-12-04T10:00:00Z",
-        },
-        {
-            id: "t2",
-            ticket_id: "t2",
-            trainer_id: "tr1",
-            client_id: "c2",
-            client_name: "Karthik",
-            subject: "Billing question",
-            category: "billing",
-            status: "resolved",
-            priority: "normal",
-            created_at: "2025-11-20T10:00:00Z",
-            updated_at: "2025-11-22T10:00:00Z",
-            resolved_at: "2025-11-22T10:00:00Z",
-        },
-        {
-            id: "t3",
-            ticket_id: "t3",
-            trainer_id: "tr1",
-            client_id: null,
-            client_name: null,
-            subject: "Feature request: Dark mode",
-            category: "feature_request",
-            status: "in_progress",
-            priority: "low",
-            created_at: "2025-12-01T10:00:00Z",
-            updated_at: "2025-12-02T10:00:00Z",
-        },
-    ];
-}
+        try {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
 
-export default async function SupportPage() {
-    const tickets = await getSupportTickets();
+            if (user) {
+                // Insert into support_tickets table (or similar table on backend)
+                await supabase.from('support_tickets').insert({
+                    user_id: user.id,
+                    subject,
+                    message,
+                    status: 'open',
+                    created_at: new Date().toISOString()
+                });
+            }
+            
+            setSubmitted(true);
+            setSubject("");
+            setMessage("");
+        } catch (err) {
+            console.error("Error submitting support request", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
-                        Support
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Manage client inquiries and technical support tickets.
-                    </p>
-                </div>
-                <Button size="sm">
-                    <MessageSquarePlus className="mr-2 h-4 w-4" />
-                    Create Ticket
-                </Button>
+        <div className="p-8 space-y-8 bg-background min-h-screen text-foreground">
+            <div>
+                <h1 className="text-3xl font-bold text-foreground tracking-tight flex items-center gap-2">
+                    <LifeBuoy className="h-8 w-8 text-primary" /> Support Request
+                </h1>
+                <p className="text-muted-foreground mt-2">
+                    Submit an issue or feature request directly to the DailyFit Admin Team.
+                </p>
             </div>
 
-            <Card>
+            <Card className="max-w-2xl bg-card border-border">
                 <CardHeader>
-                    <CardTitle className="text-base">
-                        Ticket History
-                    </CardTitle>
+                    <CardTitle>How can we help?</CardTitle>
+                    <CardDescription>We typically respond within 24 hours.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <SupportTicketsTable tickets={tickets} />
+                    {submitted ? (
+                        <div className="py-8 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in">
+                            <div className="h-16 w-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
+                                <CheckCircle className="h-8 w-8" />
+                            </div>
+                            <h3 className="text-xl font-bold">Request Submitted!</h3>
+                            <p className="text-muted-foreground max-w-md">
+                                Your support ticket has been sent to our admin team. We will be in touch shortly.
+                            </p>
+                            <Button variant="outline" onClick={() => setSubmitted(false)}>
+                                Submit Another Request
+                            </Button>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="subject">Subject</Label>
+                                <Input 
+                                    id="subject"
+                                    placeholder="Brief description of the issue..."
+                                    value={subject}
+                                    onChange={(e) => setSubject(e.target.value)}
+                                    required
+                                    className="bg-background border-border"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="message">Message Details</Label>
+                                <Textarea 
+                                    id="message"
+                                    placeholder="Please provide as much detail as possible..."
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    required
+                                    className="min-h-[150px] bg-background border-border"
+                                />
+                            </div>
+                            <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity">
+                                {loading ? "Sending..." : "Submit Request"}
+                            </Button>
+                        </form>
+                    )}
                 </CardContent>
             </Card>
         </div>

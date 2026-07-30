@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils, Clock, CreditCard, Bell, MessageSquare } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, Target, Calendar, Dumbbell, Utensils, Clock, CreditCard, Bell, MessageSquare, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { AssignPlanDialog } from "@/components/clients/assign-plan-dialog";
 import { EditClientDialog } from "@/components/clients/edit-client-dialog";
 import Link from "next/link";
+import { DeleteClientButton } from "@/components/clients/delete-client-button";
+import { ClientWeightChart } from "./weight-chart";
 
 export const metadata: Metadata = {
     title: "Client Profile | DailyFit Trainer Dashboard",
@@ -121,11 +123,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="outline" className="border-red-500/20 text-red-600 hover:bg-red-50 hover:border-red-500">
-                        <span className="flex items-center gap-2">
-                            Delete Client
-                        </span>
-                    </Button>
+                    <DeleteClientButton clientId={member.member_id} />
                     <AssignPlanDialog clientId={member.member_id} clientName={member.name} />
                 </div>
             </div>
@@ -317,6 +315,20 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                                     <p className="text-sm text-zinc-500">No training protocol assigned.</p>
                                 )}
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Weight Progress Chart */}
+                    <Card className="bg-white border-none shadow-xl">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-[#212121]">
+                                <TrendingUp className="h-5 w-5" />
+                                Weight Progress
+                            </CardTitle>
+                            <CardDescription>Historical weight logs and check-ins</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ClientWeightChart memberId={member.member_id} />
                         </CardContent>
                     </Card>
 

@@ -69,6 +69,13 @@ function GymSignupContent() {
                 // Continue anyway, auth worked
             }
 
+            // If session is null, email verification is likely required
+            if (!data.session) {
+                alert("Account created! Please check your email to verify your account before logging in.");
+                router.push("/gym/login");
+                return;
+            }
+
             // Success
             router.push("/gym");
 

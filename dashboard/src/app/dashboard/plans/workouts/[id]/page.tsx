@@ -39,28 +39,30 @@ export default function EditWorkoutPlanPage() {
     const isNew = params.id === "new"
 
     useEffect(() => {
-        if (!isNew) {
-            // TODO: Fetch real data
-            // const { data } = await supabase.from('workout_plans').select('*').eq('id', params.id).single()
-
-            // Mock data
-            setName("3 Day Beginner Upper/Lower Split")
-            setDescription("Great for beginners starting their strength journey.")
-            setLevel("beginner")
-            setFocus("strength")
-            setFrequency(3)
-            setStructure({
-                days: [
-                    { day: "Day 1", focus: "Upper Body", exercises: [{ name: "Bench Press", sets: 3, reps: "8-10", rest: "90s" }] },
-                    { day: "Day 2", focus: "Lower Body", exercises: [{ name: "Squat", sets: 3, reps: "8-10", rest: "90s" }] },
-                    { day: "Day 3", focus: "Rest", exercises: [] },
-                ]
-            })
-            setLoading(false)
-        } else {
-            setLoading(false)
+        const fetchPlan = async () => {
+            if (!isNew) {
+                try {
+                    const { data, error } = await supabase.from('workout_plans').select('*').eq('id', params.id).single()
+                    if (error) throw error
+                    if (data) {
+                        setName(data.name || "")
+                        setDescription(data.description || "")
+                        setLevel(data.level || "beginner")
+                        setFocus(data.focus || "strength")
+                        setFrequency(data.frequency_per_week || 3)
+                        setStructure(data.structure || { days: [] })
+                    }
+                } catch (err) {
+                    console.error("Error fetching plan:", err)
+                } finally {
+                    setLoading(false)
+                }
+            } else {
+                setLoading(false)
+            }
         }
-    }, [isNew])
+        fetchPlan()
+    }, [isNew, params.id, supabase])
 
     const handleSave = async () => {
         setSaving(true)

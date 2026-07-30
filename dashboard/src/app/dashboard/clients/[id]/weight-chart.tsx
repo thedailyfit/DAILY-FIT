@@ -1,39 +1,72 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { createClient } from "@/lib/supabase"
 
-const data = [
-    {
-        date: "Jan 01",
-        weight: 82,
-    },
-    {
-        date: "Jan 15",
-        weight: 81.5,
-    },
-    {
-        date: "Feb 01",
-        weight: 80.8,
-    },
-    {
-        date: "Feb 15",
-        weight: 79.5,
-    },
-    {
-        date: "Mar 01",
-        weight: 79.0,
-    },
-    {
-        date: "Mar 15",
-        weight: 78.2,
-    },
-    {
-        date: "Apr 01",
-        weight: 77.5,
-    },
-]
+export function ClientWeightChart({ memberId }: { memberId: string }) {
+    const [data, setData] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
 
-export function ClientWeightChart() {
+    useEffect(() => {
+        async function fetchWeightData() {
+            const supabase = createClient()
+            let chartData: { date: string; weight: number }[] = []
+
+            // Fetch from weight_logs
+            const { data: weightLogs, error: weightError } = await supabase
+                .from('weight_logs')
+                .select('*')
+                .eq('member_id', memberId)
+                .order('logged_at', { ascending: true })
+
+            if (weightLogs && weightLogs.length > 0) {
+                chartData = weightLogs.map((log: any) => ({
+                    date: log.logged_at ? new Date(log.logged_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }) : '',
+                    weight: log.weight
+                }))
+            } else {
+                // Try check_ins table as fallback
+                const { data: checkInLogs, error: checkInError } = await supabase
+                    .from('check_ins')
+                    .select('created_at, current_weight')
+                    .eq('member_id', memberId)
+                    .order('created_at', { ascending: true })
+
+                if (checkInLogs && checkInLogs.length > 0) {
+                    chartData = checkInLogs
+                        .filter((log: any) => log.current_weight)
+                        .map((log: any) => ({
+                            date: log.created_at ? new Date(log.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }) : '',
+                            weight: log.current_weight
+                        }))
+                }
+            }
+
+            setData(chartData)
+            setLoading(false)
+        }
+
+        if (memberId) {
+            fetchWeightData()
+        } else {
+            setLoading(false)
+        }
+    }, [memberId])
+
+    if (loading) {
+        return <div className="flex h-[350px] items-center justify-center text-muted-foreground text-sm">Loading chart...</div>
+    }
+
+    if (data.length === 0) {
+        return (
+            <div className="flex h-[350px] flex-col items-center justify-center text-muted-foreground">
+                <p className="text-sm font-medium">No weight data recorded yet</p>
+                <p className="text-xs mt-1">Weight logs or check-ins will appear here.</p>
+            </div>
+        )
+    }
+
     return (
         <ResponsiveContainer width="100%" height={350}>
             <LineChart data={data}>
@@ -61,10 +94,13 @@ export function ClientWeightChart() {
                     dataKey="weight"
                     stroke="currentColor"
                     strokeWidth={2}
-                    dot={false}
+                    dot={{ r: 3 }}
                     className="stroke-primary"
                 />
             </LineChart>
         </ResponsiveContainer>
     )
 }
+
+export { ClientWeightChart as WeightChart }
+export default ClientWeightChart

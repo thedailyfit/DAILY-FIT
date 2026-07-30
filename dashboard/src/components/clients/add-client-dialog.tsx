@@ -46,18 +46,20 @@ const formSchema = z.object({
     height: z.coerce.number().min(1).optional(),
     weight: z.coerce.number().min(1).optional(),
     monthly_fee: z.coerce.number().min(0),
+    programId: z.string().optional(),
     dietPlanId: z.string().optional(),
     workoutPlanId: z.string().optional(),
     status: z.string(),
 })
 
 interface AddClientDialogProps {
+    programs?: { id: string, name: string }[];
     dietPlans?: { id: string, name: string }[];
     workoutPlans?: { id: string, name: string }[];
     clientCount?: number;
 }
 
-export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount = 0 }: AddClientDialogProps) {
+export function AddClientDialog({ programs = [], dietPlans = [], workoutPlans = [], clientCount = 0 }: AddClientDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const router = useRouter()
@@ -75,12 +77,15 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
             custom_goal: "", // For "Other"
             monthly_fee: 0,
             status: "Active",
+            programId: "",
             dietPlanId: "",
             workoutPlanId: "",
         },
     })
 
     const selectedGoal = form.watch("goal");
+    const selectedProgramId = form.watch("programId");
+    const isProgramSelected = selectedProgramId && selectedProgramId !== "none" && selectedProgramId !== "";
 
 
     if (isLimitReached) {
@@ -101,20 +106,11 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("No user logged in")
 
-            // Get trainer_id
-            const { data: trainer } = await supabase
-                .from('trainers')
-                .select('trainer_id')
-                .limit(1)
-                .single();
-
-            if (!trainer) throw new Error("No trainer found.")
-
             const finalGoal = values.goal === "other" ? values.custom_goal : values.goal;
 
             // 1. Create Member Payload
             const memberPayload: any = {
-                trainer_id: trainer.trainer_id,
+                trainer_id: user.id,
                 name: values.name,
                 whatsapp_id: values.whatsapp_number,
                 gender: values.gender,
@@ -136,10 +132,10 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
             if (error) throw error
 
             // 2. Assign Diet Plan if selected
-            if (values.dietPlanId && values.dietPlanId !== "none" && values.dietPlanId !== "") {
+            if (!isProgramSelected && values.dietPlanId && values.dietPlanId !== "none" && values.dietPlanId !== "") {
                 const planName = dietPlans.find(p => p.id === values.dietPlanId)?.name;
                 const { data: prog } = await supabase.from('plan_programs').insert({
-                    trainer_id: trainer.trainer_id,
+                    trainer_id: user.id,
                     name: `${planName} for ${values.name}`,
                     diet_plan_id: values.dietPlanId,
                     status: 'active'
@@ -157,10 +153,10 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
             }
 
             // 3. Assign Workout Plan if selected
-            if (values.workoutPlanId && values.workoutPlanId !== "none" && values.workoutPlanId !== "") {
+            if (!isProgramSelected && values.workoutPlanId && values.workoutPlanId !== "none" && values.workoutPlanId !== "") {
                 const planName = workoutPlans.find(p => p.id === values.workoutPlanId)?.name;
                 const { data: prog } = await supabase.from('plan_programs').insert({
-                    trainer_id: trainer.trainer_id,
+                    trainer_id: user.id,
                     name: `${planName} for ${values.name}`,
                     workout_plan_id: values.workoutPlanId,
                     status: 'active'
@@ -193,13 +189,13 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-[#cbfe00] hover:bg-[#b0dc00] text-black font-bold">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
                     <Plus className="mr-2 h-4 w-4" /> Add New Client
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] bg-white text-black max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[600px] bg-card text-card-foreground max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-black uppercase text-[#212121]">Add New Client</DialogTitle>
+                    <DialogTitle className="text-xl font-black uppercase text-foreground">Add New Client</DialogTitle>
                     <DialogDescription>
                         Create a new client profile and assign initial protocols.
                     </DialogDescription>
@@ -249,13 +245,13 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                         </div>
 
                         {/* Physical Stats */}
-                        <div className="p-4 bg-zinc-50 rounded-xl grid grid-cols-3 gap-4 border">
+                        <div className="p-4 bg-muted rounded-xl grid grid-cols-3 gap-4 border">
                             <FormField
                                 control={form.control}
                                 name="gender"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase font-bold text-zinc-500">Gender</FormLabel>
+                                        <FormLabel className="text-xs uppercase font-bold text-muted-foreground">Gender</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value || ""}>
                                             <FormControl>
                                                 <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
@@ -275,7 +271,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                                 name="age"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase font-bold text-zinc-500">Age</FormLabel>
+                                        <FormLabel className="text-xs uppercase font-bold text-muted-foreground">Age</FormLabel>
                                         <FormControl>
                                             <Input type="number" placeholder="25" {...field} />
                                         </FormControl>
@@ -288,7 +284,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                                 name="weight"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase font-bold text-zinc-500">Weight (kg)</FormLabel>
+                                        <FormLabel className="text-xs uppercase font-bold text-muted-foreground">Weight (kg)</FormLabel>
                                         <FormControl>
                                             <Input type="number" placeholder="70" {...field} />
                                         </FormControl>
@@ -301,7 +297,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                                 name="height"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs uppercase font-bold text-zinc-500">Height (cm)</FormLabel>
+                                        <FormLabel className="text-xs uppercase font-bold text-muted-foreground">Height (cm)</FormLabel>
                                         <FormControl>
                                             <Input type="number" placeholder="175" {...field} />
                                         </FormControl>
@@ -314,7 +310,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                                 name="goal"
                                 render={({ field }) => (
                                     <FormItem className="col-span-2">
-                                        <FormLabel className="text-xs uppercase font-bold text-zinc-500">Primary Goal</FormLabel>
+                                        <FormLabel className="text-xs uppercase font-bold text-muted-foreground">Primary Goal</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value || ""}>
                                             <FormControl>
                                                 <SelectTrigger><SelectValue placeholder="Select Goal" /></SelectTrigger>
@@ -366,13 +362,34 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                             <div className="grid grid-cols-2 gap-4 pt-2 border-t">
                                 <FormField
                                     control={form.control}
+                                    name="programId"
+                                    render={({ field }) => (
+                                        <FormItem className="col-span-2">
+                                            <FormLabel>Assign Program</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value || "none"}>
+                                                <FormControl>
+                                                    <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="none">None</SelectItem>
+                                                    {programs.map(p => (
+                                                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
                                     name="dietPlanId"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Assign Diet Plan</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value || "none"}>
+                                            <Select onValueChange={field.onChange} value={field.value || "none"} disabled={!!isProgramSelected}>
                                                 <FormControl>
-                                                    <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                                                    <SelectTrigger className={isProgramSelected ? "opacity-50" : ""}><SelectValue placeholder="None" /></SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="none">None</SelectItem>
@@ -391,9 +408,9 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Assign Workout Plan</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value || "none"}>
+                                            <Select onValueChange={field.onChange} value={field.value || "none"} disabled={!!isProgramSelected}>
                                                 <FormControl>
-                                                    <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                                                    <SelectTrigger className={isProgramSelected ? "opacity-50" : ""}><SelectValue placeholder="None" /></SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="none">None</SelectItem>
@@ -410,7 +427,7 @@ export function AddClientDialog({ dietPlans = [], workoutPlans = [], clientCount
                         </div>
 
                         <DialogFooter className="pt-4">
-                            <Button type="submit" disabled={loading} className="w-full bg-[#212121] text-white hover:bg-black font-bold">
+                            <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {loading ? "Creating Client..." : "Create Client Profile"}
                             </Button>

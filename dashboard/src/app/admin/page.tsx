@@ -1,16 +1,78 @@
+"use client"
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Activity, Users, DollarSign, Building, Settings } from "lucide-react";
+import { Activity, Users, DollarSign, Building, Settings, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase";
+import { Badge } from "@/components/ui/badge";
 
 export default function SuperAdminDashboard() {
-    // Mock Data (Connect to 'gyms' table later)
-    const gyms = [
-        { id: 1, name: "Gold's Gym Metro", owner: "John Doe", status: "Active", trainers: 12, revenue: "$1,200" },
-        { id: 2, name: "FitBit Studio", owner: "Sarah Smith", status: "Active", trainers: 5, revenue: "$500" },
-        { id: 3, name: "Iron Pumpers", owner: "Mike Tyson", status: "Past Due", trainers: 20, revenue: "$0" },
-    ];
+    const [gyms, setGyms] = useState<any[]>([]);
+    const [stats, setStats] = useState({ totalRevenue: 0, activeGyms: 0, totalTrainers: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadAdminData() {
+            try {
+                const supabase = createClient();
+
+                // Fetch gyms
+                const { data: gymData } = await supabase
+                    .from('gyms')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                // Fetch total revenue
+                const { data: payments } = await supabase
+                    .from('payments')
+                    .select('amount')
+                    .eq('status', 'paid');
+                const totalRevenue = payments?.reduce((sum: number, p: any) => sum + (p.amount || 0), 0) || 0;
+
+                // Fetch total trainers
+                const { count: trainerCount } = await supabase
+                    .from('staff')
+                    .select('*', { count: 'exact', head: true });
+
+                // Fetch member counts per gym
+                const { data: members } = await supabase
+                    .from('members')
+                    .select('trainer_id');
+
+                const mappedGyms = (gymData || []).map((gym: any) => ({
+                    id: gym.gym_id || gym.id,
+                    name: gym.gym_name || 'Unnamed Gym',
+                    owner: gym.owner_id?.substring(0, 8) || 'Unknown',
+                    status: gym.subscription_status === 'active' || gym.subscription_status === 'trial' ? 'Active' : 'Past Due',
+                    trainers: 0,
+                    revenue: `₹${(gym.monthly_revenue || 0).toLocaleString()}`
+                }));
+
+                setGyms(mappedGyms);
+                setStats({
+                    totalRevenue,
+                    activeGyms: mappedGyms.filter((g: any) => g.status === 'Active').length,
+                    totalTrainers: trainerCount || 0
+                });
+            } catch (err) {
+                console.error("Error loading admin data:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadAdminData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-slate-50">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen bg-slate-50">
@@ -37,6 +99,21 @@ export default function SuperAdminDashboard() {
                         </Button>
                     </Link>
                 </nav>
+                <div className="mt-auto pt-8">
+                    <button
+                        onClick={async () => {
+                            const supabase = createClient();
+                            await supabase.auth.signOut();
+                            document.cookie = 'dailyfit_demo_auth=; path=/; max-age=0';
+                            document.cookie = 'dailyfit_demo_email=; path=/; max-age=0';
+                            document.cookie = 'dailyfit_role=; path=/; max-age=0';
+                            window.location.href = '/admin/login';
+                        }}
+                        className="flex items-center gap-2 text-zinc-400 hover:text-red-400 transition-colors text-sm"
+                    >
+                        <Settings className="h-4 w-4" /> Log out
+                    </button>
+                </div>
             </aside>
 
             {/* Main Content */}
@@ -57,28 +134,25 @@ export default function SuperAdminDashboard() {
                             <DollarSign className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">$12,450</div>
-                            <p className="text-xs text-muted-foreground">+12% from last month</p>
+                            <div className="text-2xl font-bold">₹{stats.totalRevenue.toLocaleString()}</div>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Active Gyms</CardTitle>
-                            <Building className="h-4 w-4 text-indigo-600" />
+                            <Building className="h-4 w-4 text-blue-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">42</div>
-                            <p className="text-xs text-muted-foreground">3 pending onboarding</p>
+                            <div className="text-2xl font-bold">{stats.activeGyms}</div>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Trainers</CardTitle>
-                            <Users className="h-4 w-4 text-blue-600" />
+                            <Users className="h-4 w-4 text-purple-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">156</div>
-                            <p className="text-xs text-muted-foreground">Across all gyms</p>
+                            <div className="text-2xl font-bold">{stats.totalTrainers}</div>
                         </CardContent>
                     </Card>
                 </div>
@@ -89,36 +163,42 @@ export default function SuperAdminDashboard() {
                         <CardTitle>Registered Gyms</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Gym Name</TableHead>
-                                    <TableHead>Owner</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Trainers</TableHead>
-                                    <TableHead>Revenue/mo</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {gyms.map((gym) => (
-                                    <TableRow key={gym.id}>
-                                        <TableCell className="font-medium">{gym.name}</TableCell>
-                                        <TableCell>{gym.owner}</TableCell>
-                                        <TableCell>
-                                            <span className={`px-2 py-1 rounded-full text-xs ${gym.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                {gym.status}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell>{gym.trainers}</TableCell>
-                                        <TableCell>{gym.revenue}</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm">Manage</Button>
-                                        </TableCell>
+                        {gyms.length === 0 ? (
+                            <div className="text-center py-8 text-slate-500">
+                                <Building className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                                <p className="font-medium">No gyms registered yet</p>
+                                <p className="text-sm">Gyms will appear here once they sign up</p>
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Gym Name</TableHead>
+                                        <TableHead>Owner ID</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Revenue</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {gyms.map(gym => (
+                                        <TableRow key={gym.id}>
+                                            <TableCell className="font-medium">{gym.name}</TableCell>
+                                            <TableCell className="text-muted-foreground font-mono text-xs">{gym.owner}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={gym.status === "Active" ? "default" : "destructive"} className={gym.status === "Active" ? "bg-green-100 text-green-800" : ""}>
+                                                    {gym.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>{gym.revenue}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="outline" size="sm">Manage</Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                     </CardContent>
                 </Card>
             </main>

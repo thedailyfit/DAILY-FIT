@@ -182,7 +182,7 @@ export default function TrainerDashboard() {
                             {!hasClients && (
                                 <Link href="/dashboard/clients">
                                     <Button className="bg-primary text-primary-foreground hover:opacity-90 font-bold rounded-xl animate-pulse shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                                        <UserPlus className="mr-2 h-4 w-4" /> Add First Client
+                                        <UserPlus className="mr-2 h-4 w-4" /> Add Client
                                     </Button>
                                 </Link>
                             )}
@@ -206,9 +206,9 @@ export default function TrainerDashboard() {
                                 {hasClients && (
                                     <div className="text-right">
                                         <p className="font-bold text-lg flex items-center gap-1 justify-end text-primary">
-                                            <Activity className="h-4 w-4" /> --
+                                            <Activity className="h-4 w-4" /> {stats.workoutsDone > 0 ? `${Math.min(100, Math.round((stats.workoutsDone / (stats.clientCount * 12)) * 100))}%` : '0%'}
                                         </p>
-                                        <p className="text-sm opacity-70">Analytics pending</p>
+                                        <p className="text-sm opacity-70">Completion rate</p>
                                     </div>
                                 )}
                             </div>
@@ -235,14 +235,23 @@ export default function TrainerDashboard() {
                         </div>
 
                         {stats.clientCount > 0 ? (
-                            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                                <div className="bg-muted p-4 rounded-full mb-3">
-                                    <Activity className="h-6 w-6 text-primary" />
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-2">
+                                <div className="p-4 rounded-xl bg-muted/40 border border-border text-center space-y-1">
+                                    <p className="text-3xl font-black text-primary">
+                                        {stats.workoutsDone > 0 ? `${Math.min(100, Math.round((stats.workoutsDone / Math.max(stats.clientCount * 12, 1)) * 100))}%` : '0%'}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Completion Rate</p>
                                 </div>
-                                <p className="text-sm font-medium text-foreground">Analytics Active</p>
-                                <p className="text-xs text-muted-foreground max-w-[200px] text-center mt-1">
-                                    Performance usage data will appear here as your clients complete workouts.
-                                </p>
+                                <div className="p-4 rounded-xl bg-muted/40 border border-border text-center space-y-1">
+                                    <p className="text-3xl font-black text-foreground">{stats.workoutsDone}</p>
+                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Workouts Logged</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-muted/40 border border-border text-center space-y-1">
+                                    <p className="text-3xl font-black text-foreground">
+                                        {(stats.clientCount > 0 ? (stats.workoutsDone / stats.clientCount).toFixed(1) : '0')}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Avg Workouts / Client</p>
+                                </div>
                             </div>
                         ) : (
                             <div className="text-center py-8 text-muted-foreground">
@@ -276,7 +285,7 @@ export default function TrainerDashboard() {
                                 </Button>
                             </Link>
 
-                            <Link href="/dashboard/clients" className="block w-full">
+                            <Link href="/dashboard/sessions" className="block w-full">
                                 <Button variant="outline" className="w-full h-14 rounded-xl border-border bg-muted hover:bg-muted/80 text-foreground font-bold text-base justify-between px-6 group transition-all">
                                     <span className="flex items-center gap-4">
                                         <div className="w-8 h-8 rounded-lg bg-background/50 flex items-center justify-center text-muted-foreground group-hover:text-foreground">

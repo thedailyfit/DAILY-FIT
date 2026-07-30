@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard, AlertCircle, Bell, TrendingUp } from "lucide-react";
+import { Users, DollarSign, Dumbbell, UserPlus, ArrowUpRight, ShieldCheck, Activity, CreditCard, AlertCircle, Bell, TrendingUp, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedCard, AnimatedList, AnimatedPage, PopupCard, SlideIn } from "@/components/animated-components";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -211,6 +211,21 @@ export default function GymOwnerDashboard() {
                         </div>
                     </SlideIn>
                 </div>
+
+                {/* Trainer Feedback Section */}
+                <SlideIn direction="up" delay={0.4}>
+                    <Card className="bg-card border-border shadow-xl">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-bold text-foreground">Trainer Feedback</CardTitle>
+                            <CardDescription className="text-muted-foreground">Direct feedback and logs submitted by your coaching staff.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
+                            <MessageSquare className="h-10 w-10 mb-3 opacity-20 text-muted-foreground" />
+                            <p className="text-sm font-medium text-foreground">No feedback submitted yet.</p>
+                            <p className="text-xs text-muted-foreground mt-1">Your trainers can submit feedback from their dashboard.</p>
+                        </CardContent>
+                    </Card>
+                </SlideIn>
             </main>
         </AnimatedPage>
     );

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Trash2, Copy } from "lucide-react"
+import { Plus, Trash2, Copy, GripVertical } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface TemplateWorkoutPlanEditorProps {
@@ -18,6 +18,7 @@ export function TemplateWorkoutPlanEditor({ initialStructure, onChange }: Templa
     // Ensure we have a valid structure to start with
     const [schedule, setSchedule] = useState<any[]>(initialStructure?.days || [])
     const [activeDay, setActiveDay] = useState("day-1")
+    const [draggedExIndex, setDraggedExIndex] = useState<number | null>(null)
 
     // Propagate changes to parent
     useEffect(() => {
@@ -72,6 +73,19 @@ export function TemplateWorkoutPlanEditor({ initialStructure, onChange }: Templa
         setSchedule(newSchedule)
     }
 
+    const reorderExercise = (dayIndex: number, fromIndex: number, toIndex: number) => {
+        const newSchedule = [...schedule]
+        if (!newSchedule[dayIndex] || !newSchedule[dayIndex].exercises) return
+        const exercises = [...newSchedule[dayIndex].exercises]
+        const [moved] = exercises.splice(fromIndex, 1)
+        exercises.splice(toIndex, 0, moved)
+        newSchedule[dayIndex] = {
+            ...newSchedule[dayIndex],
+            exercises
+        }
+        setSchedule(newSchedule)
+    }
+
     return (
         <div className="space-y-6">
             <Tabs value={activeDay} onValueChange={setActiveDay} className="w-full">
@@ -118,12 +132,40 @@ export function TemplateWorkoutPlanEditor({ initialStructure, onChange }: Templa
                             {dayData.focus !== 'Rest' && (
                                 <div className="space-y-3">
                                     {dayData.exercises?.map((ex: any, exIndex: number) => (
-                                        <div key={exIndex} className="grid grid-cols-12 gap-2 items-end border p-3 rounded-md bg-white">
+                                        <div
+                                            key={exIndex}
+                                            draggable={true}
+                                            onDragStart={(e) => {
+                                                setDraggedExIndex(exIndex)
+                                                e.dataTransfer.setData("text/plain", exIndex.toString())
+                                                e.dataTransfer.effectAllowed = "move"
+                                            }}
+                                            onDragOver={(e) => {
+                                                e.preventDefault()
+                                                e.dataTransfer.dropEffect = "move"
+                                            }}
+                                            onDrop={(e) => {
+                                                e.preventDefault()
+                                                const fromIndex = draggedExIndex !== null ? draggedExIndex : parseInt(e.dataTransfer.getData("text/plain"), 10)
+                                                if (!isNaN(fromIndex) && fromIndex !== exIndex) {
+                                                    reorderExercise(dayIndex, fromIndex, exIndex)
+                                                }
+                                                setDraggedExIndex(null)
+                                            }}
+                                            onDragEnd={() => setDraggedExIndex(null)}
+                                            className={`grid grid-cols-12 gap-2 items-end border p-3 rounded-md bg-white transition-opacity ${
+                                                draggedExIndex === exIndex ? "opacity-50 border-dashed border-primary" : ""
+                                            }`}
+                                        >
                                             <div className="col-span-4">
-                                                <Label className="text-xs">Exercise</Label>
+                                                <div className="flex items-center gap-1 mb-1">
+                                                    <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
+                                                    <Label className="text-xs">Exercise</Label>
+                                                </div>
                                                 <Input
                                                     value={ex.name}
                                                     onChange={(e) => updateExercise(dayIndex, exIndex, 'name', e.target.value)}
+                                                    onMouseDown={(e) => e.stopPropagation()}
                                                     placeholder="e.g. Bench Press"
                                                 />
                                             </div>
@@ -133,6 +175,7 @@ export function TemplateWorkoutPlanEditor({ initialStructure, onChange }: Templa
                                                     type="number"
                                                     value={ex.sets}
                                                     onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value))}
+                                                    onMouseDown={(e) => e.stopPropagation()}
                                                 />
                                             </div>
                                             <div className="col-span-2">
@@ -140,6 +183,7 @@ export function TemplateWorkoutPlanEditor({ initialStructure, onChange }: Templa
                                                 <Input
                                                     value={ex.reps}
                                                     onChange={(e) => updateExercise(dayIndex, exIndex, 'reps', e.target.value)}
+                                                    onMouseDown={(e) => e.stopPropagation()}
                                                 />
                                             </div>
                                             <div className="col-span-2">
@@ -147,6 +191,7 @@ export function TemplateWorkoutPlanEditor({ initialStructure, onChange }: Templa
                                                 <Input
                                                     value={ex.rest}
                                                     onChange={(e) => updateExercise(dayIndex, exIndex, 'rest', e.target.value)}
+                                                    onMouseDown={(e) => e.stopPropagation()}
                                                 />
                                             </div>
                                             <div className="col-span-2 flex justify-end">

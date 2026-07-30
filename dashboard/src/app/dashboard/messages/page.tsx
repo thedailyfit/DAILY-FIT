@@ -119,7 +119,19 @@ export default function MessagesPage() {
                     .select('*')
                     .eq('member_id', member.member_id)
                     .order('created_at', { ascending: false })
-                    .limit(10)
+                    .limit(20)
+
+                // Calculate unread count (messages from user after the last assistant/trainer reply)
+                let unreadCount = 0;
+                if (messages) {
+                    for (const m of messages) {
+                        if (m.sender === 'user' && m.is_read !== true) {
+                            unreadCount++;
+                        } else if (m.sender !== 'user') {
+                            break;
+                        }
+                    }
+                }
 
                 const lastMsg = messages?.[0]
                 convos.push({
@@ -128,8 +140,8 @@ export default function MessagesPage() {
                     phone: member.whatsapp_id || '',
                     lastMessage: lastMsg?.message || 'No messages yet',
                     time: lastMsg ? formatTime(lastMsg.created_at) : '',
-                    unread: 0, // TODO: Implement unread count
-                    messages: (messages || []).reverse().map(m => ({
+                    unread: unreadCount,
+                    messages: (messages || []).slice().reverse().map(m => ({
                         sender: m.sender,
                         text: m.message,
                         time: formatTime(m.created_at)
@@ -141,6 +153,23 @@ export default function MessagesPage() {
         } catch (err) {
             console.error('Error loading conversations:', err)
             setConversations([])
+        }
+    }
+
+    const handleSelectConversation = async (conv: Conversation) => {
+        const updated = { ...conv, unread: 0 }
+        setSelectedConversation(updated)
+        setConversations(prev => prev.map(c => c.id === conv.id ? updated : c))
+
+        try {
+            const supabase = createClient()
+            await supabase
+                .from('chat_history')
+                .update({ is_read: true })
+                .eq('member_id', conv.id)
+                .eq('sender', 'user')
+        } catch (err) {
+            // Ignore if is_read column does not exist
         }
     }
 
@@ -249,6 +278,7 @@ export default function MessagesPage() {
             ...selectedConversation,
             lastMessage: messageText,
             time: timeString,
+            unread: 0,
             messages: [...selectedConversation.messages, newMsg]
         }
         
@@ -277,6 +307,7 @@ export default function MessagesPage() {
     }
 
     const isConnected = connection?.is_connected
+    const totalUnread = conversations.reduce((sum, c) => sum + (c.unread || 0), 0)
 
     if (isLoading) {
         return (
@@ -293,6 +324,11 @@ export default function MessagesPage() {
                 <div>
                     <h1 className="text-3xl font-black text-foreground tracking-tight uppercase flex items-center gap-3">
                         <MessageSquare className="h-8 w-8 text-green-500" /> Messages
+                        {totalUnread > 0 && (
+                            <Badge className="bg-green-500 text-white font-bold text-xs px-2.5 py-0.5 rounded-full animate-pulse">
+                                {totalUnread} unread
+                            </Badge>
+                        )}
                     </h1>
                     <p className="text-muted-foreground mt-1 font-medium">
                         Manage WhatsApp conversations with your clients.
@@ -430,7 +466,7 @@ export default function MessagesPage() {
                             conversations.map((conv) => (
                             <div
                                 key={conv.id}
-                                onClick={() => setSelectedConversation(conv)}
+                                onClick={() => handleSelectConversation(conv)}
                                 className={`p-4 border-b cursor-pointer transition-colors hover:bg-muted/50 ${selectedConversation?.id === conv.id ? 'bg-muted' : ''}`}
                             >
                                 <div className="flex items-start justify-between">

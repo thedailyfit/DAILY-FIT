@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 import { Info } from "lucide-react";
+import { SessionTimeout } from "@/components/auth/session-timeout";
 
 export default async function DashboardLayout({
     children,
@@ -50,6 +51,7 @@ export default async function DashboardLayout({
                     <div className="fixed top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/5 to-transparent pointer-events-none z-0" />
                     <div className="relative z-10 min-h-full p-2">
                         {children}
+                        <SessionTimeout />
                     </div>
                 </div>
             </div>

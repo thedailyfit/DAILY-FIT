@@ -63,15 +63,17 @@ async function getPlans() {
     const supabase = createClient();
     const { data: d } = await supabase.from('diet_plans').select('id, name').eq('is_active', true);
     const { data: w } = await supabase.from('workout_plans').select('id, name').eq('is_active', true);
+    const { data: p } = await supabase.from('plan_programs').select('id, name').eq('status', 'active');
     return {
         dPlans: d || [],
-        wPlans: w || []
+        wPlans: w || [],
+        programs: p || []
     };
 }
 
 export default async function ClientsPage() {
     const clients = await getClients();
-    const { dPlans, wPlans } = await getPlans();
+    const { dPlans, wPlans, programs } = await getPlans();
 
     return (
         <div className="p-8 space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
@@ -86,7 +88,7 @@ export default async function ClientsPage() {
                 </div>
                 <div className="flex gap-2">
                     <ImportClientsDialog />
-                    <AddClientDialog dietPlans={dPlans} workoutPlans={wPlans} clientCount={clients.length} />
+                    <AddClientDialog programs={programs} dietPlans={dPlans} workoutPlans={wPlans} clientCount={clients.length} />
                 </div>
             </div>
 

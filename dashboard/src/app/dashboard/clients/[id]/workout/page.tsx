@@ -11,7 +11,7 @@ async function getClientAndPlan(id: string) {
     const { data: member } = await supabase
         .from('members')
         .select('*')
-        .eq('id', id)
+        .eq('member_id', id)
         .single()
 
     const { data: workoutPlan } = await supabase
@@ -26,8 +26,9 @@ async function getClientAndPlan(id: string) {
     return { member, workoutPlan }
 }
 
-export default async function WorkoutEditorPage({ params }: { params: { id: string } }) {
-    const data = await getClientAndPlan(params.id)
+export default async function WorkoutEditorPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+    const data = await getClientAndPlan(id)
 
     if (!data) {
         notFound()
@@ -41,7 +42,7 @@ export default async function WorkoutEditorPage({ params }: { params: { id: stri
             <div className="flex items-center justify-between px-6 py-3 border-b bg-white">
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/dashboard/clients/${member.id}`}>
+                        <Link href={`/dashboard/clients/${member.member_id || member.id}`}>
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
                     </Button>
@@ -51,7 +52,7 @@ export default async function WorkoutEditorPage({ params }: { params: { id: stri
                             <Badge variant="secondary">Client-Specific</Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            For {member.name} • {member.goal.replace('_', ' ')}
+                            For {member.name} • {member.goal ? member.goal.replace('_', ' ') : ''}
                         </p>
                     </div>
                 </div>
@@ -72,3 +73,4 @@ export default async function WorkoutEditorPage({ params }: { params: { id: stri
         </div>
     )
 }
+

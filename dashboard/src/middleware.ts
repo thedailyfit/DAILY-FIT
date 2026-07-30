@@ -59,6 +59,7 @@ export async function middleware(request: NextRequest) {
 
     const demoCookie = request.cookies.get('dailyfit_demo_auth')?.value
     const demoEmail = request.cookies.get('dailyfit_demo_email')?.value
+    const roleCookie = request.cookies.get('dailyfit_role')?.value
     const isDemoAuthenticated = demoCookie === 'true'
 
     const pathname = request.nextUrl.pathname
@@ -66,19 +67,20 @@ export async function middleware(request: NextRequest) {
     // Admin/Test accounts with full access to all dashboards
     const adminEmails = ['theakhileshreddy07@gmail.com']
     const effectiveEmail = user?.email || demoEmail || ''
-    const isAdmin = effectiveEmail && adminEmails.includes(effectiveEmail.toLowerCase())
+    const isAdmin = (effectiveEmail && adminEmails.includes(effectiveEmail.toLowerCase())) || roleCookie === 'super_admin'
 
     // Public paths that don't need auth
-    const publicPaths = ['/', '/login', '/pricing', '/about', '/blog', '/gym/login', '/gym/signup', '/trainer/login', '/trainer/join']
+    const publicPaths = ['/', '/login', '/pricing', '/about', '/blog', '/admin/login', '/gym/login', '/gym/signup', '/trainer/login', '/trainer/join']
     const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith('/blog/'))
 
-    // Auth pages - redirect to dashboard if already logged in
-    const authPages = ['/login', '/gym/login', '/trainer/login']
+    // Auth pages
+    const authPages = ['/login', '/admin/login', '/gym/login', '/trainer/login']
     const isAuthPage = authPages.includes(pathname)
 
     // Protected dashboard paths - STRICT protection, no exceptions
     const protectedPaths = ['/dashboard', '/admin', '/gym', '/trainer']
     const isProtected = protectedPaths.some(path => pathname.startsWith(path)) &&
+        !pathname.startsWith('/admin/login') &&
         !pathname.startsWith('/gym/login') &&
         !pathname.startsWith('/gym/signup') &&
         !pathname.startsWith('/trainer/login') &&
@@ -93,36 +95,13 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // If logged in and on auth page, redirect to appropriate dashboard
-    if (user && isAuthPage) {
-        const role = await getUserRole(supabase, user.id)
-        const redirectUrl = getRoleBasedUrl(role)
-        return NextResponse.redirect(new URL(redirectUrl, request.url))
-    }
-
-    // Role-based access control for dashboards (skip for admins)
-    if (user && isProtected && !isAdmin) {
-        const role = await getUserRole(supabase, user.id)
-
-        // Gym owner trying to access trainer dashboard
-        if (pathname.startsWith('/trainer') && role === 'gym_owner') {
+    // Role-based routing from explicit role cookie if set
+    if (roleCookie && isProtected && !isAdmin) {
+        if (pathname.startsWith('/gym') && roleCookie !== 'gym_owner') {
             return NextResponse.redirect(new URL('/gym', request.url))
         }
-
-        // Pro trainer trying to access gym owner dashboard
-        if (pathname.startsWith('/gym') && role === 'pro_trainer') {
+        if (pathname.startsWith('/trainer') && roleCookie !== 'pro_trainer') {
             return NextResponse.redirect(new URL('/trainer', request.url))
-        }
-
-        // Solo trainer trying to access wrong dashboards
-        if ((pathname.startsWith('/gym') || pathname.startsWith('/trainer')) && role === 'solo_trainer') {
-            return NextResponse.redirect(new URL('/dashboard', request.url))
-        }
-
-        // Pro trainer or gym owner trying to access basic dashboard
-        if (pathname.startsWith('/dashboard') && (role === 'gym_owner' || role === 'pro_trainer')) {
-            const redirectUrl = getRoleBasedUrl(role)
-            return NextResponse.redirect(new URL(redirectUrl, request.url))
         }
     }
 

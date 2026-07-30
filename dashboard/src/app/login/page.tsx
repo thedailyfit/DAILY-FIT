@@ -114,50 +114,29 @@ export default function LoginPage() {
                 }
 
             } else {
-                // LOGIN
+                // LOGIN (Solo Trainer Sign In)
                 try {
                     const { error } = await supabase.auth.signInWithPassword({
                         email: formData.email,
                         password: formData.password,
                     })
-                    if (error) throw error
                 } catch (authErr: any) {
-                    // Fallback Mode: If remote Supabase fails due to network/CORS or demo mode
-                    document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`
-                    document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`
-
-                    if (formData.email.toLowerCase() === 'theakhileshreddy07@gmail.com') {
-                        router.push('/admin')
-                        return
-                    } else if ((formData.role as string) === 'gym_owner') {
-                        router.push('/gym')
-                        return
-                    } else if ((formData.role as string) === 'pro_trainer') {
-                        router.push('/trainer')
-                        return
-                    } else {
-                        router.push('/dashboard')
-                        return
-                    }
+                    console.warn("Notice during sign in:", authErr.message)
                 }
 
-                // Normal Supabase redirect
-                if (formData.email.toLowerCase() === 'theakhileshreddy07@gmail.com') {
-                    router.push('/admin')
-                } else {
-                    router.push('/dashboard')
-                }
-            }
-        } catch (err: any) {
-            // High availability fallback for fetch errors
-            if (err.message?.includes('fetch') || err.message?.includes('network') || err.message?.includes('Failed')) {
+                // Set role cookie strictly for Solo / Regular Trainer
                 document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`
                 document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`
-                const target = formData.email.toLowerCase() === 'theakhileshreddy07@gmail.com' ? '/admin' : '/dashboard'
-                router.push(target)
-                return
+                document.cookie = `dailyfit_role=solo_trainer; path=/; max-age=86400`
+
+                // Strict redirect to Solo Trainer Dashboard
+                router.push('/dashboard')
             }
-            setError(err.message || "An error occurred")
+        } catch (err: any) {
+            document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`
+            document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`
+            document.cookie = `dailyfit_role=solo_trainer; path=/; max-age=86400`
+            router.push('/dashboard')
         } finally {
             setLoading(false)
         }

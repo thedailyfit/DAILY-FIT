@@ -129,10 +129,10 @@ export default function LoginPage() {
                     if (formData.email.toLowerCase() === 'theakhileshreddy07@gmail.com') {
                         router.push('/admin')
                         return
-                    } else if (formData.role === 'gym_owner') {
+                    } else if ((formData.role as string) === 'gym_owner') {
                         router.push('/gym')
                         return
-                    } else if (formData.role === 'pro_trainer') {
+                    } else if ((formData.role as string) === 'pro_trainer') {
                         router.push('/trainer')
                         return
                     } else {

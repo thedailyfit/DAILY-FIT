@@ -31,6 +31,10 @@ export default function SuperAdminLoginPage() {
                 password,
             });
 
+            if (authError) {
+                throw authError;
+            }
+
             // Set role cookie for Super Admin
             document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
             document.cookie = `dailyfit_demo_email=${encodeURIComponent(email)}; path=/; max-age=86400`;
@@ -39,11 +43,7 @@ export default function SuperAdminLoginPage() {
             // Strict redirect to Super Admin Dashboard
             window.location.href = "/admin";
         } catch (err: any) {
-            // High availability fallback for dev
-            document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
-            document.cookie = `dailyfit_demo_email=${encodeURIComponent(email)}; path=/; max-age=86400`;
-            document.cookie = `dailyfit_role=super_admin; path=/; max-age=86400`;
-            window.location.href = "/admin";
+            setError(err.message || "Authentication failed. Please check your credentials.");
         } finally {
             setIsLoading(false);
         }

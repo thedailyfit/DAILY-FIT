@@ -115,13 +115,13 @@ export default function LoginPage() {
 
             } else {
                 // LOGIN (Solo Trainer Sign In)
-                try {
-                    const { error } = await supabase.auth.signInWithPassword({
-                        email: formData.email,
-                        password: formData.password,
-                    })
-                } catch (authErr: any) {
-                    console.warn("Notice during sign in:", authErr.message)
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: formData.email,
+                    password: formData.password,
+                })
+                
+                if (error) {
+                    throw error;
                 }
 
                 // Set role cookie strictly for Solo / Regular Trainer
@@ -133,10 +133,7 @@ export default function LoginPage() {
                 window.location.href = '/dashboard'
             }
         } catch (err: any) {
-            document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`
-            document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`
-            document.cookie = `dailyfit_role=solo_trainer; path=/; max-age=86400`
-            window.location.href = '/dashboard'
+            setError(err.message || "Authentication failed. Please check your credentials.");
         } finally {
             setLoading(false)
         }

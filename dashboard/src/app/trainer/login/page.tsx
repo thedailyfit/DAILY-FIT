@@ -34,6 +34,10 @@ export default function TrainerLoginPage() {
                 password: formData.password
             });
 
+            if (authError) {
+                throw authError;
+            }
+
             document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
             document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`;
             document.cookie = `dailyfit_role=pro_trainer; path=/; max-age=86400`;
@@ -42,10 +46,7 @@ export default function TrainerLoginPage() {
             window.location.href = '/trainer';
 
         } catch (err: any) {
-            document.cookie = `dailyfit_demo_auth=true; path=/; max-age=86400`;
-            document.cookie = `dailyfit_demo_email=${encodeURIComponent(formData.email)}; path=/; max-age=86400`;
-            document.cookie = `dailyfit_role=pro_trainer; path=/; max-age=86400`;
-            window.location.href = '/trainer';
+            setError(err.message || "Authentication failed. Please check your credentials.");
         } finally {
             setIsLoading(false);
         }

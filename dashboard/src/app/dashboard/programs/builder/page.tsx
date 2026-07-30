@@ -18,6 +18,7 @@ export default function ProgramBuilderPage() {
     // Stage 1: Basic Info
     const [programName, setProgramName] = useState("");
     const [programDesc, setProgramDesc] = useState("");
+    const [programDuration, setProgramDuration] = useState("");
 
     // Stage 2: Core Protocols
     const [dietMode, setDietMode] = useState<"library" | "custom">("library");
@@ -85,6 +86,7 @@ export default function ProgramBuilderPage() {
                 trainer_id: user.id,
                 name: programName,
                 description: programDesc,
+                duration: programDuration,
                 diet_plan_id: dietMode === "library" ? (selectedDiet || null) : null,
                 workout_plan_id: workoutMode === "library" ? (selectedWorkout || null) : null,
                 custom_diet: dietMode === "custom" ? customDiet : null,
@@ -99,7 +101,7 @@ export default function ProgramBuilderPage() {
             if (error) throw error;
 
             alert("Master Program Saved Successfully!");
-            router.push("/dashboard/plans");
+            router.push("/dashboard/programs");
 
         } catch (error: any) {
             console.error("Save Error:", error);
@@ -146,6 +148,18 @@ export default function ProgramBuilderPage() {
                                     placeholder="e.g. 12 Week Shred Transformation"
                                     className="bg-background border-input text-foreground placeholder:text-muted-foreground h-14 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary"
                                 />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Duration</label>
+                                    <Input
+                                        value={programDuration}
+                                        onChange={(e) => setProgramDuration(e.target.value)}
+                                        placeholder="e.g. 3 Months, 12 Weeks"
+                                        className="bg-background border-input text-foreground placeholder:text-muted-foreground h-14 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary"
+                                    />
+                                </div>
+                                <div className="hidden md:block"></div>
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Description / Notes</label>

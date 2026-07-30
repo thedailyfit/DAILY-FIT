@@ -107,8 +107,7 @@ export default function MessagesPage() {
                 .not('whatsapp_id', 'is', null)
 
             if (!members || members.length === 0) {
-                // Use mock data if no real data
-                setConversations(MOCK_CONVERSATIONS)
+                setConversations([])
                 return
             }
 
@@ -138,10 +137,10 @@ export default function MessagesPage() {
                 })
             }
 
-            setConversations(convos.length > 0 ? convos : MOCK_CONVERSATIONS)
+            setConversations(convos)
         } catch (err) {
             console.error('Error loading conversations:', err)
-            setConversations(MOCK_CONVERSATIONS)
+            setConversations([])
         }
     }
 
@@ -234,6 +233,43 @@ export default function MessagesPage() {
         setRefreshing(true)
         await loadConversations()
         setRefreshing(false)
+    }
+
+    const handleSendMessage = async () => {
+        if (!newMessage.trim() || !selectedConversation) return
+
+        const messageText = newMessage
+        const now = new Date()
+        const timeString = 'Just now'
+
+        // Optimistic update
+        const newMsg = { sender: 'assistant', text: messageText, time: timeString }
+        
+        const updatedSelected = {
+            ...selectedConversation,
+            lastMessage: messageText,
+            time: timeString,
+            messages: [...selectedConversation.messages, newMsg]
+        }
+        
+        setSelectedConversation(updatedSelected)
+        setConversations(prev => prev.map(conv => 
+            conv.id === updatedSelected.id ? updatedSelected : conv
+        ))
+        setNewMessage('')
+
+        // Save to DB
+        try {
+            const supabase = createClient()
+            await supabase.from('chat_history').insert({
+                member_id: selectedConversation.id,
+                sender: 'assistant',
+                message: messageText,
+                created_at: now.toISOString()
+            })
+        } catch (err) {
+            console.error('Error sending message:', err)
+        }
     }
 
     const copyToClipboard = (text: string) => {
@@ -380,7 +416,18 @@ export default function MessagesPage() {
                         <CardTitle className="text-base">Recent Conversations</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0 overflow-y-auto max-h-[500px]">
-                        {conversations.map((conv) => (
+                        {!isConnected ? (
+                            <div className="p-8 text-center text-muted-foreground flex flex-col items-center">
+                                <Lock className="h-8 w-8 mb-3 opacity-20" />
+                                <p className="text-sm">Connect WhatsApp to see your recent conversations.</p>
+                            </div>
+                        ) : conversations.length === 0 ? (
+                            <div className="p-8 text-center text-muted-foreground flex flex-col items-center">
+                                <MessageSquare className="h-8 w-8 mb-3 opacity-20" />
+                                <p className="text-sm">No recent conversations.</p>
+                            </div>
+                        ) : (
+                            conversations.map((conv) => (
                             <div
                                 key={conv.id}
                                 onClick={() => setSelectedConversation(conv)}
@@ -404,13 +451,19 @@ export default function MessagesPage() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        )))}
                     </CardContent>
                 </Card>
 
                 {/* Chat View */}
                 <Card className="lg:col-span-2 flex flex-col">
-                    {selectedConversation ? (
+                    {!isConnected ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground min-h-[400px]">
+                            <Lock className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <p>WhatsApp not connected</p>
+                            <p className="text-xs mt-2">Connect your account above to start messaging clients.</p>
+                        </div>
+                    ) : selectedConversation ? (
                         <>
                             <CardHeader className="p-4 border-b flex-row items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -446,9 +499,12 @@ export default function MessagesPage() {
                                     placeholder="Type a message..."
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSendMessage()
+                                    }}
                                     className="flex-1"
                                 />
-                                <Button className="bg-primary">
+                                <Button className="bg-primary" onClick={handleSendMessage}>
                                     <Send className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -466,32 +522,3 @@ export default function MessagesPage() {
         </div>
     )
 }
-
-// Fallback mock data when no real conversations exist
-const MOCK_CONVERSATIONS: Conversation[] = [
-    {
-        id: '1',
-        name: 'Rahul Mehta',
-        phone: '+91 98765-43210',
-        lastMessage: "What's my workout for today?",
-        time: '2 min ago',
-        unread: 2,
-        messages: [
-            { sender: 'user', text: "What's my workout for today?", time: '10:30 AM' },
-            { sender: 'assistant', text: "Good morning Rahul! Today is your Push Day.\n\n1. Bench Press: 4x8\n2. Incline Dumbbell Press: 3x12\n3. Cable Flyes: 3x15", time: '10:30 AM' },
-        ]
-    },
-    {
-        id: '2',
-        name: 'Priya Sharma',
-        phone: '+91 87654-32109',
-        lastMessage: 'Thanks for the diet plan!',
-        time: '1 hour ago',
-        unread: 0,
-        messages: [
-            { sender: 'user', text: 'Can you send me my diet plan?', time: '9:15 AM' },
-            { sender: 'assistant', text: "Here's your 1800 cal plan:\n\nBreakfast: Oats\nLunch: Chicken + rice\nDinner: Fish curry + roti", time: '9:15 AM' },
-            { sender: 'user', text: 'Thanks for the diet plan!', time: '9:20 AM' },
-        ]
-    },
-]

@@ -1,78 +1,120 @@
 import { Metadata } from "next";
-import {
-    WorkoutPlansTable,
-    WorkoutPlan,
-} from "@/components/plans/workout-plans-table";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase";
-import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Activity, Plus, Search, Users, MoreVertical, Edit } from "lucide-react"
+import Link from 'next/link'
+import { Input } from '@/components/ui/input'
+import { createClient } from "@/lib/supabase"
 
 export const metadata: Metadata = {
     title: "Workout Plans | DailyFit Trainer Dashboard",
 };
 
-async function getWorkoutPlans(): Promise<WorkoutPlan[]> {
+export default async function WorkoutPlansLibraryPage() {
     const supabase = createClient();
 
-    // Fetch all workout plans
+    // Fetch all workout plans ordered by creation date
     const { data, error } = await supabase
         .from("workout_plans")
         .select("*")
         .order("created_at", { ascending: false });
 
-    if (error) {
-        console.error("Error fetching workout plans:", error);
-        return [];
+    let plans: any[] = [];
+    
+    if (!error && data) {
+        plans = data.map((plan: any) => ({
+            id: plan.id,
+            title: plan.name,
+            duration: `${plan.frequency_per_week || 3} Days/Week`,
+            clientsActive: 0, // Usage count not yet implemented
+            type: plan.focus?.replace('_', ' ') || "General",
+            lastUpdated: new Date(plan.created_at).toLocaleDateString(),
+        }));
     }
 
-    if (!data) return [];
-
-    return data.map((plan: any) => ({
-        id: plan.id,
-        name: plan.name,
-        level: plan.level || "beginner",
-        frequencyPerWeek: plan.frequency_per_week || 3,
-        focus: plan.focus || "general",
-        planType: plan.plan_type || "template",
-        tags: [], // Tags not yet in DB
-        isActive: plan.is_active !== false,
-        activeClientsCount: 0, // Usage count not yet implemented
-    }));
-}
-
-export default async function WorkoutPlansPage() {
-    const plans = await getWorkoutPlans();
-
     return (
-        <div className="p-4 md:p-8 space-y-8 bg-background min-h-screen text-foreground">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="p-4 md:p-8 space-y-6 max-w-[1600px] mx-auto min-h-screen bg-background text-foreground">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-foreground tracking-tight uppercase">
-                        Workout Plans
+                    <h1 className="text-3xl font-black uppercase flex items-center gap-3">
+                        <Activity className="h-8 w-8 text-blue-500" /> Workout Plans
                     </h1>
-                    <p className="text-muted-foreground mt-2 font-medium">
-                        Build structured training programs you can reuse.
-                    </p>
+                    <p className="text-muted-foreground mt-1 font-medium">Manage and assign your workout routines.</p>
                 </div>
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg rounded-xl" asChild>
+                
+                <div className="flex items-center gap-3">
+                    <div className="relative group hidden sm:block">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
+                        <Input 
+                            placeholder="Search workout plans..." 
+                            className="pl-10 h-10 w-64 bg-card border-border"
+                        />
+                    </div>
                     <Link href="/dashboard/plans/workouts/new">
-                        + New Workout Plan
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md">
+                            <Plus className="h-4 w-4 mr-2" /> Create Workout Plan
+                        </Button>
                     </Link>
-                </Button>
+                </div>
             </div>
 
-            <Card className="border-border shadow-xl bg-card overflow-hidden rounded-[1.5rem]">
-                <CardHeader className="bg-muted/30 border-b border-border p-6">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-card-foreground">
-                        Workout Plan Library
-                        <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse shadow-sm"></span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <WorkoutPlansTable plans={plans} />
-                </CardContent>
-            </Card>
+            {/* Content Grid */}
+            {plans.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-12 text-center border rounded-2xl bg-card border-dashed">
+                    <div className="h-16 w-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
+                        <Activity className="h-8 w-8 text-blue-500" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">No Workout Plans Yet</h3>
+                    <p className="text-muted-foreground max-w-md mb-6">Create workout routines to quickly assign to your clients.</p>
+                    <Link href="/dashboard/plans/workouts/new">
+                        <Button className="font-bold bg-blue-600 hover:bg-blue-700 text-white"><Plus className="h-4 w-4 mr-2" /> Create First Plan</Button>
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {plans.map((plan: any) => (
+                        <Card key={plan.id} className="group hover:shadow-lg transition-all duration-300 border-border bg-card overflow-hidden flex flex-col">
+                            <CardHeader className="border-b bg-blue-500/10 pb-4">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <CardTitle className="text-xl font-bold line-clamp-1 capitalize" title={plan.title}>{plan.title}</CardTitle>
+                                        <CardDescription className="mt-1 flex items-center gap-2">
+                                            <span className="bg-blue-500/20 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full font-bold capitalize">{plan.type}</span>
+                                            <span className="font-mono text-xs">• {plan.duration}</span>
+                                        </CardDescription>
+                                    </div>
+                                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground -mt-2 -mr-2">
+                                        <MoreVertical className="h-5 w-5" />
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="pt-6 flex-1">
+                                <div className="flex justify-between items-center text-sm">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-muted-foreground text-xs uppercase tracking-wider font-bold">Active Clients</span>
+                                        <span className="font-black text-2xl flex items-center gap-2">
+                                            {plan.clientsActive} <Users className="h-5 w-5 text-muted-foreground opacity-50" />
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col gap-1 text-right">
+                                        <span className="text-muted-foreground text-xs uppercase tracking-wider font-bold">Created On</span>
+                                        <span className="font-medium text-foreground">{plan.lastUpdated}</span>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="p-4 border-t bg-muted/10 gap-2">
+                                <Button className="w-full font-bold bg-blue-600 hover:bg-blue-700 text-white">
+                                    Assign to Client
+                                </Button>
+                                <Button variant="outline" size="icon" title="Edit Plan">
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
-    );
+    )
 }

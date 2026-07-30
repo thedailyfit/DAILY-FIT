@@ -38,9 +38,8 @@ export default function ReferralPage() {
                 // Lazy Generation: If no code exists (old user), generate one now
                 if (!code) {
                     code = `TR-${user.id.substring(0, 4).toUpperCase()}${Math.floor(Math.random() * 99)}`;
-                    // Ideally we save this back to DB here, but for now we just show it.
-                    // In a real app we'd trigger an update:
-                    // await supabase.from('gyms').update({ referral_code: code }).eq('gym_id', user.id)
+                    // Save the generated code back to DB
+                    await supabase.from('gyms').update({ referral_code: code }).eq('owner_id', user.id)
                 }
 
                 setReferralCode(code || 'ERROR')

@@ -18,6 +18,9 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [showPassword, setShowPassword] = useState(false)
+    const [forgotMode, setForgotMode] = useState(false)
+    const [resetEmail, setResetEmail] = useState('')
+    const [resetSent, setResetSent] = useState(false)
     const router = useRouter()
     const supabase = createClient()
 
@@ -100,7 +103,7 @@ export default function LoginPage() {
                             trial_ends_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
                         }])
 
-                    if (gymError) console.error("Gym creation error:", gymError)
+                    if (gymError) throw new Error("Failed to create account profile: " + gymError.message)
 
                     router.push('/dashboard?welcome=true')
                 }
@@ -144,7 +147,7 @@ export default function LoginPage() {
             </div>
 
             {/* Main Flip Card Container */}
-            <div className="relative w-full max-w-4xl h-[600px] perspective-1000">
+            <div className="relative w-full max-w-4xl min-h-[600px] md:h-[600px] perspective-1000">
                 <motion.div
                     className="relative w-full h-full"
                     style={{ transformStyle: 'preserve-3d' }}
@@ -156,9 +159,9 @@ export default function LoginPage() {
                         className="absolute inset-0 w-full h-full backface-hidden"
                         style={{ backfaceVisibility: 'hidden' }}
                     >
-                        <div className="flex h-full rounded-3xl overflow-hidden shadow-2xl">
+                        <div className="flex flex-col md:flex-row h-full rounded-3xl overflow-hidden shadow-2xl">
                             {/* Left: Form */}
-                            <div className="w-1/2 bg-white p-10 flex flex-col justify-center">
+                            <div className="w-full md:w-1/2 bg-white p-6 md:p-10 flex flex-col justify-center">
                                 <div className="mb-8">
                                     <h1 className="text-3xl font-black text-gray-900 mb-2">Sign In</h1>
                                     <p className="text-gray-500">Welcome back to DailyFit</p>
@@ -215,13 +218,61 @@ export default function LoginPage() {
                                     </Button>
                                 </form>
 
-                                <p className="mt-6 text-center text-sm text-gray-500">
-                                    <a href="#" className="text-purple-600 hover:underline">Forgot your password?</a>
-                                </p>
+                                {!forgotMode ? (
+                                    <p className="mt-4 md:mt-6 text-center text-sm text-gray-500">
+                                        <button type="button" onClick={() => setForgotMode(true)} className="text-purple-600 hover:underline">Forgot your password?</button>
+                                    </p>
+                                ) : (
+                                    <div className="mt-6 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                        {resetSent ? (
+                                            <div className="text-center space-y-2">
+                                                <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto" />
+                                                <p className="text-sm text-green-700 font-medium">Reset link sent to {resetEmail}</p>
+                                                <button type="button" onClick={() => { setForgotMode(false); setResetSent(false); setResetEmail(''); }} className="text-xs text-purple-600 hover:underline mt-2">Back to Login</button>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                <Label className="text-xs text-purple-900 font-bold">Reset Password</Label>
+                                                <Input 
+                                                    type="email" 
+                                                    placeholder="Enter your email" 
+                                                    value={resetEmail} 
+                                                    onChange={(e) => setResetEmail(e.target.value)} 
+                                                    className="h-10 text-sm bg-white"
+                                                />
+                                                <div className="flex gap-2">
+                                                    <Button 
+                                                        type="button" 
+                                                        onClick={async () => {
+                                                            if (!resetEmail) return;
+                                                            await supabase.auth.resetPasswordForEmail(resetEmail);
+                                                            setResetSent(true);
+                                                        }} 
+                                                        className="h-9 flex-1 bg-purple-600 hover:bg-purple-700 text-white text-xs"
+                                                    >
+                                                        Send Link
+                                                    </Button>
+                                                    <Button type="button" variant="ghost" onClick={() => setForgotMode(false)} className="h-9 text-xs text-gray-500">Cancel</Button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                {/* Mobile Flip Button */}
+                                <div className="md:hidden mt-6 pt-6 border-t border-gray-100 text-center">
+                                    <p className="text-sm text-gray-500 mb-3">Don't have an account?</p>
+                                    <Button
+                                        variant="outline"
+                                        onClick={flipToSignUp}
+                                        className="w-full font-bold text-purple-600 border-purple-200 hover:bg-purple-50"
+                                    >
+                                        Create Account
+                                    </Button>
+                                </div>
                             </div>
 
-                            {/* Right: CTA Panel */}
-                            <div className="w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-10 flex flex-col items-center justify-center text-white text-center">
+                            {/* Right: CTA Panel (Hidden on Mobile) */}
+                            <div className="hidden md:flex w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-10 flex-col items-center justify-center text-white text-center">
                                 <Dumbbell className="h-16 w-16 mb-6 opacity-80" />
                                 <h2 className="text-3xl font-black mb-4">Hey There!</h2>
                                 <p className="text-white/80 mb-8 max-w-xs">
@@ -243,9 +294,9 @@ export default function LoginPage() {
                         className="absolute inset-0 w-full h-full backface-hidden"
                         style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                     >
-                        <div className="flex h-full rounded-3xl overflow-hidden shadow-2xl">
-                            {/* Left: CTA Panel */}
-                            <div className="w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-10 flex flex-col items-center justify-center text-white text-center">
+                        <div className="flex flex-col md:flex-row h-full rounded-3xl overflow-hidden shadow-2xl">
+                            {/* Left: CTA Panel (Hidden on Mobile) */}
+                            <div className="hidden md:flex w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-10 flex-col items-center justify-center text-white text-center">
                                 <Sparkles className="h-16 w-16 mb-6 opacity-80" />
                                 <h2 className="text-3xl font-black mb-4">Welcome Back!</h2>
                                 <p className="text-white/80 mb-8 max-w-xs">
@@ -261,8 +312,8 @@ export default function LoginPage() {
                             </div>
 
                             {/* Right: Sign Up Form */}
-                            <div className="w-1/2 bg-white p-8 flex flex-col justify-center overflow-y-auto">
-                                <div className="mb-6">
+                            <div className="w-full md:w-1/2 bg-white p-6 md:p-8 flex flex-col justify-center overflow-y-auto">
+                                <div className="mb-4 md:mb-6">
                                     <h1 className="text-2xl font-black text-gray-900 mb-1">Create Account</h1>
                                     <p className="text-gray-500 text-sm">Join DailyFit today</p>
                                 </div>
@@ -424,6 +475,19 @@ export default function LoginPage() {
                                             formData.role === 'gym_owner' ? 'Continue to Billing →' : 'Start Free Trial'
                                         )}
                                     </Button>
+
+                                    {/* Mobile Flip Button */}
+                                    <div className="md:hidden mt-4 pt-4 border-t border-gray-100 text-center pb-8">
+                                        <p className="text-xs text-gray-500 mb-2">Already have an account?</p>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={flipToLogin}
+                                            className="font-bold text-purple-600 hover:bg-purple-50"
+                                        >
+                                            Sign In Instead
+                                        </Button>
+                                    </div>
                                 </form>
                             </div>
                         </div>

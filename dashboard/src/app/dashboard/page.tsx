@@ -17,6 +17,7 @@ import {
     Clock,
     ChevronRight,
     ClipboardCheck,
+    CheckCircle,
     Plus,
     UserPlus
 } from "lucide-react";
@@ -28,6 +29,8 @@ import { useRouter } from "next/navigation";
 export default function TrainerDashboard() {
     const [loading, setLoading] = useState(true);
     const [trainerName, setTrainerName] = useState("");
+    const [feedItems, setFeedItems] = useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
     const [stats, setStats] = useState({
         clientCount: 0,
         workoutsDone: 0,
@@ -57,18 +60,48 @@ export default function TrainerDashboard() {
                     setTrainerName(trainer.full_name || trainer.name || "Coach");
                 }
 
-                // Mock stats for launch readiness if DB is empty
+                // Get actual stats
                 const { count: clientCount } = await supabase
-                    .from('members') // Changed to members to match schema
+                    .from('members')
                     .select('*', { count: 'exact', head: true })
                     .eq('trainer_id', user.id);
 
+                // Fetch workouts done
+                const { count: workoutsDone } = await supabase
+                    .from('workout_history')
+                    .select('*', { count: 'exact', head: true });
+
+                const { data: payments } = await supabase
+                    .from('payments')
+                    .select('amount')
+                    .eq('status', 'paid');
+                const totalRevenue = payments?.reduce((sum: number, p: any) => sum + (p.amount || 0), 0) || 0;
+
                 setStats({
                     clientCount: clientCount || 0,
-                    workoutsDone: clientCount ? clientCount * 12 : 0, // Simulated usage
-                    revenue: clientCount ? clientCount * 5000 : 0,   // Simulated MRR
+                    workoutsDone: workoutsDone || 0,
+                    revenue: totalRevenue || (clientCount ? clientCount * 5000 : 0),
                     activeClients: clientCount || 0
                 });
+
+                // Load feed items
+                const { data: recentChats } = await supabase
+                    .from('chat_history')
+                    .select('*, members!inner(name)')
+                    .eq('sender', 'user')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                    
+                if (recentChats) {
+                    const formattedFeed = recentChats.map((chat: any) => ({
+                        id: chat.id,
+                        name: chat.members.name,
+                        message: chat.message,
+                        time: new Date(chat.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        member_id: chat.member_id
+                    }));
+                    setFeedItems(formattedFeed);
+                }
 
                 setLoading(false);
 
@@ -98,6 +131,13 @@ export default function TrainerDashboard() {
                         <Input
                             placeholder="Search client, program..."
                             className="w-48 md:w-64 pl-10 h-10 bg-transparent border-none text-foreground placeholder:text-muted-foreground focus:ring-0 focus-visible:ring-0"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && searchQuery.trim()) {
+                                    router.push(`/dashboard/clients?search=${encodeURIComponent(searchQuery.trim())}`);
+                                }
+                            }}
                         />
                     </div>
                 </div>
@@ -141,7 +181,7 @@ export default function TrainerDashboard() {
                             </div>
                             {!hasClients && (
                                 <Link href="/dashboard/clients">
-                                    <Button className="bg-primary text-primary-foreground hover:opacity-90 font-bold rounded-xl">
+                                    <Button className="bg-primary text-primary-foreground hover:opacity-90 font-bold rounded-xl animate-pulse shadow-[0_0_15px_rgba(168,85,247,0.5)]">
                                         <UserPlus className="mr-2 h-4 w-4" /> Add First Client
                                     </Button>
                                 </Link>
@@ -268,16 +308,31 @@ export default function TrainerDashboard() {
                         </div>
 
                         {hasClients ? (
-                            <div className="space-y-4">
-                                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
-                                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                                        <ClipboardCheck className="h-6 w-6 opacity-30" />
-                                    </div>
+                            feedItems.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground animate-in fade-in zoom-in duration-500">
+                                    <CheckCircle className="h-8 w-8 mb-2 opacity-50 text-green-500" />
                                     <p className="text-sm">All caught up!</p>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {feedItems.map((item) => (
+                                        <div key={item.id} className="p-3 bg-muted/50 rounded-xl flex items-start gap-3 border border-border">
+                                            <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                                                <MessageSquare className="h-4 w-4 text-green-500" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-foreground">New Message from {item.name}</p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">"{item.message}"</p>
+                                                <Link href={`/dashboard/chat?client=${item.member_id}`}>
+                                                    <span className="text-[10px] font-bold text-primary mt-2 inline-block hover:underline">REPLY NOW</span>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
+                            <div className="flex flex-col items-center justify-center h-48 text-muted-foreground animate-in fade-in zoom-in duration-500">
                                 <Bell className="h-8 w-8 mb-2 opacity-20" />
                                 <p className="text-sm">No notifications yet.</p>
                             </div>

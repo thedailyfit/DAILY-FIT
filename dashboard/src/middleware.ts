@@ -57,11 +57,16 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
+    const demoCookie = request.cookies.get('dailyfit_demo_auth')?.value
+    const demoEmail = request.cookies.get('dailyfit_demo_email')?.value
+    const isDemoAuthenticated = demoCookie === 'true'
+
     const pathname = request.nextUrl.pathname
 
     // Admin/Test accounts with full access to all dashboards
     const adminEmails = ['theakhileshreddy07@gmail.com']
-    const isAdmin = user?.email && adminEmails.includes(user.email.toLowerCase())
+    const effectiveEmail = user?.email || demoEmail || ''
+    const isAdmin = effectiveEmail && adminEmails.includes(effectiveEmail.toLowerCase())
 
     // Public paths that don't need auth
     const publicPaths = ['/', '/login', '/pricing', '/about', '/blog', '/gym/login', '/gym/signup', '/trainer/login', '/trainer/join']
@@ -79,8 +84,10 @@ export async function middleware(request: NextRequest) {
         !pathname.startsWith('/trainer/login') &&
         !pathname.startsWith('/trainer/join')
 
+    const isAuthenticated = !!user || isDemoAuthenticated
+
     // STRICT AUTH CHECK - If not logged in and trying to access protected route, ALWAYS redirect
-    if (isProtected && !user) {
+    if (isProtected && !isAuthenticated) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 

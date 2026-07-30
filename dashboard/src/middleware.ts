@@ -97,10 +97,13 @@ export async function middleware(request: NextRequest) {
 
     // Role-based routing from explicit role cookie if set
     if (roleCookie && isProtected && !isAdmin) {
-        if (pathname.startsWith('/gym') && roleCookie !== 'gym_owner') {
+        if (roleCookie === 'solo_trainer' && (pathname.startsWith('/gym') || pathname.startsWith('/trainer') || pathname.startsWith('/admin'))) {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+        if (roleCookie === 'gym_owner' && (pathname.startsWith('/dashboard') || pathname.startsWith('/trainer') || pathname.startsWith('/admin'))) {
             return NextResponse.redirect(new URL('/gym', request.url))
         }
-        if (pathname.startsWith('/trainer') && roleCookie !== 'pro_trainer') {
+        if (roleCookie === 'pro_trainer' && (pathname.startsWith('/dashboard') || pathname.startsWith('/gym') || pathname.startsWith('/admin'))) {
             return NextResponse.redirect(new URL('/trainer', request.url))
         }
     }
